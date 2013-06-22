@@ -8,11 +8,7 @@ import play.api.Play.current
 object Application extends Controller {
   
   def index = Action {    
-    Ok(views.html.index(
-        DB.withConnection {
-          conn =>
-            conn.getCatalog()
-        }))
+    Ok(views.html.index("Huraaa!"))
   }
   
   def getCat : String = {
