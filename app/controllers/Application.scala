@@ -7,12 +7,16 @@ import play.api.Play.current
 
 object Application extends Controller {
   
-  def index = Action {
-    var cat = "xx"
-    DB.withConnection(conn => {
-    	cat = conn.getCatalog()
-    })
-    Ok(views.html.index(cat))
+  def index = Action {    
+    Ok(views.html.index(
+        DB.withConnection {
+          conn =>
+            conn.getCatalog()
+        }))
   }
   
+  def getCat : String = {
+    DB.withConnection { conn =>
+      conn.getCatalog() }
+  }
 }
