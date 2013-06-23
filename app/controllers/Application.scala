@@ -8,7 +8,7 @@ import play.api.Play.current
 object Application extends Controller {
   
   def index = Action {    
-    Ok(views.html.index("Huraaa!"))
+    Ok(views.html.edit())
   }
   
   def getCat : String = {
