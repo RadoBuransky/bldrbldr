@@ -4,38 +4,28 @@
 
 <html lang="en" ng-app>
     <head>
+  		<meta charset="utf-8">
         <title>Boulder Builder</title>
-        <link rel="stylesheet" type="text/css" href="@routes.Assets.at("stylesheets/main.css")" />
+        <link rel="stylesheet" href="@routes.Assets.at("stylesheets/main.css")" />
+        
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-        <script src="@routes.Assets.at("javascripts/angular.min.js")" type="text/javascript"></script>
-        <script src="@routes.Assets.at("javascripts/raphael-min.js")" type="text/javascript"></script>
+        
+        <script src="@routes.Assets.at("javascripts/angular.min.js")"></script>
+        <script src="@routes.Assets.at("javascripts/raphael-min.js")"></script>
+        <script src="@routes.Assets.at("javascripts/jquery-2.0.2.min.js")"></script>
         
         <script src="@routes.Assets.at("javascripts/bldr-ui.js")" type="text/javascript"></script>
+        <script src="@routes.Assets.at("javascripts/PhotoViewer.js")" type="text/javascript"></script>
     </head>
     <body> 
     	<div id="main">
     		<div id="header"/> 
     			<h1>Boulder Builder</h1>
     		</div>
-		{{window_width}}
+    		<div id="photoEditor">
+        		<script src="@routes.Assets.at("javascripts/Editor.js")"></script>
+    		</div>
     	</div>    	
     	<div id="toolbar"></div>
-    	
-    	<script>
-    		//document.getElementById('main').style.width = '300px';
-    		
-    		function tellAngular() {
-			    console.log("tellAngular call");
-			    var w = document.getElementById('toolbar').offsetWidth;
-			    console.log(w);
-			    document.getElementById('main').style.width = (window.innerWidth - w) + "px";
-			}
-			
-			//first call of tellAngular when the dom is loaded
-			document.addEventListener("DOMContentLoaded", tellAngular, false);
-			
-			//calling tellAngular on resize event
-			window.onresize = tellAngular;
-    	</script>
     </body>
 </html>
