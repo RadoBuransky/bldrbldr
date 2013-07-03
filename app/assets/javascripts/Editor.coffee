@@ -1,0 +1,1 @@
+new PhotoViewer "photoEditor", "assets/images/pd.jpeg"
