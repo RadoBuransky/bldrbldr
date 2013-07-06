@@ -1,0 +1,15 @@
+@scripts = {	
+	<script src="@routes.Assets.at("javascripts/utils/Browser.js")"></script>
+	
+	<script src="@routes.Assets.at("javascripts/controls/PhotoViewer.js")"></script>
+	<script src="@routes.Assets.at("javascripts/controls/BoulderViewer.js")"></script>
+	<script src="@routes.Assets.at("javascripts/controls/BoulderEditorToolbar.js")"></script>	
+	<script src="@routes.Assets.at("javascripts/controls/BoulderEditor.js")"></script>	
+	
+	<script src="@routes.Assets.at("javascripts/pages/Editor.js")"></script>
+}
+
+@common("Editor", scripts) {
+	<div id="viewer"></div>
+	<div id="toolbar"></div>
+}

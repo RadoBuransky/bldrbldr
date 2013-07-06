@@ -6,10 +6,10 @@ import play.api.db._
 import play.api.Play.current
 
 object Application extends Controller {
-  
-  def index = Action {    
-    Ok(views.html.edit())
-  }
+
+	def index = Action {
+		Redirect("/editor")
+	}
   
   def getCat : String = {
     DB.withConnection { conn =>
