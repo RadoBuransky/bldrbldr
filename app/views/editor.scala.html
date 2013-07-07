@@ -1,7 +1,9 @@
-@scripts = {	
+@scripts = {
+    <script src="@routes.Assets.at("javascripts/paper.js")"></script>        
+        	
 	<script src="@routes.Assets.at("javascripts/utils/Browser.js")"></script>
 	
-	<script src="@routes.Assets.at("javascripts/controls/PhotoViewer.js")"></script>
+	<script src="@routes.Assets.at("javascripts/controls/PaperPhotoViewer.js")"></script>
 	<script src="@routes.Assets.at("javascripts/controls/BoulderViewer.js")"></script>
 	<script src="@routes.Assets.at("javascripts/controls/BoulderEditorToolbar.js")"></script>	
 	<script src="@routes.Assets.at("javascripts/controls/BoulderEditor.js")"></script>	
@@ -10,6 +12,7 @@
 }
 
 @common("Editor", scripts) {
-	<div id="viewer"></div>
+	<img id="photo" src="@routes.Assets.at("images/pd.jpeg")" style="display: none" />
+	<canvas id="viewer"></canvas>
 	<div id="toolbar"></div>
 }
