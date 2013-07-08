@@ -1,8 +1,8 @@
 class @BoulderEditor
 	
-	constructor: (viewerId, toolbarId, photoUrl) ->
+	constructor: (canvasId, toolbarId, imgId) ->
 		@toolbar = new BoulderEditorToolbar(toolbarId)	
-		@viewer = new BoulderViewer(viewerId, photoUrl)
+		@viewer = new BoulderViewer(canvasId, imgId)
 		@updateViewerPos()		
 		$(window).resize(@onWindowResize)
 		

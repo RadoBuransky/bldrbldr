@@ -1,3 +1,3 @@
 class @BoulderViewer extends PaperPhotoViewer
-	constructor: (viewerId, photoUrl, width) ->
-		super(viewerId, photoUrl, width)
+	constructor: (canvasId, imgId) ->
+		super(canvasId, imgId)

@@ -1,6 +1,6 @@
 class @Editor
 
 	constructor: ->
-		@boulderEditor = new BoulderEditor("viewer", "toolbar", "assets/images/pd.jpeg")
+		@boulderEditor = new BoulderEditor("viewer", "toolbar", "photo")
 
 $(document).ready(-> new Editor)
