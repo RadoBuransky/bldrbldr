@@ -6,6 +6,15 @@ class @BoulderEditor
 		@updateViewerPos()		
 		$(window).resize(@onWindowResize)
 		
+	fit: ->
+		@viewer.fit()
+		
+	zoomin: ->
+		@viewer.zoomin()
+		
+	zoomout: ->
+		@viewer.zoomout()
+		
 	onWindowResize: =>
 		@updateViewerPos()
 		

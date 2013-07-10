@@ -1,0 +1,52 @@
+#viewer {
+	position: absolute;	
+}
+
+//===================================================================
+// Toolbar
+//===================================================================
+
+@toolbar_padding: 2px;
+@toolbar_width: 200px;
+
+#toolbar {
+	background-color: #000000;
+	position: absolute;
+}
+
+#toolbar a {
+	text-decoration: none;
+	color: #000000;
+}
+
+#toolbar a:link {
+}
+
+@toolbar_line_height: 50px;
+#toolbar .toolbar_line {
+	padding: @toolbar_padding;
+	height: @toolbar_line_height;
+}
+
+@button_margin: 2px;
+.toolbar_linebox_param (@button_count) {
+	width: ((@toolbar_width - (2*@toolbar_padding) - @button_margin) / @button_count) - @button_margin - 2;
+	margin: @button_margin;
+	float: left;
+	text-align: center;
+	vertical-align: middle;
+	height: @toolbar_line_height;
+	line-height: @toolbar_line_height;
+}
+
+.toolbar_linebox {
+	background-color: #444444;		
+}
+
+.toolbar_linebox:hover {
+	background-color: #CCCCCC;		
+}
+
+#zoom .toolbar_linebox {
+	.toolbar_linebox_param(3);
+}

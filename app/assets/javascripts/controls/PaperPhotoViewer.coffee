@@ -16,6 +16,15 @@ class @PaperPhotoViewer
 		tool.onMouseDrag = @onMouseDrag
 		
 		@canvas.bind('mousewheel', @onMouseWheel)
+		
+	fit: ->
+		@reset()
+		
+	zoomin: ->
+		paper.view.zoom *= 1.1
+		
+	zoomout: ->
+		paper.view.zoom /= 1.1
 			
 	setSize: (w, h) ->
 		paper.view.viewSize = [w, h]
@@ -45,7 +54,7 @@ class @PaperPhotoViewer
 		hz = paper.view.zoom * paper.view.bounds.height / @img.height()
 		vz = paper.view.zoom * paper.view.bounds.width / @img.width()
 		
-		#paper.view.zoom = if hz < vz then hz else vz
+		paper.view.zoom = if hz < vz then hz else vz
 		
 	constraintPosition: (delta) ->
 		newBounds = new Rectangle(paper.view.bounds)

@@ -1,4 +1,6 @@
 @scripts = {
+    <link rel="stylesheet" href="@routes.Assets.at("stylesheets/editor.css")" />
+        
     <script src="@routes.Assets.at("javascripts/paper.js")"></script>
     <script src="@routes.Assets.at("javascripts/jquery.mousewheel.js")"></script>           
         	
@@ -15,5 +17,17 @@
 @common("Editor", scripts) {
 	<img id="photo" src="@routes.Assets.at("images/pd.jpeg")" style="display: none" />
 	<canvas id="viewer"></canvas>
-	<div id="toolbar"></div>
+	<div id="toolbar">
+		<div id="zoom" class="toolbar_line">
+			<a id="zoomfit" href="javascript:document.editor.boulderEditor.fit();" class="toolbar_button enabled">
+				<div class="toolbar_linebox">Fit</div>
+			</a>
+			<a id="zoomplus" href="javascript:document.editor.boulderEditor.zoomin();" class="toolbar_button enabled">
+				<div class="toolbar_linebox">+</div>
+			</a>
+			<a id="zoomminus" href="javascript:document.editor.boulderEditor.zoomout();" class="toolbar_button enabled">
+				<div class="toolbar_linebox">-</div>
+			</a>
+		</div>
+	</div>
 }
