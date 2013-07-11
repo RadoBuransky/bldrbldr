@@ -39,14 +39,37 @@
 	line-height: @toolbar_line_height;
 }
 
-.toolbar_linebox {
-	background-color: #444444;		
+@enabled_button_backgroundcolor: #444444;
+@shiny_button_backgroundcolor: #D11818;
+
+.enabled .toolbar_linebox {
+	background-color: @enabled_button_backgroundcolor;		
 }
 
-.toolbar_linebox:hover {
-	background-color: #CCCCCC;		
+.enabled .toolbar_linebox:hover {
+	.toolbar_linebox_hover(@enabled_button_backgroundcolor)	
 }
+
+.shiny .toolbar_linebox {
+	background-color: @shiny_button_backgroundcolor;		
+}
+
+.shiny .toolbar_linebox:hover {
+	.toolbar_linebox_hover(@shiny_button_backgroundcolor)	
+}
+
+.toolbar_linebox_hover(@base) {
+	background-color: lighten(@base, 30%);		
+}
+
+//===================================================================
+// Toolbar - specific
+//===================================================================
 
 #zoom .toolbar_linebox {
 	.toolbar_linebox_param(3);
+}
+
+#draw .toolbar_linebox {
+	.toolbar_linebox_param(2);
 }

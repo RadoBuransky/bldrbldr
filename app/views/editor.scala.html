@@ -1,3 +1,5 @@
+@import views.html.controls.toolbar._
+
 @scripts = {
     <link rel="stylesheet" href="@routes.Assets.at("stylesheets/editor.css")" />
         
@@ -15,19 +17,18 @@
 }
 
 @common("Editor", scripts) {
+	
 	<img id="photo" src="@routes.Assets.at("images/pd.jpeg")" style="display: none" />
 	<canvas id="viewer"></canvas>
 	<div id="toolbar">
+		<div id="draw" class="toolbar_line">
+			@button("Draw", "toolbar_draw")
+			@button("Erase", "toolbar_erase")
+		</div>
 		<div id="zoom" class="toolbar_line">
-			<a id="zoomfit" href="javascript:document.editor.boulderEditor.fit();" class="toolbar_button enabled">
-				<div class="toolbar_linebox">Fit</div>
-			</a>
-			<a id="zoomplus" href="javascript:document.editor.boulderEditor.zoomin();" class="toolbar_button enabled">
-				<div class="toolbar_linebox">+</div>
-			</a>
-			<a id="zoomminus" href="javascript:document.editor.boulderEditor.zoomout();" class="toolbar_button enabled">
-				<div class="toolbar_linebox">-</div>
-			</a>
+			@button("Fit", "zoomfit")
+			@button("+", "zoomplus")
+			@button("-", "zoomminus")
 		</div>
 	</div>
 }
