@@ -1,12 +1,5 @@
-class @BoulderEditor
-	StateEnum = 
-		normal	: 0
-		drawing : 1
-		erasing	: 2
-	
-	constructor: (canvasId, toolbarId, imgId, thisAccess) ->
-		@state = StateEnum.normal
-	
+class @BoulderEditor	
+	constructor: (canvasId, toolbarId, imgId, thisAccess) ->	
 		@toolbar = new BoulderEditorToolbar(toolbarId)	
 		@viewer = new BoulderViewer(canvasId, imgId)
 		@updateViewerPos()		
@@ -21,6 +14,8 @@ class @BoulderEditor
 		@initToolbarButton(BoulderEditorToolbar::ZOOMPLUS_ID, ".viewer.zoomin();", thisAccess)
 		@initToolbarButton(BoulderEditorToolbar::ZOOMMINUS_ID, ".viewer.zoomout();", thisAccess)
 		
+		@setState(BoulderViewer::StateEnum.drawing)
+		
 	#===============================================================================================
 	# P U B L I C
 	#===============================================================================================
@@ -30,19 +25,17 @@ class @BoulderEditor
 	#===============================================================================================
 		
 	draw: ->
-		@setState(StateEnum.drawing)
+		@setState(BoulderViewer::StateEnum.drawing)
 		
 	erase: ->
-		@setState(StateEnum.erasing)
+		@setState(BoulderViewer::StateEnum.erasing)
 		
 	setState: (newState) ->
-		@state = if @state == newState then StateEnum.normal else newState
+		@state = if @state == newState then BoulderViewer::StateEnum.normal else newState		
+		@viewer.setState(@state)
 		
-		@toolbar.setButtonState(BoulderEditorToolbar::DRAW_ID,
-			if @state == StateEnum.drawing then BoulderEditorToolbar::ButtonStates.shiny else BoulderEditorToolbar::ButtonStates.enabled)
-		
-		@toolbar.setButtonState(BoulderEditorToolbar::ERASE_ID,
-			if @state == StateEnum.erasing then BoulderEditorToolbar::ButtonStates.shiny else BoulderEditorToolbar::ButtonStates.enabled)
+		@toolbar.setButtonState(BoulderEditorToolbar::DRAW_ID, if @state == BoulderViewer::StateEnum.drawing then BoulderEditorToolbar::ButtonStates.shiny else BoulderEditorToolbar::ButtonStates.enabled)
+		@toolbar.setButtonState(BoulderEditorToolbar::ERASE_ID, if @state == BoulderViewer::StateEnum.erasing then BoulderEditorToolbar::ButtonStates.shiny else BoulderEditorToolbar::ButtonStates.enabled)
 		
 	onWindowResize: =>
 		@updateViewerPos()
