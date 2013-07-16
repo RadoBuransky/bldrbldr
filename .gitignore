@@ -15,6 +15,7 @@ dist
 /RUNNING_PID
 .settings
 .cache
+.metadata
 bin
 
 libpeerconnection.log
