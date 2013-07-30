@@ -9,6 +9,7 @@ class @BoulderViewer extends PaperPhotoViewer
 		@state = BoulderViewer::StateEnum.normal
 		@path = null
 		@points = new paper.Group()
+		@brushSize = 10
 		
 	setState: (newStatus) ->
 		@state = newStatus
@@ -20,55 +21,37 @@ class @BoulderViewer extends PaperPhotoViewer
 	onMouseDown: (e) =>
 		if (@state == BoulderViewer::StateEnum.normal)
 			return super(e)			
-		@draw(e.point)
+		@paint(e.point)
 			
 	onMouseDrag: (e) =>
 		if (@state == BoulderViewer::StateEnum.normal)
-			return super(e)	
+			return super(e)		
+		@paint(e.point)	
 			 
-	draw: (point) ->			
-		c = paper.Path.Circle(point, 50/paper.view.zoom)
-		@path = @union(@path, c)
-		@path.smooth()		
-		@path.strokeColor = 'red'
-		@path.fillColor = @path.strokeColor
-		@showPoints(@path)
+	paint: (point) ->			
+		stroke = new paper.Path.Circle(point.x, point.y, @brushSize)
+		stroke.flatten(20)
+		stroke.smooth()
 		
-	showPoints: (path) ->
-		@points.removeChildren();			
-		for segment in path.segments
-			p = new paper.Path.Circle(segment.point, 10)	
-			p.strokeColor = 'blue'
-			p.fillColor = p.strokeColor
-			@points.addChild(p)	
-		@points.bringToFront()		
+		if (@path == null)
+			@path = stroke		
+			@path.strokeColor = 'black'
+			@path.strokeWidth = 3
+			@path.fillColor = 'red'
+			@path.opacity = 0.8	
+			return
 		
-	union: (c1, c2) ->
-		if (c1 == null)
-			return c2
-		if (c2 == null)
-			return c1
-			
-		intersections = c1.getIntersections(c2)
-		if (intersections.length > 0)
-			min = c1.curves.length + 1
-			max = -1
-			for i in intersections
-				console.log(i.index)
-				if (i.index < min)
-					min = i.index
-				if (i.index > max)
-					max = i.index
-				
-			console.log("min: " + min + ", max: " + max)
-			for i in [min..(max-1)]
-				console.log(i)
-				c1.removeSegment(i+1)			
+		p = unite(@path, stroke)
+		@path.remove()
+		stroke.remove()
 		
-			for i in intersections
-				c1.insert(1, i.point)
-				
-		c2.remove()
-		
-		return c1
+		p.strokeColor = 'black'
+		p.strokeWidth = 3
+		p.fillColor = 'red'
+		p.opacity = 0.8	
+		if p instanceof CompoundPath
+			@path = p.reduce()
+		else
+			@path = p
+		@path.smooth()
 		

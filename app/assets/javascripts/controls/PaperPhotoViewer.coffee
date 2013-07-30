@@ -12,7 +12,7 @@ class @PaperPhotoViewer
 		@photo = new paper.Raster(@imgId)
 		
 		tool = new Tool()	
-		tool.onMouseDown = @onMouseDown	
+		tool.onMouseDown = @onMouseDown
 		tool.onMouseDrag = @onMouseDrag
 		
 		@canvas.bind('mousewheel', @onMouseWheel)
