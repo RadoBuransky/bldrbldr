@@ -14,6 +14,7 @@ class @PaperPhotoViewer
 		tool = new Tool()	
 		tool.onMouseDown = @onMouseDown
 		tool.onMouseDrag = @onMouseDrag
+		tool.onMouseUp = @onMouseUp
 		
 		@canvas.bind('mousewheel', @onMouseWheel)
 		
@@ -42,8 +43,14 @@ class @PaperPhotoViewer
 		paper.view.scrollBy(delta)		
 		@oldDelta = delta
 		
+	onMouseUp: (e) =>
+
 	onLoad: ->
 		@reset()
+		clippingRect = new Path.Rectangle(paper.view.center.x - Math.round(@img.width() / 2),
+			paper.view.center.y - Math.round(@img.height() / 2),@img.width(),@img.height())
+		project.activeLayer.insertChild(0, clippingRect)
+		project.activeLayer.clipped = true
 		
 	reset: ->
 		if (@img.width() == 0 || @img.height() == 0)
