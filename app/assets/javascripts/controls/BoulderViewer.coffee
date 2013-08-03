@@ -10,6 +10,7 @@ class @BoulderViewer extends PaperPhotoViewer
 		@currentPath = null
 		@holds = new paper.Group()
 		@brushSize = 6
+		@eraser = null
 		
 	setState: (newStatus) ->
 		@state = newStatus
@@ -39,12 +40,25 @@ class @BoulderViewer extends PaperPhotoViewer
 				@currentPath = null	
 				@tryToUniteAllHolds()
 				
+	onMouseMove: (e) =>
+		if (@state == BoulderViewer::StateEnum.erasing)
+			@showEraser(e.point)
+				
+	showEraser: (point) ->
+		for hold in @holds.children
+			if hold.hitTest(point) != null
+				@styleEraser(hold)
+			else
+				@styleStroke(hold)
+				
 	erase: (point) ->
+		for hold in @holds.children
+			if hold.hitTest(point) != null
+				hold.remove()
+				return
 			 
 	paint: (point) ->		
-		stroke = new Path.RegularPolygon(point,  Math.round((@brushSize) +
-			@brushSize / (2 * paper.view.zoom)),
-			2 * @brushSize / paper.view.zoom)
+		stroke = @createBrush(point, @brushSize)
 		
 		if (@currentPath == null)
 			@currentPath = @tryToUniteStroke(stroke)
@@ -86,9 +100,21 @@ class @BoulderViewer extends PaperPhotoViewer
 			p.remove()
 		return stroke
 		
+	createBrush: (point, size) ->
+		return new Path.RegularPolygon(point,  Math.round((size) +
+			size / (2 * paper.view.zoom)),
+			2 * size / paper.view.zoom)
+		
 	styleStroke: (stroke) ->			
 		stroke.strokeColor = 'black'
 		stroke.strokeWidth = 2
 		stroke.storkeKoin = 'round'
 		stroke.fillColor = 'red'
-		stroke.opacity = 0.7				
+		stroke.opacity = 0.7
+		
+	styleEraser: (stroke) ->		
+		stroke.strokeColor = 'black'
+		stroke.strokeWidth = 3
+		stroke.storkeKoin = 'round'	
+		stroke.fillColor = #DDDDDD
+		stroke.opacity = 0.4					

@@ -15,6 +15,7 @@ class @PaperPhotoViewer
 		tool.onMouseDown = @onMouseDown
 		tool.onMouseDrag = @onMouseDrag
 		tool.onMouseUp = @onMouseUp
+		tool.onMouseMove = @onMouseMove
 		
 		@canvas.bind('mousewheel', @onMouseWheel)
 		
@@ -44,6 +45,8 @@ class @PaperPhotoViewer
 		@oldDelta = delta
 		
 	onMouseUp: (e) =>
+	
+	onMouseMove: (e) =>
 
 	onLoad: ->
 		@reset()
