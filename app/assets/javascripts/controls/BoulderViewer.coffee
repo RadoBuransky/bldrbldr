@@ -16,8 +16,7 @@ class @BoulderViewer extends PaperPhotoViewer
 		@state = newStatus
 		
 	onMouseWheel: (event, delta, deltaX, deltaY) =>
-		if (@state == BoulderViewer::StateEnum.normal)
-			return super(event, delta, deltaX, deltaY)
+		return super(event, delta, deltaX, deltaY)
 		
 	onMouseDown: (e) =>
 		if (@state == BoulderViewer::StateEnum.normal)
@@ -31,7 +30,9 @@ class @BoulderViewer extends PaperPhotoViewer
 		if (@state == BoulderViewer::StateEnum.normal)
 			return super(e)
 		else if (@state == BoulderViewer::StateEnum.drawing)		
-			@paint(e.point)
+			@paint(e.point)		
+		else if (@state == BoulderViewer::StateEnum.erasing)
+			@erase(e.point)	
 		
 	onMouseUp: (e) =>
 		if (@state == BoulderViewer::StateEnum.drawing)
@@ -101,7 +102,7 @@ class @BoulderViewer extends PaperPhotoViewer
 		return stroke
 		
 	createBrush: (point, size) ->
-		return new Path.RegularPolygon(point,  Math.round((size) +
+		return new Path.RegularPolygon(point,  Math.round(2*size +
 			size / (2 * paper.view.zoom)),
 			2 * size / paper.view.zoom)
 		

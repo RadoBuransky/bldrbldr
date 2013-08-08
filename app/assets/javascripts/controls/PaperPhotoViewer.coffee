@@ -23,17 +23,26 @@ class @PaperPhotoViewer
 		@reset()
 		
 	zoomin: ->
-		paper.view.zoom *= 1.1
+		@zoomby(1.1)
 		
 	zoomout: ->
-		paper.view.zoom /= 1.1
+		@zoomby(0.909)
+		
+	zoomby: (delta) ->
+		newZoom = paper.view.zoom * delta
+		
+		minZoom = @minZoom()
+		if newZoom < minZoom
+			newZoom = minZoom
+		
+		paper.view.zoom = newZoom
 			
 	setSize: (w, h) ->
 		paper.view.viewSize = [w, h]
 		@reset()
 		
 	onMouseWheel: (event, delta, deltaX, deltaY) =>
-		paper.view.zoom *= 1 + (delta / 10)
+		@zoomby(1 + (delta / 10))
 		
 	onMouseDown: (e) =>
 		@oldDelta = new Point(0, 0)	
@@ -49,22 +58,34 @@ class @PaperPhotoViewer
 	onMouseMove: (e) =>
 
 	onLoad: ->
+		@photo.position = paper.view.center
 		@reset()
-		clippingRect = new Path.Rectangle(paper.view.center.x - Math.round(@img.width() / 2),
-			paper.view.center.y - Math.round(@img.height() / 2),@img.width(),@img.height())
-		project.activeLayer.insertChild(0, clippingRect)
-		project.activeLayer.clipped = true
 		
-	reset: ->
+	minZoom: ->
 		if (@img.width() == 0 || @img.height() == 0)
-			return
-	
-		@photo.position = paper.view.center		
-		
+			return 0
+			
 		hz = paper.view.zoom * paper.view.bounds.height / @img.height()
 		vz = paper.view.zoom * paper.view.bounds.width / @img.width()
 		
-		paper.view.zoom = if hz < vz then hz else vz
+		if hz < vz
+			return hz
+		else
+			return vz
+		
+	reset: ->		
+		if (@img.width() == 0 || @img.height() == 0)
+			return
+			
+		@zoomby(0)
+		project.activeLayer.position = paper.view.center
+		
+		console.log(paper.view.center.x, paper.view.center.y, @photo.position.x, @photo.position.y)		
+		
+		clippingRect = new Path.Rectangle(paper.view.center.x - Math.round(@img.width() / 2),
+			paper.view.center.y - Math.round(@img.height() / 2),@img.width(),@img.height())
+		project.activeLayer.insertChild(0, clippingRect)
+		project.activeLayer.clipped = true		
 		
 	constraintPosition: (delta) ->
 		newBounds = new Rectangle(paper.view.bounds)
