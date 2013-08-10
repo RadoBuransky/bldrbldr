@@ -1,0 +1,6 @@
+@common("Upload") {
+	<form id="upload" action="@routes.FileController.upload" method="post" enctype="multipart/form-data">
+		<input id="fileInput" name="fileInput" type="file" />
+ 		<input type="submit" value="Upload" />
+	</form>
+}
