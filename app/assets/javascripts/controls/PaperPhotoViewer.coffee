@@ -39,7 +39,7 @@ class @PaperPhotoViewer
 			
 	setSize: (w, h) ->
 		paper.view.viewSize = [w, h]
-		@reset()
+		@reset()	
 		
 	onMouseWheel: (event, delta, deltaX, deltaY) =>
 		@zoomby(1 + (delta / 10))
@@ -58,8 +58,14 @@ class @PaperPhotoViewer
 	onMouseMove: (e) =>
 
 	onLoad: ->
-		@photo.position = paper.view.center
 		@reset()
+		project.activeLayer.width = @img.width()
+		project.activeLayer.height = @img.height()
+		console.log(project.activeLayer.bounds)
+		c = new Path.Circle(0, 0, 20)
+		c.strokeWidth = 3
+		c.strokeColor = 'black'
+		c.fillColor = 'white'
 		
 	minZoom: ->
 		if (@img.width() == 0 || @img.height() == 0)
@@ -78,14 +84,12 @@ class @PaperPhotoViewer
 			return
 			
 		@zoomby(0)
-		project.activeLayer.position = paper.view.center
+		project.activeLayer.position = paper.view.center	
 		
-		console.log(paper.view.center.x, paper.view.center.y, @photo.position.x, @photo.position.y)		
-		
-		clippingRect = new Path.Rectangle(paper.view.center.x - Math.round(@img.width() / 2),
-			paper.view.center.y - Math.round(@img.height() / 2),@img.width(),@img.height())
-		project.activeLayer.insertChild(0, clippingRect)
-		project.activeLayer.clipped = true		
+		#clippingRect = new Path.Rectangle(paper.view.center.x - Math.round(@img.width() / 2),
+		#	paper.view.center.y - Math.round(@img.height() / 2),@img.width(),@img.height())
+		#project.activeLayer.insertChild(0, clippingRect)
+		#project.activeLayer.clipped = true		
 		
 	constraintPosition: (delta) ->
 		newBounds = new Rectangle(paper.view.bounds)

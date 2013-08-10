@@ -8,12 +8,15 @@ class @BoulderViewer extends PaperPhotoViewer
 		super(canvasId, imgId)
 		@state = BoulderViewer::StateEnum.normal
 		@currentPath = null
-		@holds = new paper.Group()
+		@holds = []
 		@brushSize = 6
 		@eraser = null
 		
 	setState: (newStatus) ->
 		@state = newStatus
+		
+	setSize: (w, h) ->
+		super(w, h)
 		
 	onMouseWheel: (event, delta, deltaX, deltaY) =>
 		return super(event, delta, deltaX, deltaY)
@@ -37,7 +40,7 @@ class @BoulderViewer extends PaperPhotoViewer
 	onMouseUp: (e) =>
 		if (@state == BoulderViewer::StateEnum.drawing)
 			if @currentPath != null
-				@holds.addChild(@currentPath)
+				@holds.push(@currentPath)
 				@currentPath = null	
 				@tryToUniteAllHolds()
 				
@@ -46,16 +49,17 @@ class @BoulderViewer extends PaperPhotoViewer
 			@showEraser(e.point)
 				
 	showEraser: (point) ->
-		for hold in @holds.children
+		for hold in @holds
 			if hold.hitTest(point) != null
 				@styleEraser(hold)
 			else
 				@styleStroke(hold)
 				
 	erase: (point) ->
-		for hold in @holds.children
+		for hold, i in @holds
 			if hold.hitTest(point) != null
 				hold.remove()
+				@holds.splice(i, 1)
 				return
 			 
 	paint: (point) ->		
@@ -79,24 +83,26 @@ class @BoulderViewer extends PaperPhotoViewer
 			0
 		
 	tryToUniteSomeHolds: ->
-		for hold1 in @holds.children
-			for hold2 in @holds.children
-				if hold1 == hold2
-					continue
-				p = unite(hold1, hold2)		
+		for hold1, i in @holds
+			for j in [i+1..@holds.length-1] by 1
+				p = unite(@holds[i], @holds[j])		
 				if p instanceof Path
+					@holds[i].remove()
+					@holds[j].remove()
+					@holds.splice(i, 1)
+					@holds.splice(j - 1, 1)
+					
 					@styleStroke(p)
-					@holds.addChild(p)
-					hold1.remove()
-					hold2.remove()
+					@holds.push(p)
 					return true
 		return false											
 		
 	tryToUniteStroke: (stroke) ->
-		for hold in @holds.children
+		for hold, i in @holds
 			p = unite(hold, stroke)		
 			if p instanceof Path
 				hold.remove()
+				@holds.splice(i, 1)
 				return @tryToUniteStroke(p)
 			p.remove()
 		return stroke
