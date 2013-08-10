@@ -8,14 +8,16 @@ object ApplicationBuild extends Build {
   val appVersion      = "1.0-SNAPSHOT"
 
   val appDependencies = Seq(
-    // Add your project dependencies here,
-    jdbc,
-    anorm,
-      "postgresql" % "postgresql" % "9.1-901.jdbc4"
+      jdbc,
+      anorm,
+      "postgresql" % "postgresql" % "9.1-901.jdbc4",
+      "org.imgscalr" % "imgscalr-lib" % "4.2"
   )
 
   val main = play.Project(appName, appVersion, appDependencies).settings(
-    // Add your own project settings here      
+    // Add your own project settings here
+      resolvers ++= Seq(
+          "The Buzz Media Maven Repository" at "http://maven.thebuzzmedia.com")
   )
 
 }
