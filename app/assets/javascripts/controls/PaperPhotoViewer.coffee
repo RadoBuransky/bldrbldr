@@ -36,6 +36,7 @@ class @PaperPhotoViewer
 			newZoom = minZoom
 		
 		paper.view.zoom = newZoom
+		@scrollBy(new Point(0,0))
 			
 	setSize: (w, h) ->
 		paper.view.viewSize = [w, h]
@@ -49,9 +50,7 @@ class @PaperPhotoViewer
 		
 	onMouseDrag: (e) =>
 		delta = new Point(@oldDelta.x - e.delta.x, @oldDelta.y - e.delta.y)
-		@constraintPosition(delta)		
-		paper.view.scrollBy(delta)		
-		@oldDelta = delta
+		@scrollBy(delta)
 		
 	onMouseUp: (e) =>
 	
@@ -59,8 +58,6 @@ class @PaperPhotoViewer
 
 	onLoad: ->
 		@reset()
-		project.activeLayer.width = @img.width()
-		project.activeLayer.height = @img.height()
 		
 	minZoom: ->
 		if (@img.width() == 0 || @img.height() == 0)
@@ -85,7 +82,12 @@ class @PaperPhotoViewer
 			clippingRect = new Path.Rectangle(paper.view.center.x - Math.round(@img.width() / 2),
 				paper.view.center.y - Math.round(@img.height() / 2),@img.width(),@img.height())
 			project.activeLayer.insertChild(0, clippingRect)
-			project.activeLayer.clipped = true		
+			project.activeLayer.clipped = true
+		
+	scrollBy: (delta) ->
+		@constraintPosition(delta)		
+		paper.view.scrollBy(delta)		
+		@oldDelta = delta		
 		
 	constraintPosition: (delta) ->
 		newBounds = new Rectangle(paper.view.bounds)

@@ -49,9 +49,11 @@ class @BoulderViewer extends PaperPhotoViewer
 			@showEraser(e.point)
 				
 	showEraser: (point) ->
+		gotYa = false
 		for hold in @holds
-			if hold.hitTest(point) != null
+			if hold.hitTest(point) != null && !gotYa
 				@styleEraser(hold)
+				gotYa = true
 			else
 				@styleStroke(hold)
 				
@@ -76,8 +78,9 @@ class @BoulderViewer extends PaperPhotoViewer
 				return	
 			@currentPath.remove()
 			@currentPath = p
-		
-		stroke.remove()
+			
+		if stroke.id != @currentPath.id
+			stroke.remove()
 		@styleStroke(@currentPath)
 		
 	tryToUniteAllHolds: ->
@@ -126,7 +129,7 @@ class @BoulderViewer extends PaperPhotoViewer
 		
 	styleEraser: (stroke) ->		
 		stroke.strokeColor = 'black'
-		stroke.strokeWidth = 3
+		stroke.strokeWidth = 2
 		stroke.storkeKoin = 'round'	
 		stroke.fillColor = #DDDDDD
 		stroke.opacity = 0.4					
