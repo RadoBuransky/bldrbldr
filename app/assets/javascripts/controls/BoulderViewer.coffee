@@ -70,6 +70,8 @@ class @BoulderViewer extends PaperPhotoViewer
 		else		
 			p = unite(@currentPath, stroke)
 			if p instanceof CompoundPath
+				stroke.remove()
+				p.removeChildren()
 				p.remove()
 				return	
 			@currentPath.remove()
@@ -95,6 +97,8 @@ class @BoulderViewer extends PaperPhotoViewer
 					@styleStroke(p)
 					@holds.push(p)
 					return true
+				p.removeChildren()
+				p.remove()
 		return false											
 		
 	tryToUniteStroke: (stroke) ->
@@ -104,6 +108,7 @@ class @BoulderViewer extends PaperPhotoViewer
 				hold.remove()
 				@holds.splice(i, 1)
 				return @tryToUniteStroke(p)
+			p.removeChildren()
 			p.remove()
 		return stroke
 		
