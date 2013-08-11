@@ -9,7 +9,7 @@ import org.imgscalr.Scalr
 object Application extends Controller {
 
 	def index = Action {
-		Redirect("/editor")
+		Ok(views.html.index())
 	}
   
   def getCat : String = {

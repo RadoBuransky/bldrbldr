@@ -1,0 +1,14 @@
+@(text: String, id: String, classes: String = "", enabled: Boolean = true, href: String = "javascript:")
+
+@classText() = @{
+	var result = "button"
+	
+	if (enabled)
+		result += " enabled "
+		
+	result + classes
+}
+
+<a id="@id" href="@href" class="@classText()">
+	<div>@text</div>
+</a>

@@ -1,5 +1,39 @@
-@(message: String)
+@import play.i18n.Messages
 
-@main {
-		@message    
+@scripts = {
+    <link rel="stylesheet" href="@routes.Assets.at("stylesheets/index.css")" />
+    
+	<script src="@routes.Assets.at("javascripts/pages/Index.js")"></script>
+}
+
+@common(Messages.get("PageIndex_Title"), scripts) {
+	<div id="step1" class="barrelSection theme3">
+		<div class="barrelContents">
+			<h1>Upload boulder photo</h1>
+			<form id="upload" action="@routes.FileController.upload" method="post" enctype="multipart/form-data">
+				<input id="fileInput" name="fileInput" type="file" size="300"/>
+		 		<input type="submit" value="Upload"/>
+			</form>
+			<div class="text">The project of your life. Mossy slab. Vintage classic.</div>
+		</div>
+	</div>
+	<div class="barrelSection theme2">
+		<div class="barrelContents">
+			<h1>Check your mailbox to access the builder</h1>
+			<div class="text">You will receive an email with links to access the boulder builder.</div>
+			<div class="text">Keep it as it is the only gate inside.</div>
+		</div>
+	</div>
+	<div class="barrelSection theme1">
+		<div class="barrelContents">
+			<h1>Build the boulder!</h1>
+			<div class="text">Give it a name, grade it, paint holds.</div>
+		</div>
+	</div>
+	<div class="barrelSection theme4">
+		<div class="barrelContents">
+			<h1>Share it and come back</h1>
+			<div class="text">Tell the world that a boulder was born and come back for more.</div>
+		</div>
+	</div>
 }
