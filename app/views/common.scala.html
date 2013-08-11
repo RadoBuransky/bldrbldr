@@ -19,10 +19,12 @@
     </head>
     <body>
     	<div id="top">
-    		<img src="@routes.Assets.at("images/logo.png")" alt="Boulder Builder" />
-			@button(Messages.get("PageCommon_About"), "about", "topButton")
-    		<div id="browse" class="topButton">@Messages.get("PageCommon_Browse")</div>
-    		<div id="upload" class="topButton">@Messages.get("PageCommon_Upload")</div>
+    		<a href="@routes.Application.index()" alt="Home">
+    			<img src="@routes.Assets.at("images/logo.png")" alt="Boulder Builder" />
+			</a>
+			@button(Messages.get("PageCommon_About"), "about", routes.Application.about().url, "topButton")
+			@button(Messages.get("PageCommon_Browse"), "browse", routes.Browse.index().url, "topButton")
+			@button(Messages.get("PageCommon_Upload"), "upload", routes.Application.index().url, "topButton")
     	</div>
     	@content
     </body>

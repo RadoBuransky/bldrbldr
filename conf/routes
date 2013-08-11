@@ -4,7 +4,9 @@
 
 # Home page
 GET     /                           controllers.Application.index
+GET		/about						controllers.Application.about
 GET		/editor						controllers.Editor.index
+GET		/browse						controllers.Browse.index
 GET		/upload						controllers.FileController.index
 POST	/upload						controllers.FileController.upload
 
