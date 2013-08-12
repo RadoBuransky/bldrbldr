@@ -3,29 +3,14 @@
 @import play.i18n.Messages
 @import views.html.controls.common.button
 
-<!DOCTYPE html>
-
-<html lang="en" ng-app>
-    <head>
-  		<meta charset="utf-8">
-        <title>Boulder Builder - @title</title>
-        <link rel="stylesheet" href="@routes.Assets.at("stylesheets/common.css")" />
-        
-        <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-        
-        <script src="@routes.Assets.at("javascripts/angular.min.js")"></script>
-        <script src="@routes.Assets.at("javascripts/jquery-2.0.2.min.js")"></script>
-        @scripts
-    </head>
-    <body>
-    	<div id="top">
-    		<a href="@routes.Application.index()" alt="Home">
-    			<img src="@routes.Assets.at("images/logo.png")" alt="Boulder Builder" />
-			</a>
-			@button(Messages.get("PageCommon_About"), "about", routes.Application.about().url, "topButton")
-			@button(Messages.get("PageCommon_Browse"), "browse", routes.Browse.index().url, "topButton")
-			@button(Messages.get("PageCommon_Upload"), "upload", routes.Application.index().url, "topButton")
-    	</div>
-    	@content
-    </body>
-</html>
+@core(title, scripts) {
+	<div id="top">
+		<a href="@routes.Application.index()" alt="Home">
+			<img src="@routes.Assets.at("images/logo.png")" alt="Boulder Builder" />
+		</a>
+		@button(Messages.get("PageCommon_About"), "about", routes.Application.about().url, "topButton")
+		@button(Messages.get("PageCommon_Browse"), "browse", routes.Browse.index().url, "topButton")
+		@button(Messages.get("PageCommon_Upload"), "upload", routes.Application.index().url, "topButton")
+	</div>
+	@content
+}
