@@ -2,6 +2,9 @@
 
 @scripts = {
     <link rel="stylesheet" href="@routes.Assets.at("stylesheets/index.css")" />
+	<script src="@routes.Assets.at("javascripts/vendor/jquery.ui.widget.js")"></script>
+	<script src="@routes.Assets.at("javascripts/jquery.fileupload.js")"></script>
+	<script src="@routes.Assets.at("javascripts/jquery.iframe-transport.js")"></script>
     
 	<script src="@routes.Assets.at("javascripts/pages/Index.js")"></script>
 }
@@ -10,9 +13,11 @@
 	<div id="step1" class="barrelSection theme3">
 		<div class="barrelContents">
 			<h1>Upload boulder photo</h1>
-			<form id="upload" action="@routes.FileController.upload" method="post" enctype="multipart/form-data">
-				<input id="fileInput" name="fileInput" type="file" size="300"/>
-		 		<input type="submit" value="Upload"/>
+			<form id="upload" action="@routes.FileController.upload" method="post"
+				enctype="multipart/form-data" autocomplete="on">
+  				<label for="email">E-mail:</label>
+				<input id="email" name="email" type="email"><br>
+				<input id="fileupload" name="files[]" type="file" size="300" data-url="server/php/" >
 			</form>
 			<div class="text">The project of your life. Mossy slab. Vintage classic.</div>
 		</div>
@@ -36,4 +41,16 @@
 			<div class="text">Tell the world that a boulder was born and come back for more.</div>
 		</div>
 	</div>
+	<script>
+		$(function () {
+		    $('#fileupload').fileupload({
+		        dataType: 'json',
+		        done: function (e, data) {
+		            $.each(data.result.files, function (index, file) {
+		                $('<p/>').text(file.name).appendTo(document.body);
+		            });
+		        }
+		    });
+		});
+</script>
 }
