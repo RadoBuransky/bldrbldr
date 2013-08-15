@@ -1,5 +1,8 @@
 class @Index
 	constructor: () ->
-		$('.barrelSection').height(document.body.clientHeight)
+		height = document.body.clientHeight
+		if height < 500
+			height = 500
+		$('.barrelSection').height(height)
 
 $(document).ready(-> @index = new Index())

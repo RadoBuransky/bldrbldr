@@ -1,11 +1,7 @@
 @import play.i18n.Messages
 
 @scripts = {
-    <link rel="stylesheet" href="@routes.Assets.at("stylesheets/index.css")" />
-	<script src="@routes.Assets.at("javascripts/vendor/jquery.ui.widget.js")"></script>
-	<script src="@routes.Assets.at("javascripts/jquery.fileupload.js")"></script>
-	<script src="@routes.Assets.at("javascripts/jquery.iframe-transport.js")"></script>
-    
+    <link rel="stylesheet" href="@routes.Assets.at("stylesheets/index.css")" />        
 	<script src="@routes.Assets.at("javascripts/pages/Index.js")"></script>
 }
 
@@ -14,14 +10,24 @@
 		<div class="barrelContents">
 			<h1>Upload boulder photo</h1>
 			<form id="upload" action="@routes.FileController.upload" method="post"
-				enctype="multipart/form-data" autocomplete="on">
-  				<label for="email">E-mail:</label>
-				<input id="email" name="email" type="email"><br>
-				<input id="fileupload" name="files[]" type="file" size="300" data-url="server/php/" >
+				enctype="multipart/form-data" autocomplete="on" ng-controller="UploadCtrl">
+  				<label for="email">E-mail:</label><input id="email" name="email" type="email" size="30"><br>
+  				<label for="area">Area:</label>
+  				<select ng-model="area" ng-options="a.name for a in areas" id="area" name="area" required></select><br>
+                <input type="file" name="file">
+                <input type="submit" value="Upload">
+                {{areas[0].name}}
 			</form>
 			<div class="text">The project of your life. Mossy slab. Vintage classic.</div>
 		</div>
 	</div>
+	<script>
+	function UploadCtrl($scope) {
+  		$scope.areas = [{"id": 1, "name":"Hive"},
+  			{"id": 2, "name":"Vertigo"},
+  			{"id": 3, "name":"K2"}]
+  	}
+	</script>
 	<div class="barrelSection theme2">
 		<div class="barrelContents">
 			<h1>Check your mailbox to access the builder</h1>
@@ -41,16 +47,4 @@
 			<div class="text">Tell the world that a boulder was born and come back for more.</div>
 		</div>
 	</div>
-	<script>
-		$(function () {
-		    $('#fileupload').fileupload({
-		        dataType: 'json',
-		        done: function (e, data) {
-		            $.each(data.result.files, function (index, file) {
-		                $('<p/>').text(file.name).appendTo(document.body);
-		            });
-		        }
-		    });
-		});
-</script>
 }
