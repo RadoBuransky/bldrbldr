@@ -15,6 +15,11 @@ object Application extends Controller {
     Ok(views.html.about())
   }
   
+  def upload = Action(parse.multipartFormData) {
+    request => { }
+    Ok("Ok!")
+  }
+  
   def getCat : String = {
     DB.withConnection { conn =>
       conn.getCatalog() }

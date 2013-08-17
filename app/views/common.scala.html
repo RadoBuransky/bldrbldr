@@ -1,9 +1,10 @@
-@(title: String, scripts: Html = Html(""))(content: Html)
+@(title: String, styles: Html = Html(""), scripts: Html = Html(""))(content: Html)
 
 @import play.i18n.Messages
 @import views.html.controls.common.button
 
-@core(title, scripts) {
+@core(title, styles, scripts) {
+	<!--
 	<div id="top">
 		<a href="@routes.Application.index()" alt="Home">
 			<img src="@routes.Assets.at("images/logo.png")" alt="Boulder Builder" />
@@ -11,6 +12,30 @@
 		@button(Messages.get("PageCommon_About"), "about", routes.Application.about().url, "topButton")
 		@button(Messages.get("PageCommon_Browse"), "browse", routes.Browse.index().url, "topButton")
 		@button(Messages.get("PageCommon_Upload"), "upload", routes.Application.index().url, "topButton")
-	</div>
+	</div>-->
+	
+	<!-- Navbar
+    ================================================== -->
+    <div class="navbar navbar-inverse navbar-static-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="@routes.Application.index">Boulder Builder</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav pull-right">
+              <li class="">
+                <a href="@routes.Application.index">Upload</a>
+              </li>
+              <li class="">
+                <a href="@routes.Browse.index">Browse</a>
+              </li>
+              <li class="">
+                <a href="@routes.Application.about">About</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    
 	@content
 }

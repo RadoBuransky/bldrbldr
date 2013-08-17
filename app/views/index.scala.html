@@ -1,50 +1,66 @@
 @import play.i18n.Messages
 
-@scripts = {
-    <link rel="stylesheet" href="@routes.Assets.at("stylesheets/index.css")" />        
-	<script src="@routes.Assets.at("javascripts/pages/Index.js")"></script>
+@styles = {
 }
 
-@common(Messages.get("PageIndex_Title"), scripts) {
-	<div id="step1" class="barrelSection theme3">
-		<div class="barrelContents">
-			<h1>Upload boulder photo</h1>
-			<form id="upload" action="@routes.FileController.upload" method="post"
-				enctype="multipart/form-data" autocomplete="on" ng-controller="UploadCtrl">
-  				<label for="email">E-mail:</label><input id="email" name="email" type="email" size="30"><br>
-  				<label for="area">Area:</label>
-  				<select ng-model="area" ng-options="a.name for a in areas" id="area" name="area" required></select><br>
-                <input type="file" name="file">
-                <input type="submit" value="Upload">
-                {{areas[0].name}}
-			</form>
-			<div class="text">The project of your life. Mossy slab. Vintage classic.</div>
+@common(Messages.get("PageIndex_Title"), styles, scripts) {
+	<div class="container">
+		<div class="hero-unit">
+	    	<h1>Upload boulder photo</h1>
+	    	<p>The project of your life. Mossy slab. Vintage classic.</p>
+	    	<form action="@routes.Application.upload"
+	    		enctype="multipart/form-data" method="post" class="form-horizontal" autocomplete="on">
+  				<fieldset>
+					<div class="control-group">
+						<label class="control-label" for="photo">Photo</label>
+						<div class="controls">
+							<div class="fileupload fileupload-new" data-provides="fileupload">
+					  			<div class="input-append">
+									<div class="uneditable-input span3">
+										<i class="icon-file fileupload-exists"></i>
+										<span class="fileupload-preview"></span>
+									</div>
+									<span class="btn btn-file">
+										<span class="fileupload-new">Select file</span>
+										<span class="fileupload-exists">Change</span>
+										<input type="file" accept="image/*" />
+									</span>
+									<a href="#" class="btn fileupload-exists" data-dismiss="fileupload">Remove</a>
+								</div>
+							</div>
+						</div>
+				  	</div>
+				  	<div class="control-group">
+						<label class="control-label" for="inputEmail">Email</label>
+						<div class="controls">
+				  			<input type="email" id="inputEmail">
+						</div>
+			  		</div>
+				  	<div class="control-group">
+						<label class="control-label" for="inputPassword">Area</label>
+						<div class="controls">
+							<select class="span3" data-provide="typeahead" data-items="4">
+						  		<option value="AL">Alabama</option>
+							  	<option value="AK">Alaska</option>
+							  	<option value="AZ">Arizona</option>
+							  	<option value="AR">Arkansas</option>
+							  	<option value="CA">California</option>
+							  	<option value="CO">Colorado</option>
+							  	<option value="CT">Connecticut</option>
+							</select>
+						</div>
+				  	</div>
+				  	<div class="control-group">
+						<div class="controls">
+					  		<button type="submit" class="btn">Upload</button>
+						</div>
+				  	</div>				    		
+				</fieldset>
+	    	</form>
 		</div>
 	</div>
-	<script>
-	function UploadCtrl($scope) {
-  		$scope.areas = [{"id": 1, "name":"Hive"},
-  			{"id": 2, "name":"Vertigo"},
-  			{"id": 3, "name":"K2"}]
-  	}
-	</script>
-	<div class="barrelSection theme2">
-		<div class="barrelContents">
-			<h1>Check your mailbox to access the builder</h1>
-			<div class="text">You will receive an email with links to access the boulder builder.</div>
-			<div class="text">Keep it as it is the only gate inside.</div>
-		</div>
-	</div>
-	<div class="barrelSection theme1">
-		<div class="barrelContents">
-			<h1>Build the boulder!</h1>
-			<div class="text">Give it a name, grade it, paint holds.</div>
-		</div>
-	</div>
-	<div class="barrelSection theme4">
-		<div class="barrelContents">
-			<h1>Share it and come back</h1>
-			<div class="text">Tell the world that a boulder was born and come back for more.</div>
-		</div>
-	</div>
+}
+
+@scripts = {     
+	<script src="@routes.Assets.at("javascripts/pages/Index.js")"></script>
 }

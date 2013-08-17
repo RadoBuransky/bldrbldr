@@ -1,20 +1,39 @@
-@(title: String, scripts: Html = Html(""))(content: Html)
+@(title: String, styles: Html = Html(""), scripts: Html = Html(""))(content: Html)
 
 <!DOCTYPE html>
 
 <html lang="en" ng-app>
     <head>
   		<meta charset="utf-8">
-        <title>Boulder Builder - @title</title>        
+        <title>Boulder Builder - @title</title>
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <meta name="description" content="Boulder Builder">
+	    <meta name="author" content="Rado Buransky">
+    
+        <!-- Styles -->
+    	<link href="@routes.Assets.at("stylesheets/bootstrap-responsive.css")" rel="stylesheet">
+    	<link href="@routes.Assets.at("stylesheets/bootstrap.css")" rel="stylesheet">        
+        <!--<link href="@routes.Assets.at("stylesheets/common.css")" rel="stylesheet">-->
+        @styles
+        
+        <!--[if lt IE 9]>
+			<script src="@routes.Assets.at("javascripts/html5shiv.js")"></script>
+		<![endif]-->        
+        
+        <!--
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="assets/ico/apple-touch-icon-144-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="114x114" href="assets/ico/apple-touch-icon-114-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/ico/apple-touch-icon-72-precomposed.png">
+		<link rel="apple-touch-icon-precomposed" href="assets/ico/apple-touch-icon-57-precomposed.png">-->       
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")" />
-        
-        <link rel="stylesheet" href="@routes.Assets.at("stylesheets/common.css")" />
-        
-        <script src="@routes.Assets.at("javascripts/angular.min.js")" ></script>
-        <script src="@routes.Assets.at("javascripts/jquery-2.0.2.min.js")" ></script>
-        @scripts
     </head>
     <body>
     	@content
+    	
+    	<!-- Scripts at the end so that the content loads faster -->
+        <script src="@routes.Assets.at("javascripts/angular.min.js")" ></script>
+        <script src="@routes.Assets.at("javascripts/jquery-2.0.2.min.js")" ></script>
+        <script src="@routes.Assets.at("javascripts/bootstrap.min.js")" ></script>
+        @scripts
     </body>
 </html>
