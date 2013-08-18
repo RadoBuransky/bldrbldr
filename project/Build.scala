@@ -11,7 +11,8 @@ object ApplicationBuild extends Build {
       jdbc,
       anorm,
       "postgresql" % "postgresql" % "9.1-901.jdbc4",
-      "org.imgscalr" % "imgscalr-lib" % "4.2"
+      "org.imgscalr" % "imgscalr-lib" % "4.2",
+      "org.reactivemongo" %% "play2-reactivemongo" % "0.9"
   )
 
   val main = play.Project(appName, appVersion, appDependencies).settings(

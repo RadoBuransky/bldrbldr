@@ -4,7 +4,7 @@
 @common("New area", styles, scripts) {
 	<div class="container">
 		<div class="hero-unit">
-	    	<h1>New area</h1>
+	    	<h1>New climbing area</h1>
 	    	<p>There's nothing better than a new climbing spot.</p>
 	    	
 	    	<form action="@routes.Area.newarea" method="post" class="form-horizontal">
@@ -29,7 +29,7 @@
 			  		</div>
 			  		<div class="control-group">
 						<div class="controls">
-							<select class="span3" required>
+							<select class="span3" id="areatype" name="areatype" required>
 						  		<option value="0">Indoor gym</option>
 						  		<option value="1">Outdoor</option>
 							</select>
