@@ -1,0 +1,50 @@
+@styles = {
+}
+
+@common("New area", styles, scripts) {
+	<div class="container">
+		<div class="hero-unit">
+	    	<h1>New area</h1>
+	    	<p>There's nothing better than a new climbing spot.</p>
+	    	
+	    	<form action="@routes.Area.newarea" method="post" class="form-horizontal">
+  				<fieldset>
+  					<div class="control-group">
+						<label class="control-label" for="email">Email</label>
+						<div class="controls">
+				  			<input type="email" id="email" name="email" autocomplete="on" required>
+						</div>
+			  		</div>
+			  		<div class="control-group">
+						<label class="control-label" for="areaname">Area name</label>
+						<div class="controls">
+				  			<input type="text" id="areaname" name="areaname" required>
+						</div>
+			  		</div>
+			  		<div class="control-group">
+						<label class="control-label" for="link">Link</label>
+						<div class="controls">
+				  			<input type="url" id="link" name="link" required>
+						</div>
+			  		</div>
+			  		<div class="control-group">
+						<div class="controls">
+							<select class="span3" required>
+						  		<option value="0">Indoor gym</option>
+						  		<option value="1">Outdoor</option>
+							</select>
+						</div>
+			  		</div>
+				  	<div class="control-group">
+						<div class="controls">
+					  		<button type="submit" class="btn btn-primary">Create</button>
+						</div>
+				  	</div>	
+  				</fieldset>
+			</form>
+    	</div>
+	</div>
+}
+
+@scripts = {
+}

@@ -4,7 +4,7 @@ class @Index
 		if height < 500
 			height = 500
 		#$('.barrelSection').height(height)
-		$('.fileupload').fileupload()
+		$(".fileupload").fileupload()
 		$('.typeahead').typeahead()
 
 $(document).ready(-> @index = new Index())

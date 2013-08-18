@@ -20,6 +20,10 @@ object Application extends Controller {
     Ok("Ok!")
   }
   
+  def msg(title: String, text: String, action: String, error: Boolean) = Action {
+    Ok(views.html.message(title, text, action, error))
+  }
+  
   def getCat : String = {
     DB.withConnection { conn =>
       conn.getCatalog() }
