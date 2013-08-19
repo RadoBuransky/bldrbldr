@@ -6,11 +6,11 @@
 @common(Messages.get("PageIndex_Title"), styles, scripts) {
 	<div class="container">
 		<div class="hero-unit">
-	    	<h1>Upload boulder photo</h1>
-	    	<p>The project of your life. Mossy slab. Vintage classic.</p>
 	    	<form action="@routes.Application.upload"
 	    		enctype="multipart/form-data" method="post" class="form-horizontal">
   				<fieldset>
+	    			<legend><h1>Upload boulder photo</h1></legend>
+    				<p>The project of your life. Mossy slab. Vintage classic.</p>
 					<div class="control-group">
 						<label class="control-label" for="photo">Photo</label>
 						<div class="controls">

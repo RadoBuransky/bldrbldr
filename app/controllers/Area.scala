@@ -36,25 +36,4 @@ object Area extends Controller with MongoController {
         Ok("Mongo LastErorr:%s".format(lastError)))
     } 
   }
-  
-  def newareapost = Action { implicit request =>
-	  val areaForm = Form(
-	    mapping(
-	      "email" -> text,
-	      "areaname" -> text,
-	      "link" -> text,
-	      "areatype" -> text
-	    )(models.Area.apply)(models.Area.unapply)
-	  )
-	    val area = areaForm.bindFromRequest.get
-	    
-	    val futureResult = collection.insert(area)
-	        
-	    Async {
-	      futureResult.map(_ =>
-	    Redirect(routes.Application.msg("Thank you! " + area.email,
-	        "New area has been created. You may now start creating boulders.",
-	        routes.Application.index.url, false)))
-	  }
-  }
 }
