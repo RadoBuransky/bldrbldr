@@ -30,6 +30,13 @@ object Area extends Controller with MongoController {
     Ok(views.html.area.newarea())
   }
   
+  def newareajson = Action(parse.json) { implicit request =>
+    Async {
+      collection.insert(request.body).map(lastError =>
+        Ok("Mongo LastErorr:%s".format(lastError)))
+    } 
+  }
+  
   def newareapost = Action { implicit request =>
 	  val areaForm = Form(
 	    mapping(

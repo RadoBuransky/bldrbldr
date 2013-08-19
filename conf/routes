@@ -9,6 +9,7 @@ POST	/upload						controllers.Application.upload
 GET		/msg						controllers.Application.msg(title: String ?= "", text: String ?= "", action: String ?= "", error: Boolean ?= false)
 GET		/area/new					controllers.Area.newarea
 POST	/area/new					controllers.Area.newareapost
+POST	/area/newjson				controllers.Area.newareajson
 GET		/editor						controllers.Editor.index
 GET		/browse						controllers.Browse.index
 
