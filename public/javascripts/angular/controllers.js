@@ -1,7 +1,4 @@
 function JugJaneCtrl($scope, $routeParams) {
-	$scope.title = $routeParams['title']
-	$scope.text = $routeParams['text']
-	$scope.url = $routeParams['url']
 }
  
 function AreaCtrl($scope, $http, $location, $routeParams) {
@@ -12,7 +9,10 @@ function AreaCtrl($scope, $http, $location, $routeParams) {
             url : '/area/new',
             data : $scope.area
         }).success(function() { 
-            $location.path('/msg?title=Ok'); });
+            $scope.msg = { title: 'Thank you!', text: 'Ano', url: '/' };
+        }).error(function() { 
+            $scope.msg = { title: 'Error!', text: 'S', url: '/' };
+        })
     }
     
 	$scope.area = {};

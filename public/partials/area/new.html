@@ -1,47 +1,49 @@
-<div class="container">
-	<div class="hero-unit">
-		<form ng-submit="createArea()"
-			class="form-horizontal">
-			<fieldset>
-				<legend>
-					<h1>New climbing area</h1>
-				</legend>
-				<p>There's nothing better than a new climbing spot.</p>
-				<div class="control-group">
-					<label class="control-label" for="email">Email</label>
-					<div class="controls">
-						<input type="email" id="email" name="email" ng-model="area.email"
-							autocomplete="on" required>
+<div ng-switch="!!msg">
+	<div ng-switch-when="true" ng-include src="'assets/partials/msg.html'"></div>
+	<div class="container" ng-switch-default>
+		<div class="hero-unit">
+			<form ng-submit="createArea()" class="form-horizontal">
+				<fieldset>
+					<legend>
+						<h1>New climbing area</h1>
+					</legend>
+					<p>There's nothing better than a new climbing spot.</p>
+					<div class="control-group">
+						<label class="control-label" for="email">Email</label>
+						<div class="controls">
+							<input type="email" id="email" name="email" ng-model="area.email"
+								autocomplete="on" required>
+						</div>
 					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label" for="areaname">Area name</label>
-					<div class="controls">
-						<input type="text" id="areaname" name="areaname"
-							ng-model="area.areaname" required>
+					<div class="control-group">
+						<label class="control-label" for="areaname">Area name</label>
+						<div class="controls">
+							<input type="text" id="areaname" name="areaname"
+								ng-model="area.areaname" required>
+						</div>
 					</div>
-				</div>
-				<div class="control-group">
-					<label class="control-label" for="link">Link</label>
-					<div class="controls">
-						<input type="url" id="link" name="link" ng-model="area.link"
-							required>
+					<div class="control-group">
+						<label class="control-label" for="link">Link</label>
+						<div class="controls">
+							<input type="url" id="link" name="link" ng-model="area.link"
+								required>
+						</div>
 					</div>
-				</div>
-				<div class="control-group">
-					<div class="controls">
-						<select class="span3" id="areatype" name="areatype"
-							ng-model="area.areatype"
-							ng-options="at.id as at.text for at in areatypes" required>
-						</select>
+					<div class="control-group">
+						<div class="controls">
+							<select class="span3" id="areatype" name="areatype"
+								ng-model="area.areatype"
+								ng-options="at.id as at.text for at in areatypes" required>
+							</select>
+						</div>
 					</div>
-				</div>
-				<div class="control-group">
-					<div class="controls">
-						<button class="btn btn-primary">Create</button>
+					<div class="control-group">
+						<div class="controls">
+							<button class="btn btn-primary">Create</button>
+						</div>
 					</div>
-				</div>
-			</fieldset>
-		</form>
+				</fieldset>
+			</form>
+		</div>
 	</div>
 </div>
