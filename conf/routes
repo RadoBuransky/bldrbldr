@@ -6,11 +6,8 @@
 GET     /                           controllers.Application.index
 GET		/about						controllers.Application.about
 POST	/upload						controllers.Application.upload
-GET		/msg						controllers.Application.msg(title: String ?= "", text: String ?= "", action: String ?= "", error: Boolean ?= false)
-GET		/area/new					controllers.Area.newarea
-POST	/area/new					controllers.Area.newareajson
+POST	/gym/new					controllers.Gym.newareajson
 GET		/editor						controllers.Editor.index
-GET		/browse						controllers.Browse.index
 
 # Map Bootstrap images
 GET     /assets/img/glyphicons-halflings.png            controllers.Assets.at(path="/public", file="/images/glyphicons-halflings.png")

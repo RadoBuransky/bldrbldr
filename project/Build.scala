@@ -10,9 +10,9 @@ object ApplicationBuild extends Build {
   val appDependencies = Seq(
       jdbc,
       anorm,
-      "postgresql" % "postgresql" % "9.1-901.jdbc4",
       "org.imgscalr" % "imgscalr-lib" % "4.2",
-      "org.reactivemongo" %% "play2-reactivemongo" % "0.9"
+      "org.reactivemongo" %% "play2-reactivemongo" % "0.9",
+      "com.typesafe" %% "play-plugins-mailer" % "2.1-RC2"
   )
 
   val main = play.Project(appName, appVersion, appDependencies).settings(
