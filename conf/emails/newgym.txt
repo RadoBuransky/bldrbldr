@@ -1,7 +1,8 @@
-Hi!
+Hi,
 
-Thanks a lot for registering at Jug Jane. Please click on following link to finish the process:
+Thanks a lot for registration at JUGJANE. Click the following link to finish the process:
+{GymActivationLink}
 
 Thank you
 
-Rado Buransky 
+Rado Buransky

@@ -6,6 +6,9 @@ import play.api.db._
 import play.api.Play.current
 import org.imgscalr.Scalr
 import play.api.libs.concurrent.Akka
+import models.services.EmailService
+import org.joda.time.DateTime
+import scala.util.Random
 
 object Application extends Controller {
   

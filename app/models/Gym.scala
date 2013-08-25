@@ -9,7 +9,8 @@ case class Gym (
     link: String,
     created: Option[DateTime],
     validated: Option[Boolean],
-    disabled: Option[Boolean]
+    disabled: Option[Boolean],
+    secret: Option[String]
 )
 
 object JsonFormats {
