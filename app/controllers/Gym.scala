@@ -1,23 +1,21 @@
 package controllers
 
+import scala.annotation.implicitNotFound
+
 import org.joda.time.DateTime
-import play.api._
-import play.api.Play.current
-import play.api.data.format.Formats._
-import play.api.libs.json._
-import play.api.mvc._
-import play.modules.reactivemongo._
-import play.modules.reactivemongo.json.collection.JSONCollection
-import reactivemongo.api._
+
+import models.JsonFormats.gymFormat
 import models.services.EmailService
+import play.api.Logger
+import play.api.mvc.Action
+import play.api.mvc.Controller
+import play.modules.reactivemongo.MongoController
+import play.modules.reactivemongo.json.collection.JSONCollection
 
 object Gym extends Controller with MongoController {
-  def collection: JSONCollection = db.collection[JSONCollection]("gym")
+  private def collection: JSONCollection = db.collection[JSONCollection]("gym")
 
   import models._
-  import models.JsonFormats._
-  import play.api.data._
-  import play.api.data.Forms._
 
   def newareajson = Action(parse.json) { request =>
     // Parse
@@ -30,10 +28,11 @@ object Gym extends Controller with MongoController {
       disabled = Option(false))      
 	    
     // Insert to Mongo
-    collection.insert(updatedGym);
+    collection.insert(updatedGym);    
+    Logger.debug("New gym inserted to Mongo.");
     
     // Send email asynchronously
-    EmailService.send
+    EmailService.newGym("radoburansky@gmail.com")
     
     Ok
   }

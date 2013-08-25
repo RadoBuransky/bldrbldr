@@ -5,8 +5,10 @@ import play.api.mvc._
 import play.api.db._
 import play.api.Play.current
 import org.imgscalr.Scalr
+import play.api.libs.concurrent.Akka
 
 object Application extends Controller {
+  
   def index = Action {
     Ok(views.html.index())
   }
