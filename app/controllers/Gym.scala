@@ -1,6 +1,6 @@
 package controllers
 
-import scala.annotation.implicitNotFound
+import scala.util.Random
 import org.joda.time.DateTime
 import models.JsonFormats.gymFormat
 import models.services.EmailService
@@ -9,24 +9,50 @@ import play.api.mvc.Action
 import play.api.mvc.Controller
 import play.modules.reactivemongo.MongoController
 import play.modules.reactivemongo.json.collection.JSONCollection
-import scala.util.Random
+import reactivemongo.bson.BSONDocument
+import play.api.libs.json._
+import play.api.mvc.Result
+import play.api.mvc.Request
+import org.codehaus.jackson.annotate.JsonValue
+import scala.concurrent.Future
+import scala.concurrent.Await
+import scala.concurrent._
+import scala.util.Try
 
 object Gym extends Controller with MongoController {
   private def collection: JSONCollection = db.collection[JSONCollection]("gym")
 
   import models._
 
-  def newareajson = Action(parse.json) { request =>
-    // Parse
-    val gym = request.body.as[Gym]
-    
+  def newGym = Action(parse.json) { request =>
+    Async {
+	  val gym = request.body.as[models.Gym]
+	
+	  validateNewGym(gym).map { msg =>
+	    msg match {
+	      case s: String => {
+	        Logger.error(s)
+	        BadRequest(s)
+	      }
+	      case _ => createNewGym(gym)
+	    }
+	  }
+    }
+  }
+  
+  def validate(secret: String) = Action {
+    Logger.info("Gym validated. [" + secret + "]")
+    Ok
+  }
+  
+  private def createNewGym(gym: Gym): Result = {  
     // Set default values
     val updatedGym = gym.copy(
       created = Option(DateTime.now),
       validated = Option(false),
       disabled = Option(false),
-      secret = Option(Random.nextLong.abs.toString))      
-	    
+      secret = Option(Random.nextLong.abs.toString))  
+    
     // Insert to Mongo
     collection.insert(updatedGym);    
     Logger.debug("New gym inserted to Mongo.");
@@ -37,8 +63,14 @@ object Gym extends Controller with MongoController {
     Ok
   }
   
-  def validate(secret: String) = Action {
-    Logger.info("Gym valited. [" + secret + "]")
-    Ok
+  private def validateNewGym(gym: Gym): Future[String] = {    
+    collection.find(Json.obj("gymname" -> gym.gymname)).cursor[Gym].toList.map {
+      list => if (!list.isEmpty) {
+        "Gym with the same name already exists!"
+      }
+      else {
+        null
+      }
+    }
   }
 }

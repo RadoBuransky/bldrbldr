@@ -6,7 +6,7 @@
 GET     /                           controllers.Application.index
 GET		/about						controllers.Application.about
 POST	/upload						controllers.Application.upload
-POST	/gym/new					controllers.Gym.newareajson
+POST	/gym/new					controllers.Gym.newGym
 GET		/gym/validate/:secret		controllers.Gym.validate(secret)
 GET		/editor						controllers.Editor.index
 
