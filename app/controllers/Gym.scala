@@ -41,8 +41,33 @@ object Gym extends Controller with MongoController {
   }
   
   def validate(secret: String) = Action {
-    Logger.info("Gym validated. [" + secret + "]")
-    Ok
+    Async {      
+      collection.update(Json.obj("secret" -> secret),
+          Json.obj( "$set" -> Json.obj("validated" -> true))).map {
+        lastError => if (lastError.ok) {
+          Ok
+        }
+        else {
+          Logger.error(lastError.errMsg.get)
+          BadRequest("Cannot validate the gym!")
+        }        
+      }
+    }
+  }
+  
+  def approve(secret: String) = Action {
+    Async {      
+      collection.update(Json.obj("secret" -> secret),
+          Json.obj( "$set" -> Json.obj("approved" -> true))).map {
+        lastError => if (lastError.ok) {
+          Ok
+        }
+        else {
+          Logger.error(lastError.errMsg.get)
+          BadRequest("Cannot approve the gym!")
+        }        
+      }
+    }
   }
   
   private def createNewGym(gym: Gym): Result = {  
@@ -51,14 +76,16 @@ object Gym extends Controller with MongoController {
       created = Option(DateTime.now),
       validated = Option(false),
       disabled = Option(false),
+      approved = Option(false),
       secret = Option(Random.nextLong.abs.toString))  
     
     // Insert to Mongo
     collection.insert(updatedGym);    
     Logger.debug("New gym inserted to Mongo.");
     
-    // Send email asynchronously
-    EmailService.newGym("radoburansky@gmail.com", updatedGym)
+    // Send emails asynchronously
+    EmailService.newGym(gym.email, updatedGym)
+    EmailService.newGymNotif(updatedGym)
     
     Ok
   }

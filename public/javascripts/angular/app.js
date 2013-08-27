@@ -7,6 +7,12 @@ jugJaneApp.config([ '$routeProvider', function($routeProvider) {
 	}).when('/gym/new', {
 		templateUrl : 'assets/partials/gym/new.html',
 		controller : GymCtrl
+	}).when('/gym/approve/:secret', {
+		templateUrl : 'assets/partials/msg.html',
+		controller : GymApproveCtrl
+	}).when('/gym/validate/:secret', {
+		templateUrl : 'assets/partials/msg.html',
+		controller : GymValidateCtrl
 	}).otherwise({
 		redirectTo : '/'
 	});

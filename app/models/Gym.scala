@@ -4,13 +4,14 @@ import org.joda.time.DateTime
 import play.data.validation.Constraints.Required
 
 case class Gym (
-    gymname: String = null,
-    email: String = null,
-    link: String = null,
-    created: Option[DateTime] = null,
-    validated: Option[Boolean] = null,
-    disabled: Option[Boolean] = null,
-    secret: Option[String] = null
+  gymname: String = null,
+  email: String = null,
+  link: String = null,
+  created: Option[DateTime] = null,
+  validated: Option[Boolean] = null,
+  disabled: Option[Boolean] = null,
+  approved: Option[Boolean] = null,
+  secret: Option[String] = null
 )
 
 object JsonFormats {

@@ -1,0 +1,6 @@
+Hey,
+
+Somebody has registered a new gym. Approve it:
+{GymApprovalLink}
+
+Your Jane

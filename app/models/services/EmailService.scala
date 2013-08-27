@@ -13,12 +13,12 @@ import models.Gym
 
 object EmailTemplate extends Enumeration {
   type EmailTemplate = Value
-  val NewGym = Value
+  val NewGym, NewGymNotification = Value
 }
   
 private object Tag extends Enumeration {
   type Tag = Value
-  val GymActivationLink, GymSecret = Value 
+  val GymActivationLink, GymSecret, GymApprovalLink = Value 
 }
 
 object EmailService {  
@@ -26,6 +26,10 @@ object EmailService {
     send(to, "Registration at JUGJANE", EmailTemplate.NewGym, getContextTagValues(gym))
   }
   
+  def newGymNotif(gym: Gym): Unit = {
+    send("radoburansky@gmail.com", "New gym: " + gym.gymname, EmailTemplate.NewGymNotification,
+        getContextTagValues(gym))
+  }
 
   import EmailTemplate._
   import Tag._
@@ -56,14 +60,18 @@ object EmailService {
   }
   
   private def replaceTags(body: String, contextTagValues: Map[Tag, String]): String = {
-    var result = body
-    getTagValues(contextTagValues) foreach {
-      case (tag, value) => {
-        result = result.replaceAllLiterally(putTagIntoBrackets(tag), value)
-      }
+    if (contextTagValues == null) {
+      body
     }
-    
-    result
+    else {
+      var result = body    
+  	  getTagValues(contextTagValues) foreach {
+        case (tag, value) => {
+          result = result.replaceAllLiterally(putTagIntoBrackets(tag), value)
+        }
+      }    
+      result
+    }
   }
   
   private def putTagIntoBrackets(tagValue: String): String = {
@@ -80,7 +88,10 @@ object EmailService {
       case _ => {
         tag match {
           case (Tag.GymActivationLink) => {
-            getAbsoluteUrl(routes.Gym.validate(getTagValue(Tag.GymSecret, contextTagValues)).url)
+            getAbsoluteUrl("/#" + routes.Gym.validate(getTagValue(Tag.GymSecret, contextTagValues)).url)
+          }
+          case (Tag.GymApprovalLink) => {
+            getAbsoluteUrl("/#" + routes.Gym.approve(getTagValue(Tag.GymSecret, contextTagValues)).url)
           }
         }
       }
@@ -103,6 +114,7 @@ object EmailService {
   private def getResourceName(emailTemplate: EmailTemplate): String = {
     emailTemplate match {
       case EmailTemplate.NewGym => "emails/newgym.txt"
+      case EmailTemplate.NewGymNotification => "emails/newgymnotif.txt"
     }
   }
 }
