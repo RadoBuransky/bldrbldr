@@ -23,6 +23,15 @@ object Gym extends Controller with MongoController {
   private def collection: JSONCollection = db.collection[JSONCollection]("gym")
 
   import models._
+  
+  def list() = Action {
+    Async {
+      collection.find(Json.obj("validated" -> true, "approved" -> true, "disabled" -> false),
+      	Json.obj("gymname" -> 1)).sort(Json.obj("gymname" -> 1)).cursor[JsObject].toList.map {
+          gyms => Ok(Json.toJson(gyms.map( gym =>
+            Json.obj("id" -> (gym \ "_id" \ "$oid"), "gymname" -> (gym \ "gymname") ) ))) }
+    }
+  }
 
   def newGym = Action(parse.json) { request =>
     Async {

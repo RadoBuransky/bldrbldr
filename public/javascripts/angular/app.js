@@ -3,7 +3,7 @@ var jugJaneApp = angular.module('jugjane', [])
 jugJaneApp.config([ '$routeProvider', function($routeProvider) {
 	$routeProvider.when('/', {
 		templateUrl : 'assets/partials/index.html',
-		controller : JugJaneCtrl
+		controller : IndexCtrl
 	}).when('/gym/new', {
 		templateUrl : 'assets/partials/gym/new.html',
 		controller : GymCtrl
@@ -39,6 +39,16 @@ jugJaneApp.factory('commonHttpInterceptor', function($q, $rootScope) {
 			return $q.reject(rejection);
 		}
 	}
+});
+
+jugJaneApp.factory('formDataObject', function() {
+	return function(data) {
+		var fd = new FormData();
+		angular.forEach(data, function(value, key) {
+			fd.append(key, value);
+		});
+		return fd;
+	};
 });
 
 jugJaneApp.run( function($rootScope, $location) {
