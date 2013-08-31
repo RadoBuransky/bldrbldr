@@ -16,7 +16,7 @@ import ExecutionContext.Implicits.global
 object Boulder extends Controller {
   def upload = Action(parse.multipartFormData) {
     implicit request =>
-      request.body.file("photo") match {
+      request.body.file("file") match {
         case Some(photo) => {
           // Check photo type
           if (checkIfPhoto(photo.contentType.get)) {
@@ -31,7 +31,7 @@ object Boulder extends Controller {
 		            //insert photo
 		            //FileModel.insertFile(photo.ref.file, photo.contentType.orNull)
 		            
-		            Ok
+		            Ok		            
               	}
             }
           }

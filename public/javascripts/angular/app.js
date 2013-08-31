@@ -1,4 +1,4 @@
-var jugJaneApp = angular.module('jugjane', [])
+var jugJaneApp = angular.module('jugjane', ['angularFileUpload'])
 
 jugJaneApp.config([ '$routeProvider', function($routeProvider) {
 	$routeProvider.when('/', {

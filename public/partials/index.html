@@ -2,7 +2,7 @@
 	<div ng-switch-when="true" ng-include src="'assets/partials/msg.html'"></div>
 	<div class="container" ng-switch-default>
 		<div class="hero-unit">
-			<form ng-submit="uploadPhoto()" enctype="multipart/form-data"
+			<form ng-submit="uploadPhoto()"
 				method="post" class="form-horizontal">
 				<fieldset>
 					<legend>
@@ -12,7 +12,7 @@
 					<div class="control-group">
 						<label class="control-label" for="photo">Photo</label>
 						<div class="controls">
-    					<input type="file" ng-model="photo" file-upload/>
+    					<input type="file" ng-model="photo" ng-file-select="onFileSelect($files)"/>
 						</div>
 					</div>
 					<div class="control-group">
