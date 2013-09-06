@@ -14,6 +14,9 @@ import scala.concurrent._
 import ExecutionContext.Implicits.global
 import javax.imageio.ImageWriteParam
 import javax.imageio.IIOImage
+import fly.play.s3._
+import java.io.BufferedInputStream
+import java.io.FileInputStream
 
 object Boulder extends Controller {
   def upload = Action(parse.multipartFormData) {
@@ -25,30 +28,46 @@ object Boulder extends Controller {
             Async {
               future {
                 try {
-									// Read and resize image
-									val rsImg = Scalr.resize(ImageIO.read(photo.ref.file), 800)
-									
-									val jpgWriter = ImageIO.getImageWritersByFormatName("jpg").next();
-									try {
-										// Set quality
-										val param = jpgWriter.getDefaultWriteParam();
-										param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-										param.setCompressionQuality(0.5f);
-										
-										// Write to temporary file
-										photo.ref.file.delete()
-										val outputStream = ImageIO.createImageOutputStream(photo.ref.file)
-										try {
-											jpgWriter.setOutput(outputStream);		            
-										  jpgWriter.write(null, new IIOImage(rsImg, null, null), param);
-										}
-										finally {
-										  outputStream.close();
-										}
-									}
-									finally {
-									  jpgWriter.dispose();
-									}
+					Logger.info("Resizing...")
+					
+					// Read and resize image
+					val rsImg = Scalr.resize(ImageIO.read(photo.ref.file), 800)
+					
+					val jpgWriter = ImageIO.getImageWritersByFormatName("jpg").next();
+					try {
+						// Set quality
+						val param = jpgWriter.getDefaultWriteParam();
+						param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+						param.setCompressionQuality(0.5f);
+						
+						// Write to temporary file
+						photo.ref.file.delete()
+						val outputStream = ImageIO.createImageOutputStream(photo.ref.file)
+						try {
+							jpgWriter.setOutput(outputStream);		            
+							jpgWriter.write(null, new IIOImage(rsImg, null, null), param);							
+						}
+						finally {
+						  outputStream.close();
+						}
+					}
+					finally {
+					  jpgWriter.dispose();
+					}
+					
+					Logger.info("Uploading to S3...")
+					
+					val bis = new BufferedInputStream(new FileInputStream(photo.ref.file.getPath()))
+					val byteArray = Stream.continually(bis.read).takeWhile(-1 !=).map(_.toByte).toArray
+					val bucket = S3("jugjane")
+					val result = bucket add BucketFile("xxx.jpg", photo.contentType.get, byteArray)
+					result
+					  .map { unit => 
+					    Logger.info("Saved the file")
+					  }
+					  .recover {
+					    case S3Exception(status, code, message, originalXml) => Logger.info("Error: " + message)
+					  }
                 }
                 catch {
                   case ex: Throwable =>	{
