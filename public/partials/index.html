@@ -2,41 +2,8 @@
 	<div ng-switch-when="true" ng-include src="'assets/partials/msg.html'"></div>
 	<div class="container" ng-switch-default>
 		<div class="hero-unit">
-			<form ng-submit="uploadPhoto()"
-				method="post" class="form-horizontal">
-				<fieldset>
-					<legend>
-						<h1>Upload boulder photo</h1>
-					</legend>
-					<p>The project of your life. Scary slab. Vintage classic.</p>
-					<div class="control-group">
-						<label class="control-label" for="photo">Photo</label>
-						<div class="controls">
-    					<input type="file" ng-model="photo" ng-file-select="onFileSelect($files)"/>
-						</div>
-					</div>
-					<div class="control-group">
-						<label class="control-label" for="inputEmail">Email</label>
-						<div class="controls">
-							<input type="email" ng-model="boulder.email" autocomplete="on"
-								>
-						</div>
-					</div>
-					<div class="control-group">
-						<label class="control-label" for="inputPassword">Gym</label>
-						<div class="controls">
-							<select ng-model="boulder.gymid"
-								ng-options="g.id as g.gymname for g in gyms"></select> <a
-								href="#/gym/new" class="btn"><i class="icon-plus"></i> New</a>
-						</div>
-					</div>
-					<div class="control-group">
-						<div class="controls">
-							<button type="submit" class="btn btn-primary">Upload</button>
-						</div>
-					</div>
-				</fieldset>
-			</form>
+			<h1>Jugjane loves gyms</h1>
+			<p>Crimps, jugs, sidepulls. Loves them all.</p>
 		</div>
 	</div>
 </div>

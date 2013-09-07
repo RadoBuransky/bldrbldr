@@ -1,0 +1,40 @@
+<div ng-switch="!!msg">
+	<div ng-switch-when="true" ng-include src="'assets/partials/msg.html'"></div>
+	<div class="container" ng-switch-default>
+		<div class="hero-unit">
+			<form ng-submit="uploadPhoto()"
+				method="post" class="form-horizontal">
+				<fieldset>
+					<legend>
+						<h1>Upload boulder photo</h1>
+					</legend>
+					<p>The project of your life. Scary slab. Vintage classic.</p>
+					<div class="control-group">
+						<label class="control-label" for="photo">Photo</label>
+						<div class="controls">
+    					<input type="file" ng-model="photo" ng-file-select="onFileSelect($files)"/>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="grade">Grade</label>
+						<div class="controls">
+							<select ng-model="boulder.grade"
+								ng-options="g.id as g.name for g in grades"></select>
+						</div>
+					</div>
+					<div class="control-group">
+						<label class="control-label" for="note">Note</label>
+						<div class="controls">
+							<textarea ng-model="boulder.note" rows="2"></textarea>
+						</div>
+					</div>
+					<div class="control-group">
+						<div class="controls">
+							<button type="submit" class="btn btn-primary">Upload</button>
+						</div>
+					</div>
+				</fieldset>
+			</form>
+		</div>
+	</div>
+</div>
