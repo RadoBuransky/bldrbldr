@@ -27,7 +27,5 @@ object Hive extends Gym[HiveGrade] {
   def name = "Hive"
   def gradingSystem = HiveGradingSystem
   def disciplines = Set(Discipline.Bouldering)
-  def holdColors = Set(Color(1, 0, 0, "red"),
-      Color(0, 1, 0, "green"),
-      Color(0, 0, 1, "blue"))
+  def holdColors = Set(Color.Red, Color.Green, Color.Blue, (Color.Yellow, Color.Blue))
 }

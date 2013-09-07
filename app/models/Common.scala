@@ -21,4 +21,9 @@ class Color(val r: Float, val g: Float, val b: Float, val name: String = null) {
 object Color {
   def apply(r: Float, g: Float, b: Float, name: String = null) =
     new Color(r, g, b, name)
+  
+  val Red = Color(1,0,0,"red")
+  val Green = Color(0,1,0,"green")
+  val Blue = Color(0,0,1,"blue")
+  val Yellow = Color(1,1,0,"yellow")
 }

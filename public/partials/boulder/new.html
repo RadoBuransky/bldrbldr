@@ -20,7 +20,9 @@
 						<div class="controls">
 							<div class="btn-toolbar">
 								<div class="btn-group">
-  								<div class="btn" name="{{grade.id}}" ng-repeat="grade in grades">⬣</div>
+  								<div class="btn" name="{{grade.id}}" ng-repeat="grade in grades">
+  									{{grade.name}}
+  								</div>
 								</div>
 							</div>
 						</div>
@@ -28,10 +30,9 @@
 					<div class="control-group">
 						<label class="control-label" for="grade">Holds</label>
 						<div class="controls">
-							<div class="btn-toolbar">
-								<div class="btn-group">
-  								<div class="btn" name="{{grade.id}}" ng-repeat="grade in grades.slice(0,6)">⬣</div>
-								</div>
+							<div class="holdColors" style="background-color: #FFFFFF"></div>
+							<div class="btn" name="{{grade.id}}" ng-repeat="hold in holds">
+								{{hold.name}}
 							</div>
 						</div>
 					</div>

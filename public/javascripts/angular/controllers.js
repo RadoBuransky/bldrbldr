@@ -2,15 +2,15 @@ function IndexCtrl($scope, $http, formDataObject) {
 }
 
 function BoulderNewCtrl($scope, $http, $routeParams) {
-	$scope.grades = [];
 	$scope.boulder = {};
 	$scope.boulder.gradeid = null;
 
 	$http({
 		method : 'GET',
-		url : '/'  + $routeParams.gymname + '/grades'
+		url : '/'  + $routeParams.gymname + '/new'
 	}).success(function(result) {
-		$scope.grades = result;
+		$scope.grades = result.grades;
+		$scope.holds = result.holds;
 		if ($scope.grades != null && $scope.grades.length > 0)
 			$scope.boulder.gradeid = $scope.grades[0].id;
 		else

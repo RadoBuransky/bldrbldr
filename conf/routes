@@ -10,7 +10,7 @@ GET		/gym/validate/:secret		controllers.GymCtrl.validate(secret)
 GET		/gym/approve/:secret		controllers.GymCtrl.approve(secret)
 GET		/gym/list					controllers.GymCtrl.list
 GET		/editor						controllers.Editor.index
-GET		/:gymname/grades			controllers.GymCtrl.grades(gymname)
+GET		/:gymname/new				controllers.GymCtrl.newBoulder(gymname)
 POST	/boulder/new				controllers.Boulder.upload
 
 # Map static resources from the /public folder to the /assets URL path

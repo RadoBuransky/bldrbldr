@@ -23,33 +23,22 @@ import play.api.cache.Cached
 import play.api.Play.current
 import models.grade.Grade
 import models.grade.NamedGrade
+import models.gym.SingleColoredHolds
+import models.gym.DoubleColoredHolds
 
 object GymCtrl extends Controller with MongoController {
   private def collection: JSONCollection = db.collection[JSONCollection]("gym")
 
   import models._
     
+  /**
+   * GET - Initialization of the form for new boulder.
+   * @param gymname
+   * @return
+   */
   def newBoulder(gymname: String) = Action {
     val gym = gymByName(gymname)
-    Ok(Json.obj("grades" -> gradesToJson(gym)))
-  }
-  
-  private def gradesToJson(gym: models.gym.Gym[Grade]) = {
-    Json.toJson(gym.gradingSystem.grades.zipWithIndex.map {
-    	case (grade, index) => {
-    	  grade match {
-    	    case namedGrade: NamedGrade =>  Json.obj("id" -> index, "name" -> namedGrade.name)
-    	  }
-    	}
-  	})
-  }
-  
-  private def gymByName(gymname: String): models.gym.Gym[Grade] = {
-    val hiveName = Hive.name
-    gymname match {
-      case hiveName => Hive
-      case _ => throw new JugJaneException("Gym doesn't exist! [" + gymname + "]")
-    }
+    Ok(Json.obj("grades" -> gradesToJson(gym), "holds" -> holdsToJson(gym)))
   }
   
   def grades(gymname: String) = Action {
@@ -110,6 +99,35 @@ object GymCtrl extends Controller with MongoController {
           BadRequest("Cannot approve the gym!")
         }        
       }
+    }
+  }
+  
+  private def holdsToJson(gym: models.gym.Gym[Grade]) = {
+    Json.toJson(gym.holdColors.map {
+      holdColor => holdColor match {
+    		case (SingleColoredHolds(color)) =>
+    		  Json.obj("name" -> holdColor.name, "color" -> color.toWeb)
+  		  case (DoubleColoredHolds(color1, color2)) =>
+    		  Json.obj("name" -> holdColor.name, "color" -> color1.toWeb, "color2" -> color2.toWeb)
+      }
+  	})
+  }
+  
+  private def gradesToJson(gym: models.gym.Gym[Grade]) = {
+    Json.toJson(gym.gradingSystem.grades.zipWithIndex.map {
+    	case (grade, index) => {
+    	  grade match {
+    	    case namedGrade: NamedGrade =>  Json.obj("id" -> index, "name" -> namedGrade.name)
+    	  }
+    	}
+  	})
+  }
+  
+  private def gymByName(gymname: String): models.gym.Gym[Grade] = {
+    val hiveName = Hive.name
+    gymname match {
+      case hiveName => Hive
+      case _ => throw new JugJaneException("Gym doesn't exist! [" + gymname + "]")
     }
   }
   
