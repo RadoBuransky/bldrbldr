@@ -18,11 +18,45 @@ import scala.concurrent.Future
 import scala.concurrent.Await
 import scala.concurrent._
 import scala.util.Try
+import models.gym.Hive
+import play.api.cache.Cached
+import play.api.Play.current
+import models.grade.Grade
+import models.grade.NamedGrade
 
-object Gym extends Controller with MongoController {
+object GymCtrl extends Controller with MongoController {
   private def collection: JSONCollection = db.collection[JSONCollection]("gym")
 
   import models._
+    
+  def newBoulder(gymname: String) = Action {
+    val gym = gymByName(gymname)
+    Ok(Json.obj("grades" -> gradesToJson(gym)))
+  }
+  
+  private def gradesToJson(gym: models.gym.Gym[Grade]) = {
+    Json.toJson(gym.gradingSystem.grades.zipWithIndex.map {
+    	case (grade, index) => {
+    	  grade match {
+    	    case namedGrade: NamedGrade =>  Json.obj("id" -> index, "name" -> namedGrade.name)
+    	  }
+    	}
+  	})
+  }
+  
+  private def gymByName(gymname: String): models.gym.Gym[Grade] = {
+    val hiveName = Hive.name
+    gymname match {
+      case hiveName => Hive
+      case _ => throw new JugJaneException("Gym doesn't exist! [" + gymname + "]")
+    }
+  }
+  
+  def grades(gymname: String) = Action {
+  	Ok(Json.toJson(Hive.gradingSystem.grades.zipWithIndex.map {
+    	case (grade, index) => Json.obj("id" -> index, "name" -> grade.name)
+  	}))
+  }
   
   def list() = Action {
     Async {
@@ -33,19 +67,19 @@ object Gym extends Controller with MongoController {
     }
   }
 
-  def newGym = Action(parse.json) { request =>
-    Async {
-	  val gym = request.body.as[models.Gym]
-	
-	  validateNewGym(gym).map { msg =>
-	    msg match {
-	      case s: String => {
-	        Logger.error(s)
-	        BadRequest(s)
-	      }
-	      case _ => createNewGym(gym)
-	    }
-	  }
+  def newGym = Action(parse.json) {
+    request => Async {
+		  val gym = request.body.as[models.Gym]
+		
+		  validateNewGym(gym).map { msg =>
+		    msg match {
+		      case s: String => {
+		        Logger.error(s)
+		        BadRequest(s)
+		      }
+		      case _ => createNewGym(gym)
+		    }
+		  }
     }
   }
   

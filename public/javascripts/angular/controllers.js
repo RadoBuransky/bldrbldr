@@ -1,17 +1,20 @@
 function IndexCtrl($scope, $http, formDataObject) {
 }
 
-function BoulderCreateCtrl($scope, $http) {
+function BoulderNewCtrl($scope, $http, $routeParams) {
 	$scope.grades = [];
 	$scope.boulder = {};
 	$scope.boulder.gradeid = null;
 
 	$http({
 		method : 'GET',
-		url : '/gym/'  + $routeParams.secret + '/grades'
+		url : '/'  + $routeParams.gymname + '/grades'
 	}).success(function(result) {
 		$scope.grades = result;
-		$scope.boulder.gradeid = $scope.grades[0].id;
+		if ($scope.grades != null && $scope.grades.length > 0)
+			$scope.boulder.gradeid = $scope.grades[0].id;
+		else
+			$scope.boulder.gradeid = null;
 	});
 
 	$scope.uploadPhoto = function($files) {

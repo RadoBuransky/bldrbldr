@@ -10,6 +10,7 @@ import models.JugJaneException
 import controllers.routes
 import java.net.URL
 import models.Gym
+import controllers.GymCtrl
 
 object EmailTemplate extends Enumeration {
   type EmailTemplate = Value
@@ -88,10 +89,10 @@ object EmailService {
       case _ => {
         tag match {
           case (Tag.GymActivationLink) => {
-            getAbsoluteUrl("/#" + routes.Gym.validate(getTagValue(Tag.GymSecret, contextTagValues)).url)
+            getAbsoluteUrl("/#" + routes.GymCtrl.validate(getTagValue(Tag.GymSecret, contextTagValues)).url)
           }
           case (Tag.GymApprovalLink) => {
-            getAbsoluteUrl("/#" + routes.Gym.approve(getTagValue(Tag.GymSecret, contextTagValues)).url)
+            getAbsoluteUrl("/#" + routes.GymCtrl.approve(getTagValue(Tag.GymSecret, contextTagValues)).url)
           }
         }
       }

@@ -5,12 +5,13 @@
 # Home page
 GET     /                           controllers.Application.index
 GET		/about						controllers.Application.about
-POST	/gym/new					controllers.Gym.newGym
-GET		/gym/validate/:secret		controllers.Gym.validate(secret)
-GET		/gym/approve/:secret		controllers.Gym.approve(secret)
-GET		/gym/list					controllers.Gym.list
-POST	/boulder/new				controllers.Boulder.upload
+POST	/gym/new					controllers.GymCtrl.newGym
+GET		/gym/validate/:secret		controllers.GymCtrl.validate(secret)
+GET		/gym/approve/:secret		controllers.GymCtrl.approve(secret)
+GET		/gym/list					controllers.GymCtrl.list
 GET		/editor						controllers.Editor.index
+GET		/:gymname/grades			controllers.GymCtrl.grades(gymname)
+POST	/boulder/new				controllers.Boulder.upload
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file				controllers.Assets.at(path="/public", file)

@@ -19,6 +19,7 @@ import java.io.BufferedInputStream
 import java.io.FileInputStream
 
 object Boulder extends Controller {
+  
   def upload = Action(parse.multipartFormData) {
     implicit request =>
       request.body.file("file") match {
