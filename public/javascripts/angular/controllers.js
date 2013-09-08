@@ -3,7 +3,8 @@ function IndexCtrl($scope, $http, formDataObject) {
 
 function BoulderNewCtrl($scope, $http, $routeParams) {
 	$scope.boulder = {};
-	$scope.boulder.gradeid = null;
+	$scope.boulder.grade = null;
+	$scope.boulder.holdColors = null;
 
 	$http({
 		method : 'GET',
@@ -12,9 +13,9 @@ function BoulderNewCtrl($scope, $http, $routeParams) {
 		$scope.grades = result.grades;
 		$scope.holds = result.holds;
 		if ($scope.grades != null && $scope.grades.length > 0)
-			$scope.boulder.gradeid = $scope.grades[0].id;
+			$scope.boulder.grade = $scope.grades[0];
 		else
-			$scope.boulder.gradeid = null;
+			$scope.boulder.grade = null;
 	});
 
 	$scope.uploadPhoto = function($files) {
@@ -23,7 +24,7 @@ function BoulderNewCtrl($scope, $http, $routeParams) {
 			data : $scope.boulder,
 			file : $scope.photo
 		}).success(function() {
-			showMsg($scope, 'Thank you!', 'Go on. Give us another one.', '#/');
+			showMsg($scope, 'Thank you!', 'Go on. Give us another one.', '#/hive/new/666');
 		})
 	}
 

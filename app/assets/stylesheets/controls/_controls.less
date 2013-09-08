@@ -1,12 +1,30 @@
 .holdColors {
+	display: inline-block;
   .ie7-inline-block();
   padding: 0;
   height: 40px;
   width: 40px;
-  border: 1px solid @btnBorder;
+  border: 3px solid @btnBorder;
   *border: 0; // Remove the border to prevent IE7's black border on input:focus
   border-bottom-color: darken(@btnBorder, 10%);
   .border-radius(@baseBorderRadius);
   .ie7-restore-left-whitespace(); // Give IE7 some love
   cursor: pointer;
+}
+
+.holdColors .color {
+	height: 100%;
+	float: left;
+}
+
+.holdColors .color.twocolors {
+	width: 50%;	
+}
+
+.holdColors .color.onecolor {
+	width: 100%;	
+}
+
+.holdColorsSelector .holdColors {
+	margin-right: 5px;
 }

@@ -18,21 +18,27 @@
 					<div class="control-group">
 						<label class="control-label" for="grade">Grade</label>
 						<div class="controls">
-							<div class="btn-toolbar">
-								<div class="btn-group">
-  								<div class="btn" name="{{grade.id}}" ng-repeat="grade in grades">
-  									{{grade.name}}
-  								</div>
-								</div>
-							</div>
-						</div>
+							<select ng-model="boulder.grade" ng-options="g.name for g in grades"
+								style="background-color: {{boulder.grade.color}}">
+						  </select>
+					  </div>
 					</div>
 					<div class="control-group">
 						<label class="control-label" for="grade">Holds</label>
 						<div class="controls">
-							<div class="holdColors" style="background-color: #FFFFFF"></div>
-							<div class="btn" name="{{grade.id}}" ng-repeat="hold in holds">
-								{{hold.name}}
+							<div id="selectedHoldColors" ng-show="boulder.holdColors">
+								<div class="holdColors" ng-click="boulder.holdColors = null">
+									<div class="color onecolor" style="background-color: {{boulder.holdColors.color}};" ng-hide="boulder.holdColors.color2"></div>
+									<div class="color twocolors" style="background-color: {{boulder.holdColors.color}};" ng-show="boulder.holdColors.color2"></div>
+									<div class="color twocolors" style="background-color: {{boulder.holdColors.color2}};" ng-show="boulder.holdColors.color2"></div>
+								</div>
+							</div>
+							<div class="holdColorsSelector" ng-hide="boulder.holdColors">
+								<div class="holdColors" ng-repeat="hold in holds" ng-click="boulder.holdColors = hold">
+									<div class="color onecolor" style="background-color: {{hold.color}};" ng-hide="hold.color2"></div>
+									<div class="color twocolors" style="background-color: {{hold.color}};" ng-show="hold.color2"></div>
+									<div class="color twocolors" style="background-color: {{hold.color2}};" ng-show="hold.color2"></div>
+								</div>
 							</div>
 						</div>
 					</div>

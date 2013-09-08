@@ -26,4 +26,6 @@ object Color {
   val Green = Color(0,1,0,"green")
   val Blue = Color(0,0,1,"blue")
   val Yellow = Color(1,1,0,"yellow")
+  val Purple = Color(0.7f,1,0.5f,"purple")
+  val White = Color(1,1,1,"white")
 }
