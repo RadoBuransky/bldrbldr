@@ -1,4 +1,4 @@
-package models.grade
+package models.domain.grade
 
 case class HuecoGrade(val value: String) extends ExactGrade
 

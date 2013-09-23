@@ -1,13 +1,9 @@
-package models.gym
+package models.domain.gym
 
 import models.Color
-import models.grade.Discipline
-import models.grade.Grade
-import models.grade.GradingSystem
-import models.grade.Hueco
-import models.grade.IntervalGrade
-import models.grade.NamedGrade
-import models.grade.SingleColorGrade
+import models.domain.grade._
+import models.domain.gym._
+import java.net.URL
 
 case class HiveGrade(val from: Grade, val to: Grade, val color: Color, val name: String)
 	extends IntervalGrade with SingleColorGrade with NamedGrade
@@ -21,10 +17,13 @@ object HiveGradingSystem extends GradingSystem[HiveGrade]("Hive", Set(Discipline
     HiveGrade(Hueco.V5, Hueco.V7, Color(0, 1, 1), "⬣⬣⬣⬣⬣⬣") ::
     Nil)
     
-object Hive extends Gym[HiveGrade] {
-  import models.gym.ColoredHolds._
+object Hive extends Gym {
+  import models.domain.gym.ColoredHolds._
   
   def name = "Hive"
+  val url = new URL("http://www.hiveclimbing.com/")
+  def handle = "hive"
+  def secret = "666"
   def gradingSystem = HiveGradingSystem
   def disciplines = Set(Discipline.Bouldering)
   def holdColors = Set(Color.Red, Color.Green, Color.Blue, (Color.Yellow, Color.Blue),Color.Purple,

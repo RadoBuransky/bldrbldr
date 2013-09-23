@@ -1,4 +1,4 @@
-package models.gym
+package models.domain.gym
 
 import models.Color
 

@@ -6,7 +6,7 @@ jugJaneApp.config([ '$routeProvider', function($routeProvider) {
 		controller : IndexCtrl
 	}).when('/gym/new', {
 		templateUrl : 'assets/partials/gym/new.html',
-		controller : GymCtrl
+		controller : GymNewCtrl
 	}).when('/gym/approve/:secret', {
 		templateUrl : 'assets/partials/msg.html',
 		controller : GymApproveCtrl
@@ -16,6 +16,9 @@ jugJaneApp.config([ '$routeProvider', function($routeProvider) {
 	}).when('/:gymname/new/:secret', {
 		templateUrl : 'assets/partials/boulder/new.html',
 		controller : BoulderNewCtrl
+	}).when('/:gymname', {
+		templateUrl : 'assets/partials/gym/index.html',
+		controller : GymCtrl
 	}).otherwise({
 		redirectTo : '/'
 	});

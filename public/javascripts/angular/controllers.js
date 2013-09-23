@@ -1,10 +1,29 @@
 function IndexCtrl($scope, $http, formDataObject) {
 }
 
+function GymCtrl($scope, $http, $routeParams) {
+	$scope.gym = {};
+	$scope.gym.name = 'xxx';
+	
+	var init = function() {
+		$http({
+			method : 'GET',
+			url : '/'  + $routeParams.gymname
+		}).success(function(result) {
+			$scope.gym = result;
+		});
+	}
+	
+	// Initialize controller
+	init();
+}
+
 function BoulderNewCtrl($scope, $http, $routeParams) {
 	$scope.boulder = {};
 	$scope.boulder.grade = null;
 	$scope.boulder.holdColors = null;
+	$scope.boulder.gymhandle = $routeParams.gymname;
+	$scope.boulder.gymsecret = $routeParams.secret;
 
 	$http({
 		method : 'GET',
@@ -19,6 +38,8 @@ function BoulderNewCtrl($scope, $http, $routeParams) {
 	});
 
 	$scope.uploadPhoto = function($files) {
+		$scope.boulder.grade = $scope.boulder.grade.id
+		$scope.boulder.holdColors = $scope.boulder.holdColors.name
 		$http.uploadFile({
 			url : '/boulder/new',
 			data : $scope.boulder,
@@ -33,7 +54,7 @@ function BoulderNewCtrl($scope, $http, $routeParams) {
 	}
 }
 
-function GymCtrl($scope, $http) {
+function GymNewCtrl($scope, $http) {
 	$scope.createGym = function() {
 		$http({
 			method : 'POST',

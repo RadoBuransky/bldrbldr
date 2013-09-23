@@ -9,7 +9,7 @@ import scala.io.Source
 import models.JugJaneException
 import controllers.routes
 import java.net.URL
-import models.Gym
+import models.data.Gym
 import controllers.GymCtrl
 
 object EmailTemplate extends Enumeration {
@@ -89,10 +89,12 @@ object EmailService {
       case _ => {
         tag match {
           case (Tag.GymActivationLink) => {
-            getAbsoluteUrl("/#" + routes.GymCtrl.validate(getTagValue(Tag.GymSecret, contextTagValues)).url)
+            //getAbsoluteUrl("/#" + routes.GymCtrl.validate(getTagValue(Tag.GymSecret, contextTagValues)).url)
+            ""
           }
           case (Tag.GymApprovalLink) => {
-            getAbsoluteUrl("/#" + routes.GymCtrl.approve(getTagValue(Tag.GymSecret, contextTagValues)).url)
+            //getAbsoluteUrl("/#" + routes.GymCtrl.approve(getTagValue(Tag.GymSecret, contextTagValues)).url)
+            ""
           }
         }
       }

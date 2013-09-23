@@ -2,8 +2,10 @@ package controllers
 
 import scala.util.Random
 import org.joda.time.DateTime
-import models.JsonFormats.gymFormat
+import models.data.JsonFormats.gymFormat
+import models.data.JsonFormats.routeFormat
 import models.services.EmailService
+import models.services.GymService
 import play.api.Logger
 import play.api.mvc.Action
 import play.api.mvc.Controller
@@ -18,18 +20,71 @@ import scala.concurrent.Future
 import scala.concurrent.Await
 import scala.concurrent._
 import scala.util.Try
-import models.gym.Hive
+import models.domain.gym.Hive
 import play.api.cache.Cached
 import play.api.Play.current
-import models.grade.Grade
-import models.grade.NamedGrade
-import models.gym.SingleColoredHolds
-import models.gym.DoubleColoredHolds
+import models.domain.grade.Grade
+import models.domain.grade.NamedGrade
+import models.domain.gym.SingleColoredHolds
+import models.domain.gym.DoubleColoredHolds
+import models.data.Gym
+import models.data.Route
+import java.util.Date
+import org.joda.time.Days
 
 object GymCtrl extends Controller with MongoController {
   private def collection: JSONCollection = db.collection[JSONCollection]("gym")
 
   import models._
+  
+  def get(gymname: String) = Action {
+    Async {
+      // Get gym by handle
+	    val gym = GymService.get(gymname)
+	    
+	    // Get boulders from Mongo for this gym
+	    getBoulders(gym.handle).map {
+	      routes => {
+	        // Group routes by grade
+	        val routesByGrade = routes.groupBy(route => route.grade).toList.
+	        	sortBy(gradeGroup => gradeGroup._1)	        
+	        
+	        // Serialize routes to JSON
+	        val routesJson = routesByGrade.map(gradeGroup => {
+	          Json.obj("grade" -> gradeGroup._2(0).grade,
+	              "routes" -> routesToJson(gradeGroup._2))
+          }).toArray
+	        
+	        // Create result
+			    Ok(Json.obj(
+			    	"name" -> gym.name,
+			    	"url" -> gym.url.toString(),
+			    	"routes" -> routesJson))        
+	      }
+	    }
+    }
+  }
+  
+  private def routesToJson(routes: List[Route]): List[JsObject] = {
+    routes match {
+      case route :: tail => routeToJson(route) :: routesToJson(tail)
+      case Seq() => Nil
+    }
+  }
+  
+  private def routeToJson(route: Route): JsObject = {
+    val days = Days.daysBetween(new DateTime(route._id.get.time), DateTime.now()).getDays()
+    Json.obj("id" -> route._id.get.stringify,
+        "holdcolor" -> route.holdcolor,
+        "note" -> route.note,
+        "days" -> days)
+  }
+  
+  private def getBoulders(gymhandle: String): Future[List[Route]] = {
+    db.collection[JSONCollection]("route").
+    	find(Json.obj("gymhandle" -> gymhandle)).
+    	cursor[Route].toList
+  }
     
   /**
    * GET - Initialization of the form for new boulder.
@@ -37,7 +92,7 @@ object GymCtrl extends Controller with MongoController {
    * @return
    */
   def newBoulder(gymname: String) = Action {
-    val gym = gymByName(gymname)
+    val gym = GymService.get(gymname)
     Ok(Json.obj("grades" -> gradesToJson(gym), "holds" -> holdsToJson(gym)))
   }
   
@@ -58,7 +113,7 @@ object GymCtrl extends Controller with MongoController {
 
   def newGym = Action(parse.json) {
     request => Async {
-		  val gym = request.body.as[models.Gym]
+		  val gym = request.body.as[models.data.Gym]
 		
 		  validateNewGym(gym).map { msg =>
 		    msg match {
@@ -102,7 +157,7 @@ object GymCtrl extends Controller with MongoController {
     }
   }
   
-  private def holdsToJson(gym: models.gym.Gym[Grade]) = {
+  private def holdsToJson(gym: models.domain.gym.Gym) = {
     Json.toJson(gym.holdColors.map {
       holdColor => holdColor match {
     		case (SingleColoredHolds(color)) =>
@@ -113,7 +168,7 @@ object GymCtrl extends Controller with MongoController {
   	})
   }
   
-  private def gradesToJson(gym: models.gym.Gym[Grade]) = {
+  private def gradesToJson(gym: models.domain.gym.Gym) = {
     Json.toJson(gym.gradingSystem.grades.zipWithIndex.map {
     	case (grade, index) => {
     	  grade match {
@@ -123,17 +178,10 @@ object GymCtrl extends Controller with MongoController {
   	})
   }
   
-  private def gymByName(gymname: String): models.gym.Gym[Grade] = {
-    val hiveName = Hive.name
-    gymname match {
-      case hiveName => Hive
-      case _ => throw new JugJaneException("Gym doesn't exist! [" + gymname + "]")
-    }
-  }
-  
   private def createNewGym(gym: Gym): Result = {  
     // Set default values
     val updatedGym = gym.copy(
+      handle = Option(gym.gymname.toLowerCase().filter(c => c != ' ')),
       created = Option(DateTime.now),
       validated = Option(false),
       disabled = Option(false),

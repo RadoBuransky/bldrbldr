@@ -1,4 +1,4 @@
-package models.grade
+package models.domain.grade
 
 import scala.collection.immutable
 import Discipline.Discipline

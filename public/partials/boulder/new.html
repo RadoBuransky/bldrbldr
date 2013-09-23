@@ -18,8 +18,7 @@
 					<div class="control-group">
 						<label class="control-label" for="grade">Grade</label>
 						<div class="controls">
-							<select ng-model="boulder.grade" ng-options="g.name for g in grades"
-								style="background-color: {{boulder.grade.color}}">
+							<select ng-model="boulder.grade" ng-options="g as g.name for g in grades" >
 						  </select>
 					  </div>
 					</div>
@@ -32,6 +31,7 @@
 									<div class="color twocolors" style="background-color: {{boulder.holdColors.color}};" ng-show="boulder.holdColors.color2"></div>
 									<div class="color twocolors" style="background-color: {{boulder.holdColors.color2}};" ng-show="boulder.holdColors.color2"></div>
 								</div>
+								<label>{{boulder.holdColors.name}}</label>
 							</div>
 							<div class="holdColorsSelector" ng-hide="boulder.holdColors">
 								<div class="holdColors" ng-repeat="hold in holds" ng-click="boulder.holdColors = hold">
