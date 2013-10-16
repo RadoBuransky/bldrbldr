@@ -65,7 +65,7 @@ object Boulder extends Controller with MongoController {
   private def saveToMongo(dataParts: Map[String, Seq[String]], fileName: String) = {
     val gymhandle = dataParts("gymhandle")(0)
            
-    val grade = dataParts("grade")(0)
+    val grade = dataParts("grade")(0).toInt
     val holdcolor = dataParts("holdColors")(0)
     val note = dataParts.getOrElse("note", null) match {
       case ns: Seq[String] => ns(0)

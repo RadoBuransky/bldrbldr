@@ -24,7 +24,7 @@ case class Route (
     _id: Option[BSONObjectID],
     gymhandle: String,
     filename: String,
-    grade: String,
+    grade: Int,
     holdcolor: String,
     note: String,
     discipline: String,

@@ -31,6 +31,7 @@ import models.data.Gym
 import models.data.Route
 import java.util.Date
 import org.joda.time.Days
+import models.domain.grade.GradingSystem
 
 object GymCtrl extends Controller with MongoController {
   private def collection: JSONCollection = db.collection[JSONCollection]("gym")
@@ -47,11 +48,11 @@ object GymCtrl extends Controller with MongoController {
 	      routes => {
 	        // Group routes by grade
 	        val routesByGrade = routes.groupBy(route => route.grade).toList.
-	        	sortBy(gradeGroup => gradeGroup._1)	        
+	        	sortBy(gradeGroup => gradeGroup._1)
 	        
 	        // Serialize routes to JSON
 	        val routesJson = routesByGrade.map(gradeGroup => {
-	          Json.obj("grade" -> gradeGroup._2(0).grade,
+	          Json.obj("grade" -> gradeToJson(gym, gradeGroup._2(0).grade),
 	              "routes" -> routesToJson(gradeGroup._2))
           }).toArray
 	        
@@ -59,10 +60,18 @@ object GymCtrl extends Controller with MongoController {
 			    Ok(Json.obj(
 			    	"name" -> gym.name,
 			    	"url" -> gym.url.toString(),
-			    	"routes" -> routesJson))        
+			    	"gradeGroups" -> routesJson))        
 	      }
 	    }
     }
+  }
+  
+  private def gradeToJson(gym: models.domain.gym.Gym, gradeIndex: Int): JsObject = {
+    val grade = gym.gradingSystem.grades(gradeIndex)
+    Json.obj("name" -> Grade.getName(grade),
+        "color" -> (Grade.getColor(grade) match {
+          case Some(c) => c.toWeb
+        }))
   }
   
   private def routesToJson(routes: List[Route]): List[JsObject] = {
@@ -82,7 +91,8 @@ object GymCtrl extends Controller with MongoController {
   
   private def getBoulders(gymhandle: String): Future[List[Route]] = {
     db.collection[JSONCollection]("route").
-    	find(Json.obj("gymhandle" -> gymhandle)).
+    	find(Json.obj("gymhandle" -> gymhandle, "enabled" -> true)).
+    	sort(Json.obj("_id" -> -1)).
     	cursor[Route].toList
   }
     

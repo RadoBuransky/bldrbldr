@@ -37,3 +37,19 @@ abstract class GradingSystem[+TGrade <: Grade](private val _name: String,
   def disciplines = _disciplines
   def grades = _grades
 }
+
+object Grade {
+  def getName(grade: Grade): Option[String] = {
+    grade match {
+      case ng: NamedGrade => Option(ng.name)
+      case _ => None
+    }
+  }
+  
+  def getColor(grade: Grade): Option[Color] = {
+    grade match {
+      case scg: SingleColorGrade => Option(scg.color)
+      case _ => None
+    }
+  }
+}
