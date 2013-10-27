@@ -19,6 +19,9 @@ jugJaneApp.config([ '$routeProvider', function($routeProvider) {
 	}).when('/:gymname', {
 		templateUrl : 'assets/partials/gym/index.html',
 		controller : GymCtrl
+	}).when('/:gymname/:routeId', {
+		templateUrl : 'assets/partials/boulder/index.html',
+		controller : RouteCtrl
 	}).otherwise({
 		redirectTo : '/'
 	});

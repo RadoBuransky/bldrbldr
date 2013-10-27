@@ -32,6 +32,7 @@ import models.data.Route
 import java.util.Date
 import org.joda.time.Days
 import models.domain.grade.GradingSystem
+import models.domain.gym._
 
 object GymCtrl extends Controller with MongoController {
   private def collection: JSONCollection = db.collection[JSONCollection]("gym")
@@ -53,12 +54,13 @@ object GymCtrl extends Controller with MongoController {
 	        // Serialize routes to JSON
 	        val routesJson = routesByGrade.map(gradeGroup => {
 	          Json.obj("grade" -> gradeToJson(gym, gradeGroup._2(0).grade),
-	              "routes" -> routesToJson(gradeGroup._2))
+	              "routes" -> routesToJson(gym, gradeGroup._2))
           }).toArray
 	        
 	        // Create result
 			    Ok(Json.obj(
 			    	"name" -> gym.name,
+			    	"handle" -> gym.handle,
 			    	"url" -> gym.url.toString(),
 			    	"gradeGroups" -> routesJson))        
 	      }
@@ -74,19 +76,26 @@ object GymCtrl extends Controller with MongoController {
         }))
   }
   
-  private def routesToJson(routes: List[Route]): List[JsObject] = {
+  private def routesToJson(gym: models.domain.gym.Gym, routes: List[Route]): List[JsObject] = {
     routes match {
-      case route :: tail => routeToJson(route) :: routesToJson(tail)
+      case route :: tail => routeToJson(gym, route) :: routesToJson(gym, tail)
       case Seq() => Nil
     }
   }
   
-  private def routeToJson(route: Route): JsObject = {
+  private def routeToJson(gym: models.domain.gym.Gym, route: Route): JsObject = {
     val days = Days.daysBetween(new DateTime(route._id.get.time), DateTime.now()).getDays()
     Json.obj("id" -> route._id.get.stringify,
-        "holdcolor" -> route.holdcolor,
+        "holdcolor" -> holdColorByName(gym, route.holdcolor),
         "note" -> route.note,
         "days" -> days)
+  }
+  
+  private def holdColorByName(gym: models.domain.gym.Gym, holdcolor: String): JsObject = {
+    gym.holdColors.find(h => h.name == holdcolor) match {
+      case Some(h) => holdColorToJson(h)
+      case None => Json.obj()
+    }
   }
   
   private def getBoulders(gymhandle: String): Future[List[Route]] = {
@@ -168,14 +177,17 @@ object GymCtrl extends Controller with MongoController {
   }
   
   private def holdsToJson(gym: models.domain.gym.Gym) = {
-    Json.toJson(gym.holdColors.map {
-      holdColor => holdColor match {
-    		case (SingleColoredHolds(color)) =>
-    		  Json.obj("name" -> holdColor.name, "color" -> color.toWeb)
-  		  case (DoubleColoredHolds(color1, color2)) =>
-    		  Json.obj("name" -> holdColor.name, "color" -> color1.toWeb, "color2" -> color2.toWeb)
-      }
-  	})
+    Json.toJson(gym.holdColors.map { h => holdColorToJson(h) })
+  }
+  
+  private def holdColorToJson(holdColor: ColoredHolds): JsObject = {
+    holdColor match {
+  		case (SingleColoredHolds(color)) =>
+  		  Json.obj("name" -> holdColor.name, "color" -> color.toWeb)
+		  case (DoubleColoredHolds(color1, color2)) =>
+  		  Json.obj("name" -> holdColor.name, "color" -> color1.toWeb, "color2" -> color2.toWeb)
+		  case _ => Json.obj()
+    }
   }
   
   private def gradesToJson(gym: models.domain.gym.Gym) = {

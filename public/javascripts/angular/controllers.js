@@ -1,9 +1,24 @@
 function IndexCtrl($scope, $http, formDataObject) {
 }
 
+function RouteCtrl($scope, $http, $routeParams) {
+	$scope.route = {};
+	
+	var init = function() {
+		$http({
+			method : 'GET',
+			url : '/'  + $routeParams.gymname + '/' + $routeParams.routeId
+		}).success(function(result) {
+			$scope.route = result.route;
+		});
+	}
+	
+	// Initialize controller
+	init();
+}
+
 function GymCtrl($scope, $http, $routeParams) {
 	$scope.gym = {};
-	$scope.gym.name = 'xxx';
 	
 	var init = function() {
 		$http({

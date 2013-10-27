@@ -33,6 +33,10 @@ object Boulder extends Controller with MongoController {
   private val jpegMime = "image/jpeg"
   private val photoWidth = 800
   
+  def get(gymname: String, routeId: String) = {
+    
+  }
+  
   def upload = Action(parse.multipartFormData) {
     implicit request => {
       val validateResult = validate(request.body)

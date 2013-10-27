@@ -5,10 +5,18 @@
 		<div ng-repeat="gg in gym.gradeGroups">
 			<h2>{{gg.grade.name}}</h2>
 			<div ng-repeat="route in gg.routes">
-				<span>{{route.holdcolor}}</span>
-				<span>{{route.note}}</span>
-				<span>{{route.days}} days</span>
-				<span class="badge">new</span>
+				<a href="#/{{gym.handle}}/{{route.id}}" class="route">
+					<div>
+						<div class="holdColors">
+							<div class="color onecolor" style="background-color: {{route.holdcolor.color}};" ng-hide="route.holdcolor.color2"></div>
+							<div class="color twocolors" style="background-color: {{route.holdcolor.color}};" ng-show="route.holdcolor.color2"></div>
+							<div class="color twocolors" style="background-color: {{route.holdcolor.color2}};" ng-show="route.holdcolor.color2"></div>
+						</div>
+						<span>{{route.note}}</span>
+						<span>{{route.days}} days</span>
+						<span class="badge">new</span>
+					</div>
+				</a>
 			</div>
 		</div>
 	</div>

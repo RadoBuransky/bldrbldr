@@ -26,7 +26,7 @@
 						<label class="control-label" for="grade">Holds</label>
 						<div class="controls">
 							<div id="selectedHoldColors" ng-show="boulder.holdColors">
-								<div class="holdColors" ng-click="boulder.holdColors = null">
+								<div class="holdColors clickable" ng-click="boulder.holdColors = null">
 									<div class="color onecolor" style="background-color: {{boulder.holdColors.color}};" ng-hide="boulder.holdColors.color2"></div>
 									<div class="color twocolors" style="background-color: {{boulder.holdColors.color}};" ng-show="boulder.holdColors.color2"></div>
 									<div class="color twocolors" style="background-color: {{boulder.holdColors.color2}};" ng-show="boulder.holdColors.color2"></div>
@@ -34,7 +34,7 @@
 								<label>{{boulder.holdColors.name}}</label>
 							</div>
 							<div class="holdColorsSelector" ng-hide="boulder.holdColors">
-								<div class="holdColors" ng-repeat="hold in holds" ng-click="boulder.holdColors = hold">
+								<div class="holdColors clickable" ng-repeat="hold in holds" ng-click="boulder.holdColors = hold">
 									<div class="color onecolor" style="background-color: {{hold.color}};" ng-hide="hold.color2"></div>
 									<div class="color twocolors" style="background-color: {{hold.color}};" ng-show="hold.color2"></div>
 									<div class="color twocolors" style="background-color: {{hold.color2}};" ng-show="hold.color2"></div>
