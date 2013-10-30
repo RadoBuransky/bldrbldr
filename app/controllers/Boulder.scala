@@ -28,13 +28,27 @@ import play.api.libs.json._
 import models.services.GymService
 import models.domain.grade.Discipline._
 import models.data.JsonFormats._
+import models.data.Route
 
 object Boulder extends Controller with MongoController {
   private val jpegMime = "image/jpeg"
   private val photoWidth = 800
   
-  def get(gymname: String, routeId: String) = {
-    
+  def get(gymname: String, routeId: String) = Action {    
+    Async {	    
+	    getBoulder(routeId).map {	route =>
+	      route match {
+	        case Some(route) => {
+	          if (!route.enabled)
+	            BadRequest("Route is disabled.")
+	          else {
+    					Ok(Json.obj())
+	          }
+	        }
+	        case None => NotFound
+	      }      
+	    }
+    }
   }
   
   def upload = Action(parse.multipartFormData) {
@@ -64,6 +78,12 @@ object Boulder extends Controller with MongoController {
       
       validateResult
     }
+  }
+  
+  private def getBoulder(routeId: String): Future[Option[Route]] = {
+    db.collection[JSONCollection]("route").
+    	find(Json.obj("_id" -> routeId)).
+    	cursor[Route].headOption
   }
   
   private def saveToMongo(dataParts: Map[String, Seq[String]], fileName: String) = {
