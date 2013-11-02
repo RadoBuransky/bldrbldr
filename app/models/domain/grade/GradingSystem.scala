@@ -7,6 +7,9 @@ import models.Color
 
 trait Grade 
 trait UnknownGrade extends Grade
+trait IdGrade extends Grade {
+  def id: String
+}
 trait ExactGrade extends Grade {
   def value: String
 }
@@ -35,7 +38,15 @@ abstract class GradingSystem[+TGrade <: Grade](private val _name: String,
     private val _disciplines: Set[Discipline], private val _grades: Seq[TGrade]) {
   def name = _name
   def disciplines = _disciplines
-  def grades = _grades
+  def grades = _grades  
+  
+  def findById(id: String): Option[Grade] = {
+    grades.find(grade =>
+      grade match {
+        case idGrade: IdGrade => id == idGrade.id
+        case _ => false
+      })
+  }
 }
 
 object Grade {

@@ -35,10 +35,10 @@ function GymCtrl($scope, $http, $routeParams) {
 
 function BoulderNewCtrl($scope, $http, $routeParams) {
 	$scope.boulder = {};
-	$scope.boulder.grade = null;
-	$scope.boulder.holdColors = null;
-	$scope.boulder.gymhandle = $routeParams.gymname;
-	$scope.boulder.gymsecret = $routeParams.secret;
+	$scope.boulder.gradeId = null;
+	$scope.boulder.holdsColor = null;
+	$scope.boulder.gymName = $routeParams.gymname;
+	$scope.boulder.gymSecret = $routeParams.secret;
 
 	$http({
 		method : 'GET',
@@ -53,8 +53,8 @@ function BoulderNewCtrl($scope, $http, $routeParams) {
 	});
 
 	$scope.uploadPhoto = function($files) {
-		$scope.boulder.grade = $scope.boulder.grade.id
-		$scope.boulder.holdColors = $scope.boulder.holdColors.name
+		$scope.boulder.gradeId = $scope.boulder.grade.id
+		$scope.boulder.holdsColor = $scope.boulder.holdColors.name
 		$http.uploadFile({
 			url : '/boulder/new',
 			data : $scope.boulder,

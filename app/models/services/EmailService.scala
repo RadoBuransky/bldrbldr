@@ -28,7 +28,7 @@ object EmailService {
   }
   
   def newGymNotif(gym: Gym): Unit = {
-    send("radoburansky@gmail.com", "New gym: " + gym.gymname, EmailTemplate.NewGymNotification,
+    send("radoburansky@gmail.com", "New gym: " + gym.gymName, EmailTemplate.NewGymNotification,
         getContextTagValues(gym))
   }
 

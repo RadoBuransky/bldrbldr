@@ -17,5 +17,6 @@ dist
 .cache
 .metadata
 bin
+conf/secret.conf
 
 libpeerconnection.log

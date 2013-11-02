@@ -33,6 +33,8 @@ import java.util.Date
 import org.joda.time.Days
 import models.domain.grade.GradingSystem
 import models.domain.gym._
+import models.contract.JsonMapper
+import models.domain.grade.IdGrade
 
 object GymCtrl extends Controller with MongoController {
   private def collection: JSONCollection = db.collection[JSONCollection]("gym")
@@ -48,12 +50,13 @@ object GymCtrl extends Controller with MongoController {
 	    getBoulders(gym.handle).map {
 	      routes => {
 	        // Group routes by grade
-	        val routesByGrade = routes.groupBy(route => route.grade).toList.
+	        val routesByGrade = routes.groupBy(route => route.gradeId).toList.
 	        	sortBy(gradeGroup => gradeGroup._1)
 	        
 	        // Serialize routes to JSON
 	        val routesJson = routesByGrade.map(gradeGroup => {
-	          Json.obj("grade" -> gradeToJson(gym, gradeGroup._2(0).grade),
+	        	val route =	gym.gradingSystem.findById(gradeGroup._2(0).gradeId)
+	        	Json.obj("grade" -> JsonMapper.gradeToJson(route),
 	              "routes" -> routesToJson(gym, gradeGroup._2))
           }).toArray
 	        
@@ -66,43 +69,6 @@ object GymCtrl extends Controller with MongoController {
 	      }
 	    }
     }
-  }
-  
-  private def gradeToJson(gym: models.domain.gym.Gym, gradeIndex: Int): JsObject = {
-    val grade = gym.gradingSystem.grades(gradeIndex)
-    Json.obj("name" -> Grade.getName(grade),
-        "color" -> (Grade.getColor(grade) match {
-          case Some(c) => c.toWeb
-        }))
-  }
-  
-  private def routesToJson(gym: models.domain.gym.Gym, routes: List[Route]): List[JsObject] = {
-    routes match {
-      case route :: tail => routeToJson(gym, route) :: routesToJson(gym, tail)
-      case Seq() => Nil
-    }
-  }
-  
-  private def routeToJson(gym: models.domain.gym.Gym, route: Route): JsObject = {
-    val days = Days.daysBetween(new DateTime(route._id.get.time), DateTime.now()).getDays()
-    Json.obj("id" -> route._id.get.stringify,
-        "holdcolor" -> holdColorByName(gym, route.holdcolor),
-        "note" -> route.note,
-        "days" -> days)
-  }
-  
-  private def holdColorByName(gym: models.domain.gym.Gym, holdcolor: String): JsObject = {
-    gym.holdColors.find(h => h.name == holdcolor) match {
-      case Some(h) => holdColorToJson(h)
-      case None => Json.obj()
-    }
-  }
-  
-  private def getBoulders(gymhandle: String): Future[List[Route]] = {
-    db.collection[JSONCollection]("route").
-    	find(Json.obj("gymhandle" -> gymhandle, "enabled" -> true)).
-    	sort(Json.obj("_id" -> -1)).
-    	cursor[Route].toList
   }
     
   /**
@@ -119,15 +85,6 @@ object GymCtrl extends Controller with MongoController {
   	Ok(Json.toJson(Hive.gradingSystem.grades.zipWithIndex.map {
     	case (grade, index) => Json.obj("id" -> index, "name" -> grade.name)
   	}))
-  }
-  
-  def list() = Action {
-    Async {
-      collection.find(Json.obj("validated" -> true, "approved" -> true, "disabled" -> false),
-      	Json.obj("gymname" -> 1)).sort(Json.obj("gymname" -> 1)).cursor[JsObject].toList.map {
-          gyms => Ok(Json.toJson(gyms.map( gym =>
-            Json.obj("id" -> (gym \ "_id" \ "$oid"), "gymname" -> (gym \ "gymname") ) ))) }
-    }
   }
 
   def newGym = Action(parse.json) {
@@ -174,27 +131,31 @@ object GymCtrl extends Controller with MongoController {
         }        
       }
     }
+  }  
+  
+  private def routesToJson(gym: models.domain.gym.Gym, routes: List[Route]): List[JsObject] = {
+    routes match {
+      case route :: tail => JsonMapper.routeToJson(gym, route) :: routesToJson(gym, tail)
+      case Seq() => Nil
+    }
+  }  
+  
+  private def getBoulders(gymhandle: String): Future[List[Route]] = {
+    db.collection[JSONCollection]("route").
+    	find(Json.obj("gymName" -> gymhandle, "enabled" -> true)).
+    	sort(Json.obj("_id" -> -1)).
+    	cursor[Route].toList
   }
   
   private def holdsToJson(gym: models.domain.gym.Gym) = {
-    Json.toJson(gym.holdColors.map { h => holdColorToJson(h) })
-  }
-  
-  private def holdColorToJson(holdColor: ColoredHolds): JsObject = {
-    holdColor match {
-  		case (SingleColoredHolds(color)) =>
-  		  Json.obj("name" -> holdColor.name, "color" -> color.toWeb)
-		  case (DoubleColoredHolds(color1, color2)) =>
-  		  Json.obj("name" -> holdColor.name, "color" -> color1.toWeb, "color2" -> color2.toWeb)
-		  case _ => Json.obj()
-    }
+    Json.toJson(gym.holdColors.map { h => JsonMapper.holdColorToJson(h) })
   }
   
   private def gradesToJson(gym: models.domain.gym.Gym) = {
-    Json.toJson(gym.gradingSystem.grades.zipWithIndex.map {
-    	case (grade, index) => {
-    	  grade match {
-    	    case namedGrade: NamedGrade =>  Json.obj("id" -> index, "name" -> namedGrade.name)
+    Json.toJson(gym.gradingSystem.grades.map {
+    	case idGrade: IdGrade => {
+    	  idGrade match {
+    	    case namedGrade: NamedGrade =>  Json.obj("id" -> idGrade.id, "name" -> namedGrade.name)
     	  }
     	}
   	})
@@ -203,7 +164,7 @@ object GymCtrl extends Controller with MongoController {
   private def createNewGym(gym: Gym): Result = {  
     // Set default values
     val updatedGym = gym.copy(
-      handle = Option(gym.gymname.toLowerCase().filter(c => c != ' ')),
+      handle = Option(gym.gymName.toLowerCase().filter(c => c != ' ')),
       created = Option(DateTime.now),
       validated = Option(false),
       disabled = Option(false),
@@ -222,7 +183,7 @@ object GymCtrl extends Controller with MongoController {
   }
   
   private def validateNewGym(gym: Gym): Future[String] = {    
-    collection.find(Json.obj("gymname" -> gym.gymname)).cursor[Gym].toList.map {
+    collection.find(Json.obj("gymname" -> gym.gymName)).cursor[Gym].toList.map {
       list => if (!list.isEmpty) {
         "Gym with the same name already exists!"
       }

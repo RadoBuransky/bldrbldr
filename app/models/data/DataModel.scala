@@ -9,7 +9,7 @@ import models.domain.grade.Discipline._
 
 case class Gym (
   _id: Option[BSONObjectID] = None,
-  gymname: String,
+  gymName: String,
   email: String,
   link: String,
   handle: Option[String] = None,
@@ -22,10 +22,10 @@ case class Gym (
 
 case class Route (
     _id: Option[BSONObjectID],
-    gymhandle: String,
-    filename: String,
-    grade: Int,
-    holdcolor: String,
+    gymName: String,
+    fileName: String,
+    gradeId: String,
+    holdsColor: String,
     note: String,
     discipline: String,
     enabled: Boolean

@@ -1,34 +1,37 @@
 package controllers
 
-import play.api._
-import play.api.mvc._
-import play.api.Play.current
-import models._
-import views._
-import java.text.SimpleDateFormat
-import play.api.libs.iteratee.Enumerator
-import java.awt.image.BufferedImage
-import javax.imageio.ImageIO
-import org.imgscalr.Scalr
-import scala.concurrent._
-import ExecutionContext.Implicits.global
-import javax.imageio.ImageWriteParam
-import javax.imageio.IIOImage
-import fly.play.s3._
 import java.io.BufferedInputStream
-import java.io.FileInputStream
-import play.api.libs.Files.TemporaryFile
-import play.api.mvc.MultipartFormData.FilePart
 import java.io.File
+import java.io.FileInputStream
 import java.util.UUID
-import reactivemongo.bson.BSONObjectID
-import play.modules.reactivemongo.MongoController
-import play.modules.reactivemongo.json.collection.JSONCollection
-import play.api.libs.json._
-import models.services.GymService
-import models.domain.grade.Discipline._
-import models.data.JsonFormats._
+
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
+
+import org.imgscalr.Scalr
+
+import javax.imageio.IIOImage
+import javax.imageio.ImageIO
+import javax.imageio.ImageWriteParam
+import models.contract.JsonMapper
+import models.data.JsonFormats.routeFormat
 import models.data.Route
+import models.domain.grade.Discipline.Bouldering
+import models.services.GymService
+import models.services.PhotoService
+import play.api.Logger
+import play.api.libs.Files.TemporaryFile
+import play.api.libs.json.Json
+import play.api.libs.json.Json.toJsFieldJsValueWrapper
+import play.api.mvc.Action
+import play.api.mvc.Controller
+import play.api.mvc.MultipartFormData
+import play.api.mvc.MultipartFormData.FilePart
+import play.api.mvc.Result
+import play.modules.reactivemongo.MongoController
+import play.modules.reactivemongo.json.BSONFormats.BSONObjectIDFormat
+import play.modules.reactivemongo.json.collection.JSONCollection
+import reactivemongo.bson.BSONObjectID
 
 object Boulder extends Controller with MongoController {
   private val jpegMime = "image/jpeg"
@@ -41,8 +44,12 @@ object Boulder extends Controller with MongoController {
 	        case Some(route) => {
 	          if (!route.enabled)
 	            BadRequest("Route is disabled.")
-	          else {
-    					Ok(Json.obj())
+	          else {	            
+				      // Get gym by handle
+					    val gym = GymService.get(gymname)
+	    
+    					Ok(Json.obj("route" -> JsonMapper.routeToJson(gym, route),
+    					    "gym" -> JsonMapper.gymToJson(gym)))
 	          }
 	        }
 	        case None => NotFound
@@ -82,32 +89,32 @@ object Boulder extends Controller with MongoController {
   
   private def getBoulder(routeId: String): Future[Option[Route]] = {
     db.collection[JSONCollection]("route").
-    	find(Json.obj("_id" -> routeId)).
+    	find(Json.obj("_id" -> BSONObjectID(routeId))).
     	cursor[Route].headOption
   }
   
   private def saveToMongo(dataParts: Map[String, Seq[String]], fileName: String) = {
-    val gymhandle = dataParts("gymhandle")(0)
+    val gymName = dataParts("gymName")(0)
            
-    val grade = dataParts("grade")(0).toInt
-    val holdcolor = dataParts("holdColors")(0)
+    val gradeId = dataParts("gradeId")(0)
+    val holdsColor = dataParts("holdsColor")(0)
     val note = dataParts.getOrElse("note", null) match {
       case ns: Seq[String] => ns(0)
       case null => ""
     }
     
     // New boulder
-    val boulder = new models.data.Route(None, gymhandle, fileName, grade, holdcolor, note,
+    val boulder = new models.data.Route(None, gymName, fileName, gradeId, holdsColor, note,
         Bouldering.toString(), true)
     
     db.collection[JSONCollection]("route").insert(boulder)
   }
   
   private def validate(body: MultipartFormData[TemporaryFile]): Result = {
-    val gymhandle = body.dataParts("gymhandle")(0)
-    val gymsecret = body.dataParts("gymsecret")(0)
+    val gymName = body.dataParts("gymName")(0)
+    val gymSecret = body.dataParts("gymSecret")(0)
     
-    if (!GymService.authorize(gymhandle, gymsecret)) {
+    if (!GymService.authorize(gymName, gymSecret)) {
       Unauthorized
     }
     else {
@@ -150,15 +157,7 @@ object Boulder extends Controller with MongoController {
 	    val bis = new BufferedInputStream(fis)
 	    try {
 		    val byteArray = Stream.continually(bis.read).takeWhile(-1 !=).map(_.toByte).toArray
-		    val bucket = S3("jugjane")
-		    
-		    val result = bucket add BucketFile(newFileName, jpegMime, byteArray)
-		    
-		    result.map {
-		      unit => Logger.info("File saved to S3. [" + newFileName + "]")
-		    } recover {
-		      case S3Exception(status, code, message, originalXml) => Logger.info("Error: " + message)
-		    }
+		    PhotoService.upload(newFileName, jpegMime, byteArray)
 	    }
 	    finally {
 	      bis.close()
