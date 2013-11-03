@@ -1,6 +1,6 @@
 <div class="container">
 	<div class="hero-unit">
-		<h1>{{gym.name}}</h1>
+		<h1>{{gym.name}} {{isAdmin}}</h1>
 		<a href="{{gym.url}}" target="_blank">{{gym.url}}</a>
 		<div ng-repeat="gg in gym.gradeGroups">
 			<h2>{{gg.grade.name}}</h2>

@@ -17,15 +17,17 @@ function RouteCtrl($scope, $http, $routeParams) {
 	init();
 }
 
-function GymCtrl($scope, $http, $routeParams) {
+function GymCtrl($scope, $http, $routeParams, $cookies) {
 	$scope.gym = {};
+	$scope.isAdmin = false;
 	
 	var init = function() {
 		$http({
 			method : 'GET',
-			url : '/'  + $routeParams.gymname
+			url : '/'  + $routeParams.gymname + ($routeParams.s == null ? '' : ('?s=' + $routeParams.s))
 		}).success(function(result) {
 			$scope.gym = result;
+			$scope.isAdmin = isAdmin($cookies, $scope.gym.handle);
 		});
 	}
 	
@@ -115,6 +117,10 @@ function GymValidateCtrl($scope, $http, $routeParams) {
 								'The gym has been validated. You may now start uploading boulders.',
 								'#/');
 					})
+}
+
+function isAdmin($cookies, gymHandle) {
+	return $cookies[gymHandle] != null;	
 }
 
 function showMsg($scope, title, text, url) {

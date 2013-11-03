@@ -1,4 +1,4 @@
-var jugJaneApp = angular.module('jugjane', ['angularFileUpload'])
+var jugJaneApp = angular.module('jugjane', ['angularFileUpload', 'ngCookies']);
 
 jugJaneApp.config([ '$routeProvider', function($routeProvider) {
 	$routeProvider.when('/', {
@@ -13,7 +13,7 @@ jugJaneApp.config([ '$routeProvider', function($routeProvider) {
 	}).when('/gym/validate/:secret', {
 		templateUrl : 'assets/partials/msg.html',
 		controller : GymValidateCtrl
-	}).when('/:gymname/new/:secret', {
+	}).when('/:gymname/new', {
 		templateUrl : 'assets/partials/boulder/new.html',
 		controller : BoulderNewCtrl
 	}).when('/:gymname', {

@@ -1,6 +1,7 @@
 package controllers
 
 import scala.util.Random
+import play.api.mvc.Cookie
 import org.joda.time.DateTime
 import models.data.JsonFormats.gymFormat
 import models.data.JsonFormats.routeFormat
@@ -41,8 +42,8 @@ object GymCtrl extends Controller with MongoController {
 
   import models._
   
-  def get(gymname: String) = Action {
-    Async {
+  def get(gymname: String, s: Option[String]) = Action {
+    Async {      
       // Get gym by handle
 	    val gym = GymService.get(gymname)
 	    
@@ -61,11 +62,20 @@ object GymCtrl extends Controller with MongoController {
           }).toArray
 	        
 	        // Create result
-			    Ok(Json.obj(
+			    val result = Ok(Json.obj(
 			    	"name" -> gym.name,
 			    	"handle" -> gym.handle,
 			    	"url" -> gym.url.toString(),
-			    	"gradeGroups" -> routesJson))        
+			    	"gradeGroups" -> routesJson))
+			    	
+			    if ((s.isDefined) &&
+			        (GymService.authorize(gymname, s.get))) {
+			      // Yes, there are better ways how to do authorization...
+			      result.withCookies(Cookie(gymname, s.get, Some(60*60*24*7), httpOnly = false))
+			    }
+			    else {
+			      result
+			    }
 	      }
 	    }
     }
