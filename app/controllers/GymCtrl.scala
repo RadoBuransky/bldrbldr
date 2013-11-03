@@ -60,22 +60,30 @@ object GymCtrl extends Controller with MongoController {
 	        	Json.obj("grade" -> JsonMapper.gradeToJson(route),
 	              "routes" -> routesToJson(gym, gradeGroup._2))
           }).toArray
+			    	
+			    val cookie: Cookie = {
+				    if ((s.isDefined) &&
+				        (GymService.authorize(gymname, s.get))) {
+				      // Yes, there are better ways how to do authorization...
+				      Cookie(gymname, s.get, Some(60*60*24*7))
+				    }
+				    else {
+				      null
+				    }
+	        }
 	        
 	        // Create result
 			    val result = Ok(Json.obj(
-			    	"name" -> gym.name,
-			    	"handle" -> gym.handle,
-			    	"url" -> gym.url.toString(),
-			    	"gradeGroups" -> routesJson))
-			    	
-			    if ((s.isDefined) &&
-			        (GymService.authorize(gymname, s.get))) {
-			      // Yes, there are better ways how to do authorization...
-			      result.withCookies(Cookie(gymname, s.get, Some(60*60*24*7), httpOnly = false))
-			    }
-			    else {
-			      result
-			    }
+			    	"gym" -> JsonMapper.gymToJson(gym),
+			    	"gradeGroups" -> routesJson,
+			    	"isAdmin" -> (cookie != null)))
+	        
+	        if (cookie == null) {
+	          result
+	        }
+          else {
+            result.withCookies(cookie)
+          }
 	      }
 	    }
     }

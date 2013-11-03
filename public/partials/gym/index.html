@@ -2,7 +2,7 @@
 	<div class="hero-unit">
 		<h1>{{gym.name}} {{isAdmin}}</h1>
 		<a href="{{gym.url}}" target="_blank">{{gym.url}}</a>
-		<div ng-repeat="gg in gym.gradeGroups">
+		<div ng-repeat="gg in gradeGroups">
 			<h2>{{gg.grade.name}}</h2>
 			<div ng-repeat="route in gg.routes">
 				<a href="#/{{gym.handle}}/{{route.id}}" class="route">
@@ -17,6 +17,8 @@
 						<span class="badge">new</span>
 					</div>
 				</a>
+				<button type="button" class="btn btn-danger" ng-show="isAdmin"
+					ng-click="remove('{{route.id}}')">Remove</button>
 			</div>
 		</div>
 	</div>

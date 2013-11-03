@@ -19,15 +19,48 @@ function RouteCtrl($scope, $http, $routeParams) {
 
 function GymCtrl($scope, $http, $routeParams, $cookies) {
 	$scope.gym = {};
+	$scope.gradeGroups = {};
 	$scope.isAdmin = false;
+	
+	$scope.remove = function(routeId) {
+		var removeRoute = function(routeId) {
+			for (var i = 0; i < $scope.gradeGroups.length; i++) {
+				if ($scope.gradeGroups[i].routes == null)
+					continue;
+				
+				for (var j = 0; j < $scope.gradeGroups[i].routes.length; j++) {
+					if ($scope.gradeGroups[i].routes[j].id == routeId) {
+						// Remove route
+						$scope.gradeGroups[i].routes.splice(j, 1);
+						
+						if ($scope.gradeGroups[i].routes.length == 0) {
+							$scope.gradeGroups.splice(i, 1);
+						}
+							
+						return;
+					}
+				}
+			}
+		};
+		
+		// Remove route from the scope
+		removeRoute(routeId);
+		
+		// Fire & forget delete
+		$http({
+			method : 'DELETE',
+			url : '/'  + $routeParams.gymname + '/' + routeId
+		});
+	}
 	
 	var init = function() {
 		$http({
 			method : 'GET',
 			url : '/'  + $routeParams.gymname + ($routeParams.s == null ? '' : ('?s=' + $routeParams.s))
 		}).success(function(result) {
-			$scope.gym = result;
-			$scope.isAdmin = isAdmin($cookies, $scope.gym.handle);
+			$scope.gym = result.gym;
+			$scope.gradeGroups = result.gradeGroups;
+			$scope.isAdmin = result.isAdmin;
 		});
 	}
 	
@@ -117,10 +150,6 @@ function GymValidateCtrl($scope, $http, $routeParams) {
 								'The gym has been validated. You may now start uploading boulders.',
 								'#/');
 					})
-}
-
-function isAdmin($cookies, gymHandle) {
-	return $cookies[gymHandle] != null;	
 }
 
 function showMsg($scope, title, text, url) {

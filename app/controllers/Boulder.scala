@@ -7,6 +7,7 @@ import java.util.UUID
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
+import scala.concurrent._
 
 import org.imgscalr.Scalr
 
@@ -36,6 +37,14 @@ import reactivemongo.bson.BSONObjectID
 object Boulder extends Controller with MongoController {
   private val jpegMime = "image/jpeg"
   private val photoWidth = 800
+  
+  def delete(gymname: String, routeId: String) = Action {
+    Async {
+      future {
+      	Ok
+      }
+    }
+  }
   
   def get(gymname: String, routeId: String) = Action {    
     Async {	    
