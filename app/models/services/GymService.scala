@@ -5,11 +5,7 @@ import models.JugJaneException
 import models.domain.gym.Hive
 import models.JugJaneException
 
-object GymService {
-  def authorize(handle: String, secret: String): Boolean = {   
-    get(handle).secret == secret
-  }
-  
+object GymService {  
   def get(handle: String): Gym = {
     // Currently pretty hardcoded
     val hiveHandle = Hive.handle

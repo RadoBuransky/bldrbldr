@@ -1,8 +1,19 @@
 function IndexCtrl($scope, $http, formDataObject) {
 }
 
-function RouteCtrl($scope, $http, $routeParams) {
+function RouteCtrl($scope, $http, $routeParams, $location) {
 	$scope.route = {};
+	$scope.isAdmin = false;
+	$scope.sureRemove = false;
+	
+	$scope.remove = function() {
+		$http({
+			method : 'DELETE',
+			url : '/'  + $routeParams.gymname + '/' + $scope.route.id
+		}).success(function(result) {
+			$location.path($routeParams.gymname);
+		});
+	}
 	
 	var init = function() {
 		$http({
@@ -10,6 +21,7 @@ function RouteCtrl($scope, $http, $routeParams) {
 			url : '/'  + $routeParams.gymname + '/' + $routeParams.routeId
 		}).success(function(result) {
 			$scope.route = result.route;
+			$scope.isAdmin = result.isAdmin;
 		});
 	}
 	
@@ -17,41 +29,10 @@ function RouteCtrl($scope, $http, $routeParams) {
 	init();
 }
 
-function GymCtrl($scope, $http, $routeParams, $cookies) {
+function GymCtrl($scope, $http, $routeParams, $cookies, $window) {
 	$scope.gym = {};
 	$scope.gradeGroups = {};
 	$scope.isAdmin = false;
-	
-	$scope.remove = function(routeId) {
-		var removeRoute = function(routeId) {
-			for (var i = 0; i < $scope.gradeGroups.length; i++) {
-				if ($scope.gradeGroups[i].routes == null)
-					continue;
-				
-				for (var j = 0; j < $scope.gradeGroups[i].routes.length; j++) {
-					if ($scope.gradeGroups[i].routes[j].id == routeId) {
-						// Remove route
-						$scope.gradeGroups[i].routes.splice(j, 1);
-						
-						if ($scope.gradeGroups[i].routes.length == 0) {
-							$scope.gradeGroups.splice(i, 1);
-						}
-							
-						return;
-					}
-				}
-			}
-		};
-		
-		// Remove route from the scope
-		removeRoute(routeId);
-		
-		// Fire & forget delete
-		$http({
-			method : 'DELETE',
-			url : '/'  + $routeParams.gymname + '/' + routeId
-		});
-	}
 	
 	var init = function() {
 		$http({
@@ -61,6 +42,12 @@ function GymCtrl($scope, $http, $routeParams, $cookies) {
 			$scope.gym = result.gym;
 			$scope.gradeGroups = result.gradeGroups;
 			$scope.isAdmin = result.isAdmin;
+			
+			if (($scope.isAdmin) &&
+				($routeParams.s != null)) {
+				// This trick hides the secret from browser
+				$window.location.href = '#/' + $routeParams.gymname;				
+			}
 		});
 	}
 	
@@ -142,14 +129,14 @@ function GymValidateCtrl($scope, $http, $routeParams) {
 		url : '/gym/validate/' + $routeParams.secret,
 		data : $scope.gym
 	})
-			.success(
-					function() {
-						showMsg(
-								$scope,
-								'Yes!',
-								'The gym has been validated. You may now start uploading boulders.',
-								'#/');
-					})
+	.success(
+			function() {
+				showMsg(
+						$scope,
+						'Yes!',
+						'The gym has been validated. You may now start uploading boulders.',
+						'#/');
+			})
 }
 
 function showMsg($scope, title, text, url) {

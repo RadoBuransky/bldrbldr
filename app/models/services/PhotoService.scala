@@ -24,4 +24,9 @@ object PhotoService {
   def getUrl(fileName: String): URL = {
     new URL(UrlTemplate.format(BucketName, fileName))
   }
+  
+  def remove(fileName: String) = {
+  	val bucket = S3(BucketName)  	
+  	bucket.remove(fileName)    
+  }
 }

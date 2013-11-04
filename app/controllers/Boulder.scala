@@ -4,13 +4,10 @@ import java.io.BufferedInputStream
 import java.io.File
 import java.io.FileInputStream
 import java.util.UUID
-
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 import scala.concurrent._
-
 import org.imgscalr.Scalr
-
 import javax.imageio.IIOImage
 import javax.imageio.ImageIO
 import javax.imageio.ImageWriteParam
@@ -33,20 +30,47 @@ import play.modules.reactivemongo.MongoController
 import play.modules.reactivemongo.json.BSONFormats.BSONObjectIDFormat
 import play.modules.reactivemongo.json.collection.JSONCollection
 import reactivemongo.bson.BSONObjectID
+import models.services.AuthService
 
 object Boulder extends Controller with MongoController {
   private val jpegMime = "image/jpeg"
   private val photoWidth = 800
   
-  def delete(gymname: String, routeId: String) = Action {
-    Async {
-      future {
-      	Ok
-      }
+  def delete(gymHandle: String, routeId: String) = Action { request =>
+    // Get gym by handle
+    val gym = GymService.get(gymHandle)
+    
+    if (!AuthService.isAdmin(request.cookies, gym)) {
+      Unauthorized
+    }
+    else {    
+	  	Async {	  	  	    
+		    getBoulder(routeId).map {	route =>
+		      route match {
+		        case None => NotFound		        
+	        	case Some(route) => {
+	        	  // Delete file from S3
+				  	  val removePhotoFuture = logFuture("removePhoto") {
+				  	    PhotoService.remove(route.fileName)
+				  	  }
+			        val disableRouteFuture = logFuture("disableRoute") {
+			          disableRoute(routeId)
+			        }
+			        
+			        for {
+			          rp <- removePhotoFuture
+			          dr <- disableRouteFuture
+			        } yield true
+			        
+			        Ok
+	        	}
+		      }
+		    }
+	    }
     }
   }
   
-  def get(gymname: String, routeId: String) = Action {    
+  def get(gymHandle: String, routeId: String) = Action { request =>    
     Async {	    
 	    getBoulder(routeId).map {	route =>
 	      route match {
@@ -55,10 +79,11 @@ object Boulder extends Controller with MongoController {
 	            BadRequest("Route is disabled.")
 	          else {	            
 				      // Get gym by handle
-					    val gym = GymService.get(gymname)
+					    val gym = GymService.get(gymHandle)
 	    
     					Ok(Json.obj("route" -> JsonMapper.routeToJson(gym, route),
-    					    "gym" -> JsonMapper.gymToJson(gym)))
+    					    "gym" -> JsonMapper.gymToJson(gym),
+    					    "isAdmin" -> AuthService.isAdmin(request.cookies, gym)))
 	          }
 	        }
 	        case None => NotFound
@@ -67,33 +92,48 @@ object Boulder extends Controller with MongoController {
     }
   }
   
-  def upload = Action(parse.multipartFormData) {
-    implicit request => {
-      val validateResult = validate(request.body)
-      
-      if (validateResult == Ok) {
-	      // Generate random UUID file name 
-	      val fileName = UUID.randomUUID().toString() + ".jpg"
-      
-        val uploadPhotoFuture = logFuture("uploadPhoto") {
-      		uploadPhoto(request.body.file("file"), fileName)
-        }
-        val saveToMongoFuture = logFuture("saveToMongo") {
-          saveToMongo(request.body.dataParts, fileName)
-        }
-        
-        val store = for {
-          //uploadPhoto <- uploadPhotoFuture
-          saveToMongo <- saveToMongoFuture
-        } yield true
-        
-        store.onSuccess {
-          case _ => true
-        }
-      }
-      
-      validateResult
-    }
+  def upload = Action(parse.multipartFormData) { request => {
+	    val gymHandle = request.body.dataParts("gymName")(0)
+	    
+	    // Get gym by handle
+	    val gym = GymService.get(gymHandle)
+	    
+	    if (!AuthService.isAdmin(request.cookies, gym)) {
+	      Unauthorized
+	    }
+	    else {
+	      val validateResult = validate(request.body)
+	      
+	      if (validateResult == Ok) {
+		      // Generate random UUID file name 
+		      val fileName = UUID.randomUUID().toString() + ".jpg"
+	      
+	        val uploadPhotoFuture = logFuture("uploadPhoto") {
+	      		uploadPhoto(request.body.file("file"), fileName)
+	        }
+	        val saveToMongoFuture = logFuture("saveToMongo") {
+	          saveToMongo(request.body.dataParts, fileName)
+	        }
+	        
+	        val store = for {
+	          //uploadPhoto <- uploadPhotoFuture
+	          saveToMongo <- saveToMongoFuture
+	        } yield true
+	        
+	        store.onSuccess {
+	          case _ => true
+	        }
+	      }
+	      
+	      validateResult
+	    }
+  	}
+  }
+  
+  private def disableRoute(routeId: String) = {
+    db.collection[JSONCollection]("route").
+    	update(Json.obj("_id" -> BSONObjectID(routeId)),
+    	    Json.obj("$set" -> Json.obj("enabled" -> false)))    
   }
   
   private def getBoulder(routeId: String): Future[Option[Route]] = {
@@ -120,13 +160,6 @@ object Boulder extends Controller with MongoController {
   }
   
   private def validate(body: MultipartFormData[TemporaryFile]): Result = {
-    val gymName = body.dataParts("gymName")(0)
-    val gymSecret = body.dataParts("gymSecret")(0)
-    
-    if (!GymService.authorize(gymName, gymSecret)) {
-      Unauthorized
-    }
-    else {
 //	    body.file("file") match {
 //	      case Some(photo) => {
 //	        // Check photo type
@@ -140,7 +173,6 @@ object Boulder extends Controller with MongoController {
 //	      case None => BadRequest("No photo uploaded!")
 //	    }
 	    Ok
-    }
   }
 
   private def uploadPhoto(file: Option[FilePart[TemporaryFile]], fileName: String) = {

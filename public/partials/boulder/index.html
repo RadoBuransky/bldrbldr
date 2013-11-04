@@ -1,3 +1,17 @@
 <h1 style="color: {{route.grade.color}}">{{route.grade.name}}</h1>
 <div>{{route.note}}</div>
-<img src="{{route.photo}}">
+
+<span ng-show="isAdmin">
+	<button type="button" class="btn btn-danger" ng-show="!sureRemove"
+		ng-click="sureRemove = true">Delete</button>
+	<div ng-show="sureRemove">
+		Do you really want to delete this?
+		<button type="button" class="btn btn-danger"
+			ng-click="remove()">Yes, delete it!</button>
+		<button type="button" class="btn"
+			ng-click="sureRemove = false">No</button>
+	</div>		
+</span>
+
+
+<div><img src="{{route.photo}}"></div>
