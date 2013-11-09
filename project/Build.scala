@@ -10,10 +10,10 @@ object ApplicationBuild extends Build {
   val appDependencies = Seq(
       jdbc,
       anorm,
-      "org.imgscalr" % "imgscalr-lib" % "4.2",
-      "org.reactivemongo" %% "play2-reactivemongo" % "0.9",
-      "com.typesafe" %% "play-plugins-mailer" % "2.1-RC2",
-      "nl.rhinofly" %% "api-s3" % "3.1.0"
+      "org.imgscalr" % "imgscalr-lib" % "4.2" exclude("org.scala-stm", "scala-stm_2.10.0"),
+      "org.reactivemongo" %% "play2-reactivemongo" % "0.9" exclude("org.scala-stm", "scala-stm_2.10.0"),
+      "com.typesafe" %% "play-plugins-mailer" % "2.1-RC2" exclude("org.scala-stm", "scala-stm_2.10.0"),
+      "nl.rhinofly" %% "api-s3" % "3.1.0" exclude("org.scala-stm", "scala-stm_2.10.0")
   )
 
   val main = play.Project(appName, appVersion, appDependencies).settings(
