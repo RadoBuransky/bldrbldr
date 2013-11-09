@@ -37,12 +37,13 @@ import models.domain.grade.GradingSystem
 import models.domain.gym._
 import models.contract.JsonMapper
 import models.domain.grade.IdGrade
+import scala.concurrent.ExecutionContext.Implicits.global
 
 object GymCtrl extends Controller with MongoController {
   private def collection: JSONCollection = db.collection[JSONCollection]("gym")
 
   import models._
-  
+
   def get(gymname: String, s: Option[String]) = Action { request =>
     Async {      
       // Get gym by handle
@@ -165,7 +166,7 @@ object GymCtrl extends Controller with MongoController {
     db.collection[JSONCollection]("route").
     	find(Json.obj("gymName" -> gymhandle, "enabled" -> true)).
     	sort(Json.obj("_id" -> -1)).
-    	cursor[Route].toList
+    	cursor[Route].collect[List](Int.MaxValue, true)
   }
   
   private def holdsToJson(gym: models.domain.gym.Gym) = {
@@ -204,7 +205,7 @@ object GymCtrl extends Controller with MongoController {
   }
   
   private def validateNewGym(gym: Gym): Future[String] = {    
-    collection.find(Json.obj("gymname" -> gym.gymName)).cursor[Gym].toList.map {
+    collection.find(Json.obj("gymname" -> gym.gymName)).cursor[Gym].collect[List](Int.MaxValue, true).map {
       list => if (!list.isEmpty) {
         "Gym with the same name already exists!"
       }

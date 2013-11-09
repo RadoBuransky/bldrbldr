@@ -11,7 +11,7 @@ object ApplicationBuild extends Build {
       jdbc,
       anorm,
       "org.imgscalr" % "imgscalr-lib" % "4.2" exclude("org.scala-stm", "scala-stm_2.10.0"),
-      "org.reactivemongo" %% "play2-reactivemongo" % "0.9" exclude("org.scala-stm", "scala-stm_2.10.0"),
+      "org.reactivemongo" %% "play2-reactivemongo" % "0.10.0-SNAPSHOT" exclude("org.scala-stm", "scala-stm_2.10.0"),
       "com.typesafe" %% "play-plugins-mailer" % "2.1-RC2" exclude("org.scala-stm", "scala-stm_2.10.0"),
       "nl.rhinofly" %% "api-s3" % "3.1.0" exclude("org.scala-stm", "scala-stm_2.10.0")
   )
@@ -19,8 +19,8 @@ object ApplicationBuild extends Build {
   val main = play.Project(appName, appVersion, appDependencies).settings(
     // Add your own project settings here
       resolvers += "The Buzz Media Maven Repository" at "http://maven.thebuzzmedia.com",
-      resolvers += "Rhinofly Internal Repository" at "http://maven-repository.rhinofly.net:8081/artifactory/libs-release-local"
-  
+      resolvers += "Rhinofly Internal Repository" at "http://maven-repository.rhinofly.net:8081/artifactory/libs-release-local",
+      resolvers += "Sonatype Snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/"
   )
   
 
