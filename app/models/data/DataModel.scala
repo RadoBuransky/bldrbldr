@@ -21,14 +21,15 @@ case class Gym (
 )
 
 case class Route (
-    _id: Option[BSONObjectID],
-    gymName: String,
-    fileName: String,
-    gradeId: String,
-    holdsColor: String,
-    note: String,
-    discipline: String,
-    enabled: Boolean
+  _id: Option[BSONObjectID],
+  gymName: String,
+  fileName: String,
+  gradeId: String,
+  holdsColor: String,
+  note: String,
+  discipline: String,
+  enabled: Boolean,
+  tags: Map[String, Int]
 )
 
 object JsonFormats {

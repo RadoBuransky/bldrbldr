@@ -8,8 +8,18 @@ import play.api.libs.json.Json
 import models.domain.gym._
 import models.services.PhotoService
 import models.domain.grade.Grade
+import models.domain.route.Tag
 
 object JsonMapper {
+  def tagsToJson(tags: List[Tag]): List[JsObject] = {
+    tags.map(tag => tagToJson(tag))
+  }
+
+  def tagToJson(tag: Tag): JsObject = {
+    Json.obj("name" -> tag.name,
+      "color" -> tag.color.toWeb)
+  }
+
   def routeToJson(gym: models.domain.gym.Gym, route: Route): JsObject = {
     val days = Days.daysBetween(new DateTime(route._id.get.time), DateTime.now()).getDays()
     Json.obj("id" -> route._id.get.stringify,

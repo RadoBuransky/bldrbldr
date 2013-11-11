@@ -68,6 +68,7 @@ function BoulderNewCtrl($scope, $http, $routeParams) {
 	}).success(function(result) {
 		$scope.grades = result.grades;
 		$scope.holds = result.holds;
+		$scope.tags = result.tags;
 		if ($scope.grades != null && $scope.grades.length > 0)
 			$scope.boulder.grade = $scope.grades[0];
 		else

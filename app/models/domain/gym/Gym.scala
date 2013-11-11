@@ -5,6 +5,7 @@ import models.domain.grade.Grade
 import models.domain.grade.Discipline.Discipline
 import java.net.URI
 import java.net.URL
+import models.domain.route.Tag
 
 abstract class Gym {
   def name: String
@@ -14,4 +15,5 @@ abstract class Gym {
   def gradingSystem: GradingSystem[Grade]
   def disciplines: Set[Discipline]
   def holdColors: Set[ColoredHolds]
+  def tags: List[Tag]
 }

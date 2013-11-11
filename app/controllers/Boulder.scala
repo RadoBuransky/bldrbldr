@@ -154,7 +154,7 @@ object Boulder extends Controller with MongoController {
     
     // New boulder
     val boulder = new models.data.Route(None, gymName, fileName, gradeId, holdsColor, note,
-        Bouldering.toString(), true)
+        Bouldering.toString(), true, Map.empty)
     
     db.collection[JSONCollection]("route").insert(boulder)
   }

@@ -2,8 +2,8 @@ package models.domain.gym
 
 import models.Color
 import models.domain.grade._
-import models.domain.gym._
 import java.net.URL
+import models.domain.route.CategoryTag
 
 case class HiveGrade(val from: Grade, val to: Grade, val color: Color, val name: String, val id: String)
 	extends IntervalGrade with SingleColorGrade with NamedGrade with IdGrade
@@ -28,4 +28,5 @@ object Hive extends Gym {
   def disciplines = Set(Discipline.Bouldering)
   def holdColors = Set(Color.Red, Color.Green, Color.Blue, (Color.Yellow, Color.Blue),Color.Purple,
       Color.White, Color.Yellow)
+  def tags = CategoryTag("TNT", Color.White) :: Nil
 }

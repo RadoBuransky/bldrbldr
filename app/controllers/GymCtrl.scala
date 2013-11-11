@@ -38,6 +38,7 @@ import models.domain.gym._
 import models.contract.JsonMapper
 import models.domain.grade.IdGrade
 import scala.concurrent.ExecutionContext.Implicits.global
+import models.domain.route.Tag
 
 object GymCtrl extends Controller with MongoController {
   private def collection: JSONCollection = db.collection[JSONCollection]("gym")
@@ -100,7 +101,9 @@ object GymCtrl extends Controller with MongoController {
    */
   def newBoulder(gymname: String) = Action {
     val gym = GymService.get(gymname)
-    Ok(Json.obj("grades" -> gradesToJson(gym), "holds" -> holdsToJson(gym)))
+    Ok(Json.obj("grades" -> gradesToJson(gym),
+      "holds" -> holdsToJson(gym),
+      "tags" -> JsonMapper.tagsToJson(gym.tags ::: Tag.getCategories)))
   }
   
   def grades(gymname: String) = Action {
@@ -153,7 +156,7 @@ object GymCtrl extends Controller with MongoController {
         }        
       }
     }
-  }  
+  }
   
   private def routesToJson(gym: models.domain.gym.Gym, routes: List[Route]): List[JsObject] = {
     routes match {
