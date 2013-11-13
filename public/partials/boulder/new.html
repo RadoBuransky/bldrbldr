@@ -1,66 +1,60 @@
 <div ng-switch="!!msg">
 	<div ng-switch-when="true" ng-include src="'assets/partials/msg.html'"></div>
-	<div class="container" ng-switch-default>
-		<div class="hero-unit">
-			<form ng-submit="uploadPhoto()"
-				method="post" class="form-horizontal">
-				<fieldset>
-					<legend>
-						<h1>Upload boulder photo</h1>
-					</legend>
-					<p>The project of your life. Scary slab. Vintage classic.</p>
-					<div class="control-group">
-						<label class="control-label" for="photo">Photo</label>
-						<div class="controls">
-    					<input type="file" ng-model="photo" ng-file-select="onFileSelect($files)"/>
-						</div>
-					</div>
-					<div class="control-group">
-						<label class="control-label" for="grade">Grade</label>
-						<div class="controls">
-							<select ng-model="boulder.grade" ng-options="g as g.name for g in grades" >
-						  </select>
-					  </div>
-					</div>
-					<div class="control-group">
-						<label class="control-label" for="grade">Holds</label>
-						<div class="controls">
-							<div id="selectedHoldColors" ng-show="boulder.holdColors">
-								<div class="holdColors clickable" ng-click="boulder.holdColors = null">
-									<div class="color onecolor" style="background-color: {{boulder.holdColors.color}};" ng-hide="boulder.holdColors.color2"></div>
-									<div class="color twocolors" style="background-color: {{boulder.holdColors.color}};" ng-show="boulder.holdColors.color2"></div>
-									<div class="color twocolors" style="background-color: {{boulder.holdColors.color2}};" ng-show="boulder.holdColors.color2"></div>
-								</div>
-								<label>{{boulder.holdColors.name}}</label>
-							</div>
-							<div class="holdColorsSelector" ng-hide="boulder.holdColors">
-								<div class="holdColors clickable" ng-repeat="hold in holds" ng-click="boulder.holdColors = hold">
-									<div class="color onecolor" style="background-color: {{hold.color}};" ng-hide="hold.color2"></div>
-									<div class="color twocolors" style="background-color: {{hold.color}};" ng-show="hold.color2"></div>
-									<div class="color twocolors" style="background-color: {{hold.color2}};" ng-show="hold.color2"></div>
-								</div>
-							</div>
-						</div>
-					</div>
-                    <div class="control-group">
-                        <label class="control-label" for="note">Tags</label>
-                        <div class="controls">
-                            <span ng-repeat="tag in tags" style="color: {{tag.color}}">{{tag.name}}&nbsp;</span>
+	<div id="newroute" class="container" ng-switch-default>
+        <form ng-submit="uploadPhoto()" method="post" class="form-horizontal" role="form">
+            <h1>Add new climbing route</h1>
+            <div class="form-group">
+                <label for="photo" class="col-sm-1 control-label">Photo</label>
+                <div class="col-sm-5">
+                    <input id="photo" type="file" ng-model="photo" ng-file-select="onFileSelect($files)"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="grade" class="col-sm-1 control-label">Grade</label>
+                <div class="col-sm-5">
+                    <select id="grade" class="form-control" ng-model="boulder.grade" ng-options="g as g.name for g in grades" >
+                    </select>
+              </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label">Holds</label>
+                <div class="col-sm-5">
+                    <div id="selectedHoldColors" ng-show="boulder.holdColors">
+                        <div class="holdColors clickable" ng-click="boulder.holdColors = null">
+                            <div class="color onecolor" style="background-color: {{boulder.holdColors.color}};" ng-if="!boulder.holdColors.color2"></div>
+                            <div class="color twocolors" style="background-color: {{boulder.holdColors.color}};" ng-if="boulder.holdColors.color2"></div>
+                            <div class="color twocolors" style="background-color: {{boulder.holdColors.color2}};" ng-if="boulder.holdColors.color2"></div>
                         </div>
                     </div>
-					<div class="control-group">
-						<label class="control-label" for="note">Note</label>
-						<div class="controls">
-							<textarea ng-model="boulder.note" rows="3"></textarea>
-						</div>
-					</div>
-					<div class="control-group">
-						<div class="controls">
-							<button type="submit" class="btn btn-primary">Upload</button>
-						</div>
-					</div>
-				</fieldset>
-			</form>
-		</div>
+                    <div class="holdColorsSelector" ng-hide="boulder.holdColors">
+                        <div class="holdColors clickable" ng-repeat="hold in holds" ng-click="boulder.holdColors = hold">
+                            <div class="color onecolor" style="background-color: {{hold.color}};" ng-hide="hold.color2"></div>
+                            <div class="color twocolors" style="background-color: {{hold.color}};" ng-show="hold.color2"></div>
+                            <div class="color twocolors" style="background-color: {{hold.color2}};" ng-show="hold.color2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label">Tags</label>
+                <div class="col-sm-5" id="tags">
+                    <button type="button" class="btn btn-default btn-sm" data-toggle="button"
+                           ng-repeat="tag in tags">{{tag.name}}
+                    </button>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label" for="note">Note</label>
+                <div class="col-sm-5">
+                    <textarea id="note" ng-model="boulder.note" class="form-control" rows="5"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-1 control-label"></div>
+                <div class="col-sm-5">
+                    <button type="submit" class="btn btn-primary">Upload</button>
+                </div>
+            </div>
+        </form>
 	</div>
 </div>

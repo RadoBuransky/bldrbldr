@@ -1,4 +1,4 @@
-var jugJaneApp = angular.module('jugjane', ['ngCookies']);
+var jugJaneApp = angular.module('jugjane', ['angularFileUpload', 'ngCookies']);
 
 jugJaneApp.config([ '$routeProvider', function($routeProvider) {
 	$routeProvider.when('/', {

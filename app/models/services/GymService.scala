@@ -1,17 +1,17 @@
 package models.services
 
-import models.domain.gym.Gym
+import models.domain.gym.{Demo, Gym, Hive}
 import models.JugJaneException
-import models.domain.gym.Hive
 import models.JugJaneException
 
-object GymService {  
+object GymService {
+  private val gyms = Hive :: Demo :: Nil;
+
   def get(handle: String): Gym = {
-    // Currently pretty hardcoded
-    val hiveHandle = Hive.handle
-    handle match {
-      case `hiveHandle` => Hive
-      case _ => throw new JugJaneException("Gym not found! [" + handle + "]")
+    val gym = gyms.find(g => g.handle == handle)
+    gym match {
+      case Some(g) => g
+      case None => throw new JugJaneException("Gym not found! [" + handle + "]")
     }
   }
 }
