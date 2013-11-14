@@ -7,8 +7,14 @@ import org.joda.time.DateTime
 import play.api.libs.json.Json
 import models.domain.gym._
 import models.services.PhotoService
-import models.domain.grade.Grade
+import models.domain.grade._
 import models.domain.route.Tag
+import models.domain.gym.SingleColoredHolds
+import models.domain.gym.DoubleColoredHolds
+import play.api.libs.json.JsObject
+import models.data.Route
+import scala.Some
+import models.domain.gym.Address
 
 object JsonMapper {
   def tagsToJson(tags: List[Tag]): List[JsObject] = {
@@ -49,19 +55,42 @@ object JsonMapper {
   
   def gymToJson(gym: models.domain.gym.Gym): JsObject = {
     Json.obj("name" -> gym.name,
-			    	"handle" -> gym.handle,
-			    	"url" -> gym.url.toString())
+      "handle" -> gym.handle,
+      "url" -> gym.url.toString(),
+      "address" -> addressToJson(gym.address))
   }  
   
   def gradeToJson(grade: Option[Grade]): JsObject = {
     grade match {
       case Some(g) => {
-    		Json.obj("name" -> Grade.getName(g),
-    		    "color" -> (Grade.getColor(g) match {
-          		case Some(c) => c.toWeb
-        		}))        
+    		val name = g match {
+          case ex: ExactGrade => ex.value
+          case ng: NamedGrade => ng.name
+          case _ => ""
+        }
+
+        val color = g match {
+          case cg: SingleColorGrade => Json.obj("color" -> cg.color.toWeb)
+          case _ => Json.obj()
+        }
+
+        val interval = g match {
+          case ig: IntervalGrade => {
+            Json.obj("from" -> gradeToJson(Some(ig.from)),
+              "to" -> gradeToJson(Some(ig.to)))
+          }
+          case _ => Json.obj()
+        }
+
+        Json.obj("name" -> name) ++ color ++ interval
       }
       case None => Json.obj()
     }
+  }
+
+  private def addressToJson(address: Address): JsObject = {
+    Json.obj("street" -> address.street,
+      "city" -> address.city,
+      "country" -> address.country.getDisplayCountry())
   }
 }

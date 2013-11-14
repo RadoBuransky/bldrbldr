@@ -1,11 +1,15 @@
-<div class="container">
+<div class="container" id="gym">
     <h1>{{gym.name}}</h1>
-    <div><a href="{{gym.url}}" target="_blank">{{gym.url}}</a></div>
+    <div id="gymurl"><a href="{{gym.url}}" target="_blank">{{gym.url}}</a></div>
+    <div id="gymaddress">{{gym.address.street}}, {{gym.address.city}}, {{gym.address.country}}</div>
     <a href="#/{{gym.handle}}/new" ng-show="isAdmin">
         <button type="button" class="btn btn-default">Add new</button>
     </a>
     <div ng-repeat="gg in gradeGroups">
-        <h2>{{gg.grade.name}}</h2>
+        <h2>
+            {{gg.grade.name}}
+            <span ng-if="gg.grade.from">({{gg.grade.from.name}}<span ng-if="gg.grade.to"> - {{gg.grade.to.name}}</span>)</span>
+        </h2>
         <div ng-repeat="route in gg.routes">
             <a href="#/{{gym.handle}}/{{route.id}}" class="route">
                 <div>

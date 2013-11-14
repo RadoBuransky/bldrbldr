@@ -6,6 +6,7 @@ import models.Color
 import models.domain.route.CategoryTag
 import models.domain.route.CategoryTag
 import models.domain.route.CategoryTag
+import java.util.Locale
 
 case class DemoGrade(val from: Grade, val to: Grade, val color: Color, val name: String, val id: String)
   extends IntervalGrade with SingleColorGrade with NamedGrade with IdGrade
@@ -36,4 +37,5 @@ object Demo extends Gym {
   def holdColors = Set(Color.Red, Color.Green, Color.Blue, (Color.Yellow, Color.Blue),Color.Purple,
     Color.White, Color.Yellow)
   def tags = CategoryTag("TNT", Color.White) :: Nil
+  def address = Address("Marie Curie Sklodowskej 39", "Bratislava", Locale.forLanguageTag("sk-sk"))
 }

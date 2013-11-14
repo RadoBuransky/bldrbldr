@@ -6,8 +6,9 @@ import models.domain.grade.Discipline.Discipline
 import java.net.URI
 import java.net.URL
 import models.domain.route.Tag
+import java.util.Locale
 
-abstract class Gym {
+trait Gym {
   def name: String
   def url: URL
   def handle: String
@@ -16,4 +17,10 @@ abstract class Gym {
   def disciplines: Set[Discipline]
   def holdColors: Set[ColoredHolds]
   def tags: List[Tag]
+  def address: Address
 }
+
+case class Address(
+  val street: String,
+  val city: String,
+  val country: Locale)
