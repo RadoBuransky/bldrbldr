@@ -1,17 +1,32 @@
-<h1 style="color: {{route.grade.color}}">{{route.grade.name}}</h1>
-<div>{{route.note}}</div>
+<div class="container" id="route">
+    <h1>
+        <div class="holdColors" style="margin-right: 15px">
+            <div class="color onecolor" style="background-color: {{route.holdcolor.color}};" ng-if="!route.holdcolor.color2"></div>
+            <div class="color twocolors" style="background-color: {{route.holdcolor.color}};" ng-if="route.holdcolor.color2"></div>
+            <div class="color twocolors" style="background-color: {{route.holdcolor.color2}};" ng-if="route.holdcolor.color2"></div>
+        </div>
+        {{route.grade.name}}
+        <span ng-if="route.grade.from">
+            ({{route.grade.from.name}}
+            <span ng-if="route.grade.to"> - {{route.grade.to.name}}</span>)
+        </span>
+    </h1>
+    <div>{{route.note}}</div>
 
-<span ng-show="isAdmin">
-	<button type="button" class="btn btn-danger" ng-show="!sureRemove"
-		ng-click="sureRemove = true">Delete</button>
-	<div ng-show="sureRemove">
-		Do you really want to delete this?
-		<button type="button" class="btn btn-danger"
-			ng-click="remove()">Yes, delete it!</button>
-		<button type="button" class="btn"
-			ng-click="sureRemove = false">No</button>
-	</div>		
-</span>
+    <div id="admincontainer" ng-if="isAdmin">
+        <button type="button" class="btn btn-default" ng-show="!sureRemove"
+            ng-click="sureRemove = true">Delete</button>
+        <div ng-show="sureRemove">
+            Do you really want to delete this?
+            <button type="button" class="btn btn-danger"
+                ng-click="remove()">Yes, delete it!</button>
+            <button type="button" class="btn"
+                ng-click="sureRemove = false">No</button>
+        </div>
+    </div>
 
 
-<div><img ng-src="{{route.photo}}"></div>
+    <div class="row">
+        <img id="routephoto" ng-src="{{route.photo}}" class="col-xs-12" style="max-width: 800px">
+    </div>
+</div>

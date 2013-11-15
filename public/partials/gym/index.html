@@ -3,24 +3,25 @@
     <div id="gymurl"><a href="{{gym.url}}" target="_blank">{{gym.url}}</a></div>
     <div id="gymaddress">{{gym.address.street}}, {{gym.address.city}}, {{gym.address.country}}</div>
     <a href="#/{{gym.handle}}/new" ng-show="isAdmin">
-        <button type="button" class="btn btn-default">Add new</button>
+        <button id="addnewroute" type="button" class="btn btn-default">Add new</button>
     </a>
     <div ng-repeat="gg in gradeGroups">
         <h2>
             {{gg.grade.name}}
             <span ng-if="gg.grade.from">({{gg.grade.from.name}}<span ng-if="gg.grade.to"> - {{gg.grade.to.name}}</span>)</span>
         </h2>
-        <div ng-repeat="route in gg.routes">
-            <a href="#/{{gym.handle}}/{{route.id}}" class="route">
-                <div>
+        <div id="routes">
+            <a ng-repeat="route in gg.routes" href="#/{{gym.handle}}/{{route.id}}" class="route">
+                <div class="routerow">
                     <div class="holdColors">
-                        <div class="color onecolor" style="background-color: {{route.holdcolor.color}};" ng-hide="route.holdcolor.color2"></div>
-                        <div class="color twocolors" style="background-color: {{route.holdcolor.color}};" ng-show="route.holdcolor.color2"></div>
-                        <div class="color twocolors" style="background-color: {{route.holdcolor.color2}};" ng-show="route.holdcolor.color2"></div>
+                        <div class="color onecolor" style="background-color: {{route.holdcolor.color}};" ng-if="!route.holdcolor.color2"></div>
+                        <div class="color twocolors" style="background-color: {{route.holdcolor.color}};" ng-if="route.holdcolor.color2"></div>
+                        <div class="color twocolors" style="background-color: {{route.holdcolor.color2}};" ng-if="route.holdcolor.color2"></div>
                     </div>
-                    <span>{{route.note}}</span>
-                    <span>{{route.days}} days</span>
-                    <span class="badge">new</span>
+                    <div>
+                        {{route.note}} ({{route.days}} days) TAGS!!!
+                        <span ng-if="route.days < 14" class="badge newbadge">new</span>
+                    </div>
                 </div>
             </a>
         </div>
