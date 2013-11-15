@@ -22,6 +22,8 @@ function RouteCtrl($scope, $http, $routeParams, $location) {
 		}).success(function(result) {
 			$scope.route = result.route;
 			$scope.isAdmin = result.isAdmin;
+
+			setContextButton('#/' + result.gym.handle, result.gym.name);
 		});
 	}
 	
@@ -42,6 +44,8 @@ function GymCtrl($scope, $http, $routeParams, $cookies, $window) {
 			$scope.gym = result.gym;
 			$scope.gradeGroups = result.gradeGroups;
 			$scope.isAdmin = result.isAdmin;
+
+			setContextButton('#/' + $scope.gym.handle, $scope.gym.name);
 			
 			if (($scope.isAdmin) &&
 				($routeParams.s != null)) {
@@ -138,6 +142,12 @@ function GymValidateCtrl($scope, $http, $routeParams) {
 						'The gym has been validated. You may now start uploading boulders.',
 						'#/');
 			})
+}
+
+function setContextButton(url, text) {
+    var b = $('#contextbutton');
+    b.attr('href', url);
+    b.html(text);
 }
 
 function showMsg($scope, title, text, url) {

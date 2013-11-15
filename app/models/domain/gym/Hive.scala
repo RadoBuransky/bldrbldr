@@ -3,7 +3,7 @@ package models.domain.gym
 import models.Color
 import models.domain.grade._
 import java.net.URL
-import models.domain.route.CategoryTag
+import models.domain.route.{FlagTag, CategoryTag}
 import java.util.Locale
 
 case class HiveGrade(val from: Grade, val to: Grade, val color: Color, val name: String, val id: String)
@@ -29,6 +29,7 @@ object Hive extends Gym {
   def disciplines = Set(Discipline.Bouldering)
   def holdColors = Set(Color.Red, Color.Green, Color.Blue, (Color.Yellow, Color.Blue),Color.Purple,
       Color.White, Color.Yellow)
-  def tags = CategoryTag("TNT", Color.White) :: Nil
+  def tags = CategoryTag("TNT", Color.White) ::
+    CategoryTag("CNC", Color.White)::Nil
   def address = Address("520 Industrial Avenue", "Vancouver", Locale.CANADA)
 }

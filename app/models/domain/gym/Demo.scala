@@ -3,9 +3,7 @@ package models.domain.gym
 import java.net.URL
 import models.domain.grade._
 import models.Color
-import models.domain.route.CategoryTag
-import models.domain.route.CategoryTag
-import models.domain.route.CategoryTag
+import models.domain.route.{FlagTag, CategoryTag}
 import java.util.Locale
 
 case class DemoGrade(val from: Grade, val to: Grade, val color: Color, val name: String, val id: String)

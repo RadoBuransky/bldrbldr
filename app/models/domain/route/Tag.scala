@@ -14,6 +14,7 @@ import models.Color
  * Route tagging.
  */
 trait Tag {
+  val id: String
   val name: String
   val color: Color
 }
@@ -22,13 +23,17 @@ trait Tag {
  * Categorization tag. Users cannot do anything about it.
  * @param name
  */
-case class CategoryTag(name: String, color: Color) extends Tag
+case class CategoryTag(name: String, color: Color) extends Tag {
+  val id = name.toLowerCase
+}
 
 /**
  * General flagging tag. Users can (un)flag it.
  * @param name
  */
-case class FlagTag(name: String, color: Color) extends Tag
+case class FlagTag(name: String, color: Color) extends Tag{
+  val id = name.toLowerCase.filter(c => (c != ' ') && (c != '?'))
+}
 
 object Tag {
   def getFlags: List[FlagTag] = {
@@ -37,12 +42,20 @@ object Tag {
     FlagTag("Too easy", Color.Red) ::
     FlagTag("Too hard", Color.Red) ::
     FlagTag("Scary", Color.Red) ::
-    FlagTag("what? How?", Color.Red) :: Nil
+    FlagTag("What? How?", Color.Red) :: Nil
   }
 
   def getCategories: List[CategoryTag] = {
     CategoryTag("Slab", Color.Blue) ::
     CategoryTag("Overhang", Color.Blue) ::
-    CategoryTag("Traverse", Color.Blue) :: Nil
+    CategoryTag("Traverse", Color.Blue) ::
+    CategoryTag("Corner", Color.Blue) ::
+    CategoryTag("Edge", Color.Blue) ::
+    CategoryTag("Crack", Color.Blue) ::
+    CategoryTag("Jugs", Color.Blue) ::
+    CategoryTag("Crimps", Color.Blue) ::
+    CategoryTag("Slopers", Color.Blue) ::
+    CategoryTag("Pinches", Color.Blue) ::
+    CategoryTag("Volumes", Color.Blue) ::  Nil
   }
 }

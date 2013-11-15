@@ -22,7 +22,8 @@ object JsonMapper {
   }
 
   def tagToJson(tag: Tag): JsObject = {
-    Json.obj("name" -> tag.name,
+    Json.obj("id" -> tag.id,
+      "name" -> tag.name,
       "color" -> tag.color.toWeb)
   }
 
