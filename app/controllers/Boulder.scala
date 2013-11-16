@@ -35,6 +35,20 @@ import models.services.AuthService
 object Boulder extends Controller with MongoController {
   private val jpegMime = "image/jpeg"
   private val photoWidth = 800
+
+  def flag(gymHandle: String, routeId: String, flagId: String) = Action {
+    Async {
+      incFlag(routeId, flagId) map { lastError =>
+        Ok
+      }
+    }
+  }
+
+  private def incFlag(routeId: String, flagId: String) = {
+    db.collection[JSONCollection]("route").
+      update(Json.obj("_id" -> BSONObjectID(routeId)),
+      Json.obj("$inc" -> Json.obj(("flags." + flagId) -> 1)))
+  }
   
   def delete(gymHandle: String, routeId: String) = Action { request =>
     // Get gym by handle
@@ -151,10 +165,12 @@ object Boulder extends Controller with MongoController {
       case ns: Seq[String] => ns(0)
       case null => ""
     }
+
+    val categories = dataParts("tags")(0).split(',').toList;
     
     // New boulder
     val boulder = new models.data.Route(None, gymName, fileName, gradeId, holdsColor, note,
-        Bouldering.toString(), true, Map.empty)
+        Bouldering.toString(), true, categories, Map.empty)
     
     db.collection[JSONCollection]("route").insert(boulder)
   }

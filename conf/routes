@@ -15,6 +15,7 @@ GET		/:gymHandle/new				controllers.GymCtrl.newBoulder(gymHandle)
 GET		/:gymHandle					controllers.GymCtrl.get(gymHandle, s: Option[String])
 GET		/:gymHandle/:routeId		controllers.Boulder.get(gymHandle, routeId)
 DELETE	/:gymHandle/:routeId		controllers.Boulder.delete(gymHandle, routeId)
+PUT 	/:gymHandle/:routeId/flag/:flagId		controllers.Boulder.flag(gymHandle, routeId, flagId)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file				controllers.Assets.at(path="/public", file)

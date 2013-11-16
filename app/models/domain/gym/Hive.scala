@@ -29,7 +29,6 @@ object Hive extends Gym {
   def disciplines = Set(Discipline.Bouldering)
   def holdColors = Set(Color.Red, Color.Green, Color.Blue, (Color.Yellow, Color.Blue),Color.Purple,
       Color.White, Color.Yellow)
-  def tags = CategoryTag("TNT", Color.White) ::
-    CategoryTag("CNC", Color.White)::Nil
+  def categories = List(CategoryTag("TNT"), CategoryTag("CNC"))
   def address = Address("520 Industrial Avenue", "Vancouver", Locale.CANADA)
 }

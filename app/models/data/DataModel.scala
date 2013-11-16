@@ -29,7 +29,8 @@ case class Route (
   note: String,
   discipline: String,
   enabled: Boolean,
-  tags: Map[String, Int]
+  categories: List[String],
+  flags: Map[String, Int]
 )
 
 object JsonFormats {

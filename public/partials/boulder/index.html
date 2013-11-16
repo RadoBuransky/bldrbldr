@@ -11,7 +11,21 @@
             <span ng-if="route.grade.to"> - {{route.grade.to.name}}</span>)
         </span>
     </h1>
-    <div>{{route.note}}</div>
+    <div class="routedesc">
+        <span class="routenote">
+            {{route.note}} ({{route.days}} days)
+        </span>
+        <span ng-repeat="category in route.categories" class="badge category">
+            {{category}}
+        </span><span ng-if="route.days < 14" class="badge category newcategory">new</span>
+    </div>
+    <div id="flags">
+        <button ng-repeat="flag in route.flags" id="{{flag.id}}" type="button" class="btn btn-default"
+                ng-click="flagIt(flag)" ng-disabled="flag.flagged">
+            {{flag.name}} ({{flag.count}})
+            <span ng-if="flag.flagged" class="glyphicon glyphicon-ok"></span>
+        </button>
+    </div>
 
     <div id="admincontainer" ng-if="isAdmin">
         <button type="button" class="btn btn-default" ng-show="!sureRemove"

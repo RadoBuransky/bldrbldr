@@ -103,7 +103,7 @@ object GymCtrl extends Controller with MongoController {
     val gym = GymService.get(gymname)
     Ok(Json.obj("grades" -> gradesToJson(gym),
       "holds" -> holdsToJson(gym),
-      "tags" -> JsonMapper.tagsToJson(gym.tags ::: Tag.getCategories)))
+      "tags" -> JsonMapper.tagsToJson(gym.categories ++ Tag.getCategories)))
   }
   
   def grades(gymname: String) = Action {

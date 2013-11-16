@@ -5,7 +5,7 @@ import models.domain.grade.Grade
 import models.domain.grade.Discipline.Discipline
 import java.net.URI
 import java.net.URL
-import models.domain.route.Tag
+import models.domain.route.{CategoryTag, Tag}
 import java.util.Locale
 
 trait Gym {
@@ -16,7 +16,7 @@ trait Gym {
   def gradingSystem: GradingSystem[Grade]
   def disciplines: Set[Discipline]
   def holdColors: Set[ColoredHolds]
-  def tags: List[Tag]
+  def categories: List[CategoryTag]
   def address: Address
 }
 

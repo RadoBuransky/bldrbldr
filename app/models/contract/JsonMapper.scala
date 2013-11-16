@@ -17,24 +17,25 @@ import scala.Some
 import models.domain.gym.Address
 
 object JsonMapper {
-  def tagsToJson(tags: List[Tag]): List[JsObject] = {
-    tags.map(tag => tagToJson(tag))
+  def tagsToJson[T <: Tag](tags: Traversable[T]): List[JsObject] = {
+    tags.map(tag => tagToJson(tag)).toList
   }
 
-  def tagToJson(tag: Tag): JsObject = {
+  def tagToJson[T <: Tag](tag: T): JsObject = {
     Json.obj("id" -> tag.id,
-      "name" -> tag.name,
-      "color" -> tag.color.toWeb)
+      "name" -> tag.name)
   }
 
   def routeToJson(gym: models.domain.gym.Gym, route: Route): JsObject = {
     val days = Days.daysBetween(new DateTime(route._id.get.time), DateTime.now()).getDays()
     Json.obj("id" -> route._id.get.stringify,
-        "holdcolor" -> holdColorByName(gym, route.holdsColor),
-        "note" -> route.note,
-        "days" -> days,
-        "photo" -> PhotoService.getUrl(route.fileName).toString,
-        "grade" -> gradeToJson(gym.gradingSystem.findById(route.gradeId)))
+      "holdcolor" -> holdColorByName(gym, route.holdsColor),
+      "note" -> route.note,
+      "days" -> days,
+      "photo" -> PhotoService.getUrl(route.fileName).toString,
+      "grade" -> gradeToJson(gym.gradingSystem.findById(route.gradeId)),
+      "categories" -> routeCategoriesToJson(gym, route.categories),
+      "flags" -> flagsToJson(route.flags))
   }
   
   def holdColorByName(gym: models.domain.gym.Gym, holdcolor: String): JsObject = {
@@ -89,9 +90,32 @@ object JsonMapper {
     }
   }
 
+  private def flagsToJson(flags: Map[String, Int]) = {
+    Tag.getFlags.map { f =>
+      Json.obj("id" -> f.id,
+        "name" -> f.name,
+        "count" -> {
+          flags.get(f.id) match {
+            case Some(c) => c
+            case _ => 0
+          }
+        })
+    }
+  }
+
   private def addressToJson(address: Address): JsObject = {
     Json.obj("street" -> address.street,
       "city" -> address.city,
       "country" -> address.country.getDisplayCountry())
+  }
+
+  private def routeCategoriesToJson(gym: models.domain.gym.Gym, categories: List[String]) = {
+    val allCategories = gym.categories ++  Tag.getCategories;
+
+    categories.map(c => allCategories.find(ct => ct.id == c) match {
+      case Some(categoryTag) => Some(categoryTag.name)
+      case _ => None
+    }
+    ).flatten
   }
 }

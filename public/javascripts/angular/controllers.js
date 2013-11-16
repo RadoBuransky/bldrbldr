@@ -14,6 +14,17 @@ function RouteCtrl($scope, $http, $routeParams, $location) {
 			$location.path($routeParams.gymname);
 		});
 	}
+
+	$scope.flagIt = function(flag) {
+	    flag.flagged = true;
+	    flag.count++;
+
+        // Fire & forget
+	    $http({
+            method : 'PUT',
+            url : '/'  + $routeParams.gymname + '/' + $scope.route.id + '/flag/' + flag.id
+        });
+	}
 	
 	var init = function() {
 		$http({
@@ -79,9 +90,21 @@ function BoulderNewCtrl($scope, $http, $routeParams) {
 			$scope.boulder.grade = null;
 	});
 
+	function getTags() {
+	    var activeTags = $('#tags > button.active');
+
+	    var length = activeTags.length, result = [];
+        for (var i = 0; i < length; i++) {
+          result.push(activeTags[i].id);
+        }
+
+	    return result;
+	}
+
 	$scope.uploadPhoto = function($files) {
-		$scope.boulder.gradeId = $scope.boulder.grade.id
-		$scope.boulder.holdsColor = $scope.boulder.holdColors.name
+		$scope.boulder.gradeId = $scope.boulder.grade.id;
+		$scope.boulder.tags = getTags();
+		$scope.boulder.holdsColor = $scope.boulder.holdColors.name;
 		$http.uploadFile({
 			url : '/boulder/new',
 			data : $scope.boulder,

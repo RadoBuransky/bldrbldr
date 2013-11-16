@@ -16,14 +16,13 @@ import models.Color
 trait Tag {
   val id: String
   val name: String
-  val color: Color
 }
 
 /**
  * Categorization tag. Users cannot do anything about it.
  * @param name
  */
-case class CategoryTag(name: String, color: Color) extends Tag {
+case class CategoryTag(name: String) extends Tag {
   val id = name.toLowerCase
 }
 
@@ -31,31 +30,20 @@ case class CategoryTag(name: String, color: Color) extends Tag {
  * General flagging tag. Users can (un)flag it.
  * @param name
  */
-case class FlagTag(name: String, color: Color) extends Tag{
+case class FlagTag(name: String) extends Tag{
   val id = name.toLowerCase.filter(c => (c != ' ') && (c != '?'))
 }
 
 object Tag {
   def getFlags: List[FlagTag] = {
-    FlagTag("Awesome", Color.Red) ::
-    FlagTag("Boring", Color.Red) ::
-    FlagTag("Too easy", Color.Red) ::
-    FlagTag("Too hard", Color.Red) ::
-    FlagTag("Scary", Color.Red) ::
-    FlagTag("What? How?", Color.Red) :: Nil
+    List(FlagTag("Awesome"), FlagTag("Boring"), FlagTag("Too easy"),
+    FlagTag("Too hard"), FlagTag("Scary"), FlagTag("What? How?"))
   }
 
   def getCategories: List[CategoryTag] = {
-    CategoryTag("Slab", Color.Blue) ::
-    CategoryTag("Overhang", Color.Blue) ::
-    CategoryTag("Traverse", Color.Blue) ::
-    CategoryTag("Corner", Color.Blue) ::
-    CategoryTag("Edge", Color.Blue) ::
-    CategoryTag("Crack", Color.Blue) ::
-    CategoryTag("Jugs", Color.Blue) ::
-    CategoryTag("Crimps", Color.Blue) ::
-    CategoryTag("Slopers", Color.Blue) ::
-    CategoryTag("Pinches", Color.Blue) ::
-    CategoryTag("Volumes", Color.Blue) ::  Nil
+    List(CategoryTag("Slab"), CategoryTag("Overhang"),
+    CategoryTag("Traverse"), CategoryTag("Corner"), CategoryTag("Edge"), CategoryTag("Crack"),
+    CategoryTag("Jugs"), CategoryTag("Crimps"), CategoryTag("Slopers"), CategoryTag("Pinches"),
+    CategoryTag("Volumes"))
   }
 }
