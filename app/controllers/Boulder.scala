@@ -31,6 +31,7 @@ import play.modules.reactivemongo.json.BSONFormats.BSONObjectIDFormat
 import play.modules.reactivemongo.json.collection.JSONCollection
 import reactivemongo.bson.BSONObjectID
 import models.services.AuthService
+import play.api.cache.Cached
 
 object Boulder extends Controller with MongoController {
   private val jpegMime = "image/jpeg"
@@ -84,25 +85,25 @@ object Boulder extends Controller with MongoController {
     }
   }
   
-  def get(gymHandle: String, routeId: String) = Action { request =>    
-    Async {	    
-	    getBoulder(routeId).map {	route =>
-	      route match {
-	        case Some(route) => {
-	          if (!route.enabled)
-	            BadRequest("Route is disabled.")
-	          else {	            
-				      // Get gym by handle
-					    val gym = GymService.get(gymHandle)
-	    
-    					Ok(Json.obj("route" -> JsonMapper.routeToJson(gym, route),
-    					    "gym" -> JsonMapper.gymToJson(gym),
-    					    "isAdmin" -> AuthService.isAdmin(request.cookies, gym)))
-	          }
-	        }
-	        case None => NotFound
-	      }      
-	    }
+  def get(gymHandle: String, routeId: String) = Action { request =>
+    Async {
+      getBoulder(routeId).map {	route =>
+        route match {
+          case Some(route) => {
+            if (!route.enabled)
+              BadRequest("Route is disabled.")
+            else {
+              // Get gym by handle
+              val gym = GymService.get(gymHandle)
+
+              Ok(Json.obj("route" -> JsonMapper.routeToJson(gym, route),
+                "gym" -> JsonMapper.gymToJson(gym),
+                "isAdmin" -> AuthService.isAdmin(request.cookies, gym)))
+            }
+          }
+          case None => NotFound
+        }
+      }
     }
   }
   
@@ -130,7 +131,7 @@ object Boulder extends Controller with MongoController {
 	        }
 	        
 	        val store = for {
-	          //uploadPhoto <- uploadPhotoFuture
+	          uploadPhoto <- uploadPhotoFuture
 	          saveToMongo <- saveToMongoFuture
 	        } yield true
 	        
@@ -176,19 +177,18 @@ object Boulder extends Controller with MongoController {
   }
   
   private def validate(body: MultipartFormData[TemporaryFile]): Result = {
-//	    body.file("file") match {
-//	      case Some(photo) => {
-//	        // Check photo type
-//	        if (!checkIfPhoto(photo.contentType.get)) {
-//	          Logger.error("Format not supported! [" + photo.contentType.get + "]")
-//	          BadRequest("Format not supported!")
-//	        }
-//	        else
-//	          Ok
-//	      }
-//	      case None => BadRequest("No photo uploaded!")
-//	    }
-	    Ok
+	    body.file("file") match {
+	      case Some(photo) => {
+	        // Check photo type
+	        if (!checkIfPhoto(photo.contentType.get)) {
+	          Logger.error("Format not supported! [" + photo.contentType.get + "]")
+	          BadRequest("Format not supported!")
+	        }
+	        else
+	          Ok
+	      }
+	      case None => BadRequest("No photo uploaded!")
+	    }
   }
 
   private def uploadPhoto(file: Option[FilePart[TemporaryFile]], fileName: String) = {

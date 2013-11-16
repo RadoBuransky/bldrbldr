@@ -1,7 +1,7 @@
-function IndexCtrl($scope, $http, formDataObject) {
+function IndexCtrl(analytics) {
 }
 
-function RouteCtrl($scope, $http, $routeParams, $location) {
+function RouteCtrl($scope, $location, $http, $routeParams, analytics) {
 	$scope.route = {};
 	$scope.isAdmin = false;
 	$scope.sureRemove = false;
@@ -42,7 +42,7 @@ function RouteCtrl($scope, $http, $routeParams, $location) {
 	init();
 }
 
-function GymCtrl($scope, $http, $routeParams, $cookies, $window) {
+function GymCtrl($scope, $window, $http, $routeParams, $cookies, analytics) {
 	$scope.gym = {};
 	$scope.gradeGroups = {};
 	$scope.isAdmin = false;
@@ -110,7 +110,7 @@ function BoulderNewCtrl($scope, $http, $routeParams) {
 			data : $scope.boulder,
 			file : $scope.photo
 		}).success(function() {
-			showMsg($scope, 'Thank you!', 'Go on. Give us another one.', '#/hive/new/666');
+			showMsg($scope, 'Thank you!', 'Go on. Give us another one.', '#/' + $scope.boulder.gymName);
 		})
 	}
 

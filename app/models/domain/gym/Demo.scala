@@ -32,8 +32,11 @@ object Demo extends Gym {
   def secret = "123"
   def gradingSystem = DemoGradingSystem
   def disciplines = Set(Discipline.Bouldering)
-  def holdColors = Set(Color.Red, Color.Green, Color.Blue, (Color.Yellow, Color.Blue),Color.Purple,
-    Color.White, Color.Yellow)
+  def holdColors = List(Color.Red, Color.LightRed, Color.Orange, Color.Yellow,
+    Color.Green, Color.LightGreen, Color.Blue, Color.LightBlue,
+    Color.Indigo, Color.Violet, Color.White, Color.Black, Color.Brown, Color.Sand,
+    (Color.Yellow, Color.Blue), (Color.White, Color.Black), (Color.Sand, Color.Black),
+    (Color.Red, Color.Black), (Color.Green, Color.Black))
   def categories = List(CategoryTag("TNT"), CategoryTag("CNC"))
   def address = Address("Marie Curie Sklodowskej 39", "Bratislava", Locale.forLanguageTag("sk-sk"))
 }

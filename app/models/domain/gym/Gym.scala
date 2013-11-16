@@ -15,7 +15,7 @@ trait Gym {
   def secret: String
   def gradingSystem: GradingSystem[Grade]
   def disciplines: Set[Discipline]
-  def holdColors: Set[ColoredHolds]
+  def holdColors: List[ColoredHolds]
   def categories: List[CategoryTag]
   def address: Address
 }
