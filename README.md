@@ -1,7 +1,7 @@
 Jugjane
 =======
 
-Jugjane loves gyms. Climbing gyms. She loves them all.
+[Jugjane](http://jugajne.com/) loves gyms. Climbing gyms. She loves them all.
 
 Share new boulders and climbing routes
 --------------------------------------
