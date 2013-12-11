@@ -6,6 +6,6 @@ Jugjane
 Share new boulders and climbing routes
 --------------------------------------
 
-1) Take a photo of the new climbing challenge.
-2) Upload it, say how hard it is and write a few words about it.
-3) Share it and get feedback from climbers.
+1. Take a photo of the new climbing challenge.
+2. Upload it, say how hard it is and write a few words about it.
+3. Share it and get feedback from climbers.
