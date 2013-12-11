@@ -2,7 +2,7 @@
 
 <!DOCTYPE html>
 
-<html lang="en" ng-app="jugjane">
+<html lang="en">
     <head>
   		<meta charset="utf-8">
         <title>Jugjane</title>
@@ -23,14 +23,17 @@
     	@content
 
     	<!-- Scripts at the end so that the content loads faster -->
-        <script src="@routes.Assets.at("javascripts/angular.min.js")" ></script>
-        <script src="@routes.Assets.at("javascripts/angular-cookies.min.js")" ></script>
         <script src="@routes.Assets.at("javascripts/jquery-2.0.2.min.js")" ></script>
         <script src="@routes.Assets.at("javascripts/bootstrap.min.js")" ></script>
+
+        <!--
+        <script src="@routes.Assets.at("javascripts/angular.min.js")" ></script>
+        <script src="@routes.Assets.at("javascripts/angular-cookies.min.js")" ></script>
         <script src="@routes.Assets.at("javascripts/angular/app.js")" ></script>
         <script src="@routes.Assets.at("javascripts/angular/controllers.js")" ></script>
         <script src="@routes.Assets.at("javascripts/upload/angular-file-upload.min.js")" ></script>
-        <script src="@routes.Assets.at("javascripts/analyticsService.js")" ></script>
+        <script src="@routes.Assets.at("javascripts/analyticsService.js")" ></script>--!>
+
         @scripts
     </body>
 </html>

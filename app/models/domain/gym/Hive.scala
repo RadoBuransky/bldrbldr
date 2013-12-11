@@ -7,7 +7,7 @@ import models.domain.route.{FlagTag, CategoryTag}
 import java.util.Locale
 
 case class HiveGrade(val from: Grade, val to: Grade, val color: Color, val name: String, val id: String)
-	extends IntervalGrade with SingleColorGrade with NamedGrade with IdGrade
+	extends IntervalGrade with SingleColorGrade
 
 object HiveGradingSystem extends GradingSystem[HiveGrade]("Hive", Set(Discipline.Bouldering),
     HiveGrade(Hueco.V0, Hueco.V2, Color(0, 0, 0), "⬣", "hive1") ::

@@ -7,7 +7,7 @@ import models.domain.route.{FlagTag, CategoryTag}
 import java.util.Locale
 
 case class DemoGrade(val from: Grade, val to: Grade, val color: Color, val name: String, val id: String)
-  extends IntervalGrade with SingleColorGrade with NamedGrade with IdGrade
+  extends IntervalGrade with SingleColorGrade
 
 object DemoGradingSystem extends GradingSystem[DemoGrade]("Demo", Set(Discipline.Bouldering),
   DemoGrade(Hueco.V0, Hueco.V1, Color(0, 0, 0), "Entry", "demo1") ::

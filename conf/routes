@@ -4,7 +4,6 @@
 
 # Home page
 GET     /                           controllers.Application.index
-GET		/about						controllers.Application.about
 #POST	/gym/new					controllers.GymCtrl.newGym
 #GET	/gym/validate/:secret		controllers.GymCtrl.validate(secret)
 #GET	/gym/approve/:secret		controllers.GymCtrl.approve(secret)
