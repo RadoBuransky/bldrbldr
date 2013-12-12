@@ -5,14 +5,12 @@ import java.io.File
 import java.io.FileInputStream
 import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 import scala.concurrent._
 import org.imgscalr.Scalr
 import javax.imageio.IIOImage
 import javax.imageio.ImageIO
 import javax.imageio.ImageWriteParam
 import models.contract.JsonMapper
-import models.data.JsonFormats.routeFormat
 import models.data.Route
 import models.domain.grade.Discipline.Bouldering
 import models.services.GymService
@@ -27,11 +25,11 @@ import play.api.mvc.MultipartFormData
 import play.api.mvc.MultipartFormData.FilePart
 import play.api.mvc.Result
 import play.modules.reactivemongo.MongoController
-import play.modules.reactivemongo.json.BSONFormats.BSONObjectIDFormat
 import play.modules.reactivemongo.json.collection.JSONCollection
 import reactivemongo.bson.BSONObjectID
 import models.services.AuthService
-import play.api.cache.Cached
+import models.data.JsonFormats._
+import play.modules.reactivemongo.json.BSONFormats._
 
 object Boulder extends Controller with MongoController {
   private val jpegMime = "image/jpeg"

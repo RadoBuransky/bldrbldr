@@ -67,8 +67,7 @@ object JsonMapper {
       case Some(g) => {
     		val name = g match {
           case ex: ExactGrade => ex.value
-          case ng: NamedGrade => ng.name
-          case _ => ""
+          case _ => g.name
         }
 
         val color = g match {

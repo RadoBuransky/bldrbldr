@@ -13,26 +13,11 @@ import play.api.mvc.Action
 import play.api.mvc.Controller
 import play.modules.reactivemongo.MongoController
 import play.modules.reactivemongo.json.collection.JSONCollection
-import reactivemongo.bson.BSONDocument
 import play.api.libs.json._
 import play.api.mvc.Result
-import play.api.mvc.Request
-import org.codehaus.jackson.annotate.JsonValue
-import scala.concurrent.Future
-import scala.concurrent.Await
 import scala.concurrent._
-import scala.util.Try
-import models.domain.gym.Hive
-import play.api.cache.Cached
-import play.api.Play.current
-import models.domain.grade.Grade
-import models.domain.gym.SingleColoredHolds
-import models.domain.gym.DoubleColoredHolds
 import models.data.Gym
 import models.data.Route
-import java.util.Date
-import org.joda.time.Days
-import models.domain.grade.GradingSystem
 import models.domain.gym._
 import models.contract.JsonMapper
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -44,22 +29,22 @@ object GymCtrl extends Controller with MongoController {
   import models._
 
   def get(gymname: String, s: Option[String]) = Action { request =>
-    Async {      
+    Async {
       // Get gym by handle
 	    val gym = GymService.get(gymname)
-	    
+
 	    // Get boulders from Mongo for this gym
 	    getBoulders(gym.handle).map {
 	      routes => {
 	        // Group routes by grade
 	        val routesByGrade = routes.groupBy(route => route.gradeId)
-	        
+
 	        // Serialize routes to JSON
 	        val routesByGradeEx = routesByGrade.map(gradeGroup => {
 	        	val grade =	gym.gradingSystem.findById(gradeGroup._2(0).gradeId).get
             (grade, gradeGroup._2)
           })
-			    	
+
 			    val cookie: Cookie = {
 				    if ((s.isDefined) &&
 				        (gym.secret == s.get)) {
@@ -72,16 +57,18 @@ object GymCtrl extends Controller with MongoController {
 	        }
 
 	        val isAdmin = (cookie != null) || AuthService.isAdmin(request.cookies, gym)
-	        
+
 	        // Create result
 //			    val result = Ok(Json.obj(
 //			    	"gym" -> JsonMapper.gymToJson(gym),
 //			    	"gradeGroups" -> routesJson,
 //			    	"isAdmin" -> isAdmin))
 
-          val uiGrades = gym.gradingSystem.grades.map(g => ui.Grade(g)).toList
-          val uiRouted = routesByGrade.map(e => (e._1, e._2.map(r => ui.)))
-          val result = Ok(views.html.gym.index(ui.Gym(gym, grades, routesByGrade), isAdmin))
+          val uiGrades = gym.gradingSystem.grades.filter(g =>
+            routesByGrade.get(g.id).isDefined).map(g => ui.Grade(g)).toList
+          val uiRoutes = routesByGrade.map(e => (e._1, e._2.map(r => ui.Route(r, gym))))
+
+          val result = Ok(views.html.gym.index(ui.Gym(gym, uiGrades, uiRoutes), isAdmin))
 
 	        if (cookie == null) {
 	          result
