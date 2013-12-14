@@ -6,7 +6,6 @@ import play.api.mvc.Cookie
 import org.joda.time.DateTime
 import models.data.JsonFormats.gymFormat
 import models.data.JsonFormats.routeFormat
-import models.services.EmailService
 import models.services.GymService
 import play.api.Logger
 import play.api.mvc.Action
@@ -86,7 +85,7 @@ object GymCtrl extends Controller with MongoController {
     
   /**
    * GET - Initialization of the form for new boulder.
-   * @param gymname
+   * @param gymHandle
    * @return
    */
   def newBoulder(gymHandle: String) = Action {
@@ -101,22 +100,6 @@ object GymCtrl extends Controller with MongoController {
   	Ok(Json.toJson(Hive.gradingSystem.grades.zipWithIndex.map {
     	case (grade, index) => Json.obj("id" -> index, "name" -> grade.name)
   	}))
-  }
-
-  def newGym = Action(parse.json) {
-    request => Async {
-		  val gym = request.body.as[models.data.Gym]
-		
-		  validateNewGym(gym).map { msg =>
-		    msg match {
-		      case s: String => {
-		        Logger.error(s)
-		        BadRequest(s)
-		      }
-		      case _ => createNewGym(gym)
-		    }
-		  }
-    }
   }
   
   def validate(secret: String) = Action {
@@ -161,47 +144,5 @@ object GymCtrl extends Controller with MongoController {
     	find(Json.obj("gymHandle" -> gymhandle, "enabled" -> true)).
     	sort(Json.obj("_id" -> -1)).
     	cursor[Route].collect[List](Int.MaxValue, true)
-  }
-  
-  private def holdsToJson(gym: models.domain.gym.Gym) = {
-    Json.toJson(gym.holdColors.map { h => JsonMapper.holdColorToJson(h) })
-  }
-  
-  private def gradesToJson(gym: models.domain.gym.Gym) = {
-    Json.toJson(gym.gradingSystem.grades.map { grade =>
-    	Json.obj("id" -> grade.id, "name" -> grade.name)
-  	})
-  }
-  
-  private def createNewGym(gym: Gym): Result = {  
-    // Set default values
-    val updatedGym = gym.copy(
-      handle = Option(gym.gymName.toLowerCase().filter(c => c != ' ')),
-      created = Option(DateTime.now),
-      validated = Option(false),
-      disabled = Option(false),
-      approved = Option(false),
-      secret = Option(Random.nextLong.abs.toString))  
-    
-    // Insert to Mongo
-    collection.insert(updatedGym);    
-    Logger.debug("New gym inserted to Mongo.");
-    
-    // Send emails asynchronously
-    EmailService.newGym(gym.email, updatedGym)
-    EmailService.newGymNotif(updatedGym)
-    
-    Ok
-  }
-  
-  private def validateNewGym(gym: Gym): Future[String] = {    
-    collection.find(Json.obj("gymname" -> gym.gymName)).cursor[Gym].collect[List](Int.MaxValue, true).map {
-      list => if (!list.isEmpty) {
-        "Gym with the same name already exists!"
-      }
-      else {
-        null
-      }
-    }
   }
 }

@@ -7,12 +7,6 @@ GET     /*path/                     controllers.Application.untrail(path: String
 # Home page
 GET     /                           controllers.Application.index
 
-#POST	/gym/new					controllers.GymCtrl.newGym
-#GET	/gym/validate/:secret		controllers.GymCtrl.validate(secret)
-#GET	/gym/approve/:secret		controllers.GymCtrl.approve(secret)
-#GET	/gym/list					controllers.GymCtrl.list
-#GET	/editor						controllers.Editor.index
-
 POST	/climbing/:gymHandle/new	                    controllers.Boulder.upload(gymHandle)
 GET		/climbing/:gymHandle/new		        		controllers.GymCtrl.newBoulder(gymHandle)
 GET		/climbing/:gymHandle	        				controllers.GymCtrl.get(gymHandle, s: Option[String])
