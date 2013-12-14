@@ -19,7 +19,7 @@ case class Gym (
 
 case class Route (
   _id: Option[BSONObjectID],
-  gymName: String,
+  gymHandle: String,
   fileName: String,
   gradeId: String,
   holdsColor: String,

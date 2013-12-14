@@ -39,7 +39,7 @@ object JsonMapper {
   }
   
   def holdColorByName(gym: models.domain.gym.Gym, holdcolor: String): JsObject = {
-    gym.holdColors.find(h => h.name == holdcolor) match {
+    gym.holdColors.find(h => h.id == holdcolor) match {
       case Some(h) => holdColorToJson(h)
       case None => Json.obj()
     }
@@ -48,9 +48,9 @@ object JsonMapper {
   def holdColorToJson(holdColor: ColoredHolds): JsObject = {
     holdColor match {
   		case (SingleColoredHolds(color)) =>
-  		  Json.obj("name" -> holdColor.name, "color" -> color.toWeb)
+  		  Json.obj("name" -> holdColor.id, "color" -> color.toWeb)
 		  case (DoubleColoredHolds(color1, color2)) =>
-  		  Json.obj("name" -> holdColor.name, "color" -> color1.toWeb, "color2" -> color2.toWeb)
+  		  Json.obj("name" -> holdColor.id, "color" -> color1.toWeb, "color2" -> color2.toWeb)
 		  case _ => Json.obj()
     }
   }

@@ -1,6 +1,7 @@
 @(gym: models.ui.Gym, isAdmin: Boolean)
 
 @import controls.color
+@import controls.categories
 
 @common("") {
 <div id="gym">
@@ -9,41 +10,24 @@
         <div id="gymurl"><a href="@gym.url" target="_blank">@gym.url</a></div>
         <div id="gymaddress">@gym.address.street, @gym.address.city, @gym.address.country</div>
         @if(isAdmin) {
-        <a href="/@gym.handle/new">
+        <a href="/climbing/@gym.handle/new">
             <button id="addnewroute" type="button" class="btn btn-default">Add new</button>
         </a>
         }
     </div>
     @for(grade <- gym.grades) {
     <div class="container" style="margin-top: 20px;">
-        <h2>
-            @grade.name
-            @if(grade.from.isDefined) {
-                @grade.from.get
-                @if(grade.to.isDefined) {
-                    - @grade.to.get
-                }
-            }
-        </h2>
+        <h2>@grade</h2>
         <div id="routes">
             @for(route <- gym.routes(grade.id)) {
-            <a href="/@gym.handle/@route.id" class="route">
+            <a href="/climbing/@gym.handle/@route.id" class="route">
                 <div class="routerow">
-                    <div class="holdColors">
-                        @color(route.color)
-                    </div>
+                    @color(route.color)
                     <div class="routedesc">
                         <span class="routenote">
                             @route.note (@route.days days)
                         </span>
-                        @for(category <- route.categories) {
-                        <span class="badge category">
-                            @category
-                        </span>
-                            @if(route.days < 14) {
-                                <span class="badge category newcategory">new</span>
-                            }
-                        }
+                        @categories(route.categories, route.days)
                     </div>
                 </div>
             </a>

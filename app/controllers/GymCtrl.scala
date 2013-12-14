@@ -24,7 +24,7 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import models.domain.route.Tag
 import play.api.data.Form
 import play.api.data.Forms._
-import models.ui.{Color2, forms}
+import models.ui.Color2
 
 object GymCtrl extends Controller with MongoController {
   private def collection: JSONCollection = db.collection[JSONCollection]("gym")
@@ -70,7 +70,6 @@ object GymCtrl extends Controller with MongoController {
           val uiGrades = gym.gradingSystem.grades.filter(g =>
             routesByGrade.get(g.id).isDefined).map(g => ui.Grade(g)).toList
           val uiRoutes = routesByGrade.map(e => (e._1, e._2.map(r => ui.Route(r, gym))))
-
           val result = Ok(views.html.gym.index(ui.Gym(gym, uiGrades, uiRoutes), isAdmin))
 
 	        if (cookie == null) {
@@ -90,12 +89,12 @@ object GymCtrl extends Controller with MongoController {
    * @param gymname
    * @return
    */
-  def newBoulder(gymname: String) = Action {
-    val gym = GymService.get(gymname)
+  def newBoulder(gymHandle: String) = Action {
+    val gym = GymService.get(gymHandle)
     val grades = gym.gradingSystem.grades.map(g => g.id -> g.name)
     val colors = gym.holdColors.map(c => Color2(c))
     val categories = (gym.categories ::: Tag.categories).map(c => c.id -> c.name)
-    Ok(views.html.boulder.create(grades, colors, categories))
+    Ok(views.html.route.create(grades, colors, categories, gymHandle))
   }
   
   def grades(gymname: String) = Action {
@@ -159,7 +158,7 @@ object GymCtrl extends Controller with MongoController {
   
   private def getBoulders(gymhandle: String): Future[List[Route]] = {
     db.collection[JSONCollection]("route").
-    	find(Json.obj("gymName" -> gymhandle, "enabled" -> true)).
+    	find(Json.obj("gymHandle" -> gymhandle, "enabled" -> true)).
     	sort(Json.obj("_id" -> -1)).
     	cursor[Route].collect[List](Int.MaxValue, true)
   }

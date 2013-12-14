@@ -1,0 +1,43 @@
+@(route: models.ui.Route, grade: models.ui.Grade, flags: Seq[models.ui.Flag], photoUrl: String, isAdmin: Boolean)
+
+@import controls.color
+@import controls.categories
+
+@common(""){
+<div class="container" id="route">
+    <h1>
+        @color(route.color)
+        @grade
+    </h1>
+    <div class="routedesc">
+        <span class="routenote">
+            @route.note (@route.days days)
+        </span>
+        @categories(route.categories, route.days)
+    </div>
+    <div id="flags">
+        @for(flag <- flags) {
+        <button id="@flag.id" type="button" class="btn btn-default">
+            @flag.name (@flag.count)
+            <span ng-if="flag.flagged" class="glyphicon glyphicon-ok"></span>
+        </button>
+        }
+    </div>
+
+    @if(isAdmin) {
+    <div id="admincontainer">
+        <button id="deleteRoute" type="button" class="btn btn-default">Delete</button>
+        <div id="reallyDelete" style="display: none">
+            Do you really want to delete this?
+            <button id="yesDelete" type="button" class="btn btn-danger">Yes, delete it!</button>
+            <button id="noDelete" type="button" class="btn">No</button>
+        </div>
+    </div>
+    }
+
+
+    <div class="row">
+        <img id="routephoto" src="@photoUrl" class="col-xs-12" style="max-width: 800px">
+    </div>
+</div>
+}

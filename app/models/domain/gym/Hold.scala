@@ -6,17 +6,17 @@ trait Holds
 
 trait ColoredHolds extends Holds {
   def colors: Set[Color]
-  def name: String
+  def id: String
 }
 
 case class SingleColoredHolds(val color: Color) extends ColoredHolds {
   def colors = Set(color)
-  def name = color.name
+  def id = color.id
 }
 
 case class DoubleColoredHolds(val color1: Color, val color2: Color) extends ColoredHolds {
   def colors = Set(color1, color2)
-  def name = color1.name + "/" + color2.name
+  def id = color1.id + "_" + color2.id
 }
 
 object ColoredHolds {  

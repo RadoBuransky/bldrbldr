@@ -10,9 +10,8 @@ object Application extends Controller {
   def index = Action {
     Ok(views.html.index())
   }
-    
-  def getCat : String = {
-    DB.withConnection { conn =>
-      conn.getCatalog() }
+
+  def untrail(path: String) = Action {
+    MovedPermanently("/" + path)
   }
 }

@@ -30,6 +30,7 @@ import reactivemongo.bson.BSONObjectID
 import models.services.AuthService
 import models.data.JsonFormats._
 import play.modules.reactivemongo.json.BSONFormats._
+import models.domain.route.Tag
 
 object Boulder extends Controller with MongoController {
   private val jpegMime = "image/jpeg"
@@ -41,12 +42,6 @@ object Boulder extends Controller with MongoController {
         Ok
       }
     }
-  }
-
-  private def incFlag(routeId: String, flagId: String) = {
-    db.collection[JSONCollection]("route").
-      update(Json.obj("_id" -> BSONObjectID(routeId)),
-      Json.obj("$inc" -> Json.obj(("flags." + flagId) -> 1)))
   }
   
   def delete(gymHandle: String, routeId: String) = Action { request =>
@@ -94,9 +89,18 @@ object Boulder extends Controller with MongoController {
               // Get gym by handle
               val gym = GymService.get(gymHandle)
 
-              Ok(Json.obj("route" -> JsonMapper.routeToJson(gym, route),
-                "gym" -> JsonMapper.gymToJson(gym),
-                "isAdmin" -> AuthService.isAdmin(request.cookies, gym)))
+//              Ok(Json.obj("route" -> JsonMapper.routeToJson(gym, route),
+//                "gym" -> JsonMapper.gymToJson(gym),
+//                "isAdmin" -> AuthService.isAdmin(request.cookies, gym)))
+
+              val grade = models.ui.Grade(gym.gradingSystem.findById(route.gradeId).get)
+              val flags = Tag.flags.map(flag => {
+                val count = route.flags.getOrElse(flag.id, 0)
+                models.ui.Flag(flag, count)
+              })
+              val isAdmin = AuthService.isAdmin(request.cookies, gym)
+              Ok(views.html.route.index(models.ui.Route(route, gym), grade, flags,
+                PhotoService.getUrl(route.fileName).toString, isAdmin))
             }
           }
           case None => NotFound
@@ -105,9 +109,7 @@ object Boulder extends Controller with MongoController {
     }
   }
   
-  def upload = Action(parse.multipartFormData) { request => {
-	    val gymHandle = request.body.dataParts("gymName")(0)
-	    
+  def upload(gymHandle: String) = Action(parse.multipartFormData) { request => {
 	    // Get gym by handle
 	    val gym = GymService.get(gymHandle)
 	    
@@ -122,10 +124,10 @@ object Boulder extends Controller with MongoController {
 		      val fileName = UUID.randomUUID().toString() + ".jpg"
 	      
 	        val uploadPhotoFuture = logFuture("uploadPhoto") {
-	      		uploadPhoto(request.body.file("file"), fileName)
+	      		uploadPhoto(request.body.file("photo"), fileName)
 	        }
 	        val saveToMongoFuture = logFuture("saveToMongo") {
-	          saveToMongo(request.body.dataParts, fileName)
+	          saveToMongo(gymHandle, request.body.dataParts, fileName)
 	        }
 	        
 	        val store = for {
@@ -142,6 +144,12 @@ object Boulder extends Controller with MongoController {
 	    }
   	}
   }
+
+  private def incFlag(routeId: String, flagId: String) = {
+    db.collection[JSONCollection]("route").
+      update(Json.obj("_id" -> BSONObjectID(routeId)),
+        Json.obj("$inc" -> Json.obj(("flags." + flagId) -> 1)))
+  }
   
   private def disableRoute(routeId: String) = {
     db.collection[JSONCollection]("route").
@@ -155,27 +163,25 @@ object Boulder extends Controller with MongoController {
     	cursor[Route].headOption
   }
   
-  private def saveToMongo(dataParts: Map[String, Seq[String]], fileName: String) = {
-    val gymName = dataParts("gymName")(0)
-           
-    val gradeId = dataParts("gradeId")(0)
-    val holdsColor = dataParts("holdsColor")(0)
+  private def saveToMongo(gymHandle: String, dataParts: Map[String, Seq[String]], fileName: String) = {
+    val gradeId = dataParts("grade")(0)
+    val holdsColor = dataParts("color")(0)
     val note = dataParts.getOrElse("note", null) match {
       case ns: Seq[String] => ns(0)
       case null => ""
     }
 
-    val categories = dataParts("tags")(0).split(',').toList;
+    val categories = dataParts("categories")(0).split(',').filter(c => !c.trim.isEmpty).toList;
     
     // New boulder
-    val boulder = new models.data.Route(None, gymName, fileName, gradeId, holdsColor, note,
+    val boulder = new models.data.Route(None, gymHandle, fileName, gradeId, holdsColor, note,
         Bouldering.toString(), true, categories, Map.empty)
     
     db.collection[JSONCollection]("route").insert(boulder)
   }
   
   private def validate(body: MultipartFormData[TemporaryFile]): Result = {
-	    body.file("file") match {
+	    body.file("photo") match {
 	      case Some(photo) => {
 	        // Check photo type
 	        if (!checkIfPhoto(photo.contentType.get)) {

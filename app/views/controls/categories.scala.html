@@ -1,0 +1,11 @@
+@(categories: Seq[String], days: Int)
+
+@for(category <- categories) {
+<span class="badge category">
+    @category
+</span>
+}
+
+@if(days < 14) {
+<span class="badge category newcategory">new</span>
+}

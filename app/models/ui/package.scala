@@ -22,26 +22,48 @@ package object ui {
 
   case class Route(id: String, color: Color2, note: String, days: Int, categories: List[String])
 
-  case class Grade(name: String, id: String, from: Option[String], to: Option[String])
+  case class Flag(id: String, name: String, count: Int)
+
+  case class Grade(name: String, id: String, from: Option[String], to: Option[String]) {
+    override def toString(): String = {
+      val toS = to match {
+        case Some(t) => " - " + t
+        case None => ""
+      }
+      val fromS = from match {
+        case Some(f) => " (" + f + toS + ")"
+        case None => ""
+      }
+
+      name + fromS
+    }
+  }
 
   case class Address(street: String, city: String, country: String)
 
   object Color2 {
     def apply(from: models.domain.gym.ColoredHolds): models.ui.Color2 = {
       from match {
-        case (SingleColoredHolds(color)) => Color2(from.name, color.toWeb)
-        case (DoubleColoredHolds(color1, color2)) => Color2(from.name, color1.toWeb, Some(color2.toWeb))
+        case (SingleColoredHolds(color)) => Color2(from.id, color.toWeb)
+        case (DoubleColoredHolds(color1, color2)) => Color2(from.id, color1.toWeb, Some(color2.toWeb))
         case _ => throw new IllegalStateException()
       }
     }
   }
 
   object Route {
-    def apply(from: models.data.Route, gym: models.domain.gym.Gym): models.ui.Route = {
-      val holdsColor = Color2(gym.holdColors.find(hc => hc.name == from.holdsColor).get)
+    def apply(from: models.data.Route, gym: models.domain.gym.Gym):
+      models.ui.Route = {
+      val holdsColor = Color2(gym.holdColors.find(hc => hc.id == from.holdsColor).get)
       val days = Days.daysBetween(new DateTime(from._id.get.time), DateTime.now()).getDays()
       holdsColor.two.isEmpty
-      Route(from._id.get.toString, holdsColor, from.note, days, from.categories)
+      Route(from._id.get.stringify, holdsColor, from.note, days, from.categories)
+    }
+  }
+
+  object Flag {
+    def apply(from: models.domain.route.FlagTag, count: Int): models.ui.Flag = {
+        Flag(from.id, from.name, count)
     }
   }
 

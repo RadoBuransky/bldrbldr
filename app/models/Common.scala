@@ -1,6 +1,6 @@
 package models
 
-class Color(val r: Double, val g: Double, val b: Double, val name: String = null) {
+class Color(val r: Double, val g: Double, val b: Double, val id: String = null) {
   def toWeb = "#" +  floatToHex(r) + floatToHex(g) + floatToHex(b)
   
   private def floatToHex(f: Double) = byteToHex(floatToByte(f))
@@ -23,13 +23,13 @@ object Color {
     new Color(r, g, b, name)
   
   val Red = Color(1,0,0,"red")
-  val LightRed = Color(1,0.4,0.4,"light red")
+  val LightRed = Color(1,0.4,0.4,"lightRed")
   val Orange = Color(1,0.5,0,"orange")
   val Yellow = Color(1,1,0,"yellow")
   val Green = Color(0,0.6,0,"green")
-  val LightGreen = Color(0.2,1,0.2,"light green")
+  val LightGreen = Color(0.2,1,0.2,"lightGreen")
   val Blue = Color(0,0,0.6,"blue")
-  val LightBlue = Color(0.4,0.4,1,"light blue")
+  val LightBlue = Color(0.4,0.4,1,"lightBlue")
   val Indigo = Color(0.294, 0, 0.51,"indigo")
   val Violet = Color(0.58, 0, 0.827,"violet")
   val White = Color(1,1,1,"white")
