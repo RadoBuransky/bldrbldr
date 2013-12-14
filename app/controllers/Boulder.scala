@@ -99,7 +99,7 @@ object Boulder extends Controller with MongoController {
                 models.ui.Flag(flag, count)
               })
               val isAdmin = AuthService.isAdmin(request.cookies, gym)
-              Ok(views.html.route.index(models.ui.Route(route, gym), grade, flags,
+              Ok(views.html.route.index(models.ui.Route(route, gym), gym.name, gym.handle, grade, flags,
                 PhotoService.getUrl(route.fileName).toString, isAdmin))
             }
           }
@@ -138,9 +138,12 @@ object Boulder extends Controller with MongoController {
 	        store.onSuccess {
 	          case _ => true
 	        }
+
+          Ok(views.html.msg("Thank you!", "Go on. Give us another one.",
+            routes.GymCtrl.get(gymHandle, None).url))
 	      }
-	      
-	      validateResult
+        else
+	        validateResult
 	    }
   	}
   }

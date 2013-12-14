@@ -1,9 +1,10 @@
-@(route: models.ui.Route, grade: models.ui.Grade, flags: Seq[models.ui.Flag], photoUrl: String, isAdmin: Boolean)
+@(route: models.ui.Route, gymName: String, gymHandle: String, grade: models.ui.Grade, flags: Seq[models.ui.Flag],
+    photoUrl: String, isAdmin: Boolean)
 
 @import controls.color
 @import controls.categories
 
-@common(""){
+@common("", Some(gymName), Some(gymHandle)){
 <div class="container" id="route">
     <h1>
         @color(route.color)
@@ -18,8 +19,8 @@
     <div id="flags">
         @for(flag <- flags) {
         <button id="@flag.id" type="button" class="btn btn-default">
-            @flag.name (@flag.count)
-            <span ng-if="flag.flagged" class="glyphicon glyphicon-ok"></span>
+            @flag.name <span class="flagCount">(@flag.count)</span>
+            <span class="glyphicon glyphicon-ok" style="display: none"></span>
         </button>
         }
     </div>
@@ -35,9 +36,12 @@
     </div>
     }
 
-
     <div class="row">
         <img id="routephoto" src="@photoUrl" class="col-xs-12" style="max-width: 800px">
     </div>
 </div>
+<script>
+    window.gymHandle = '@gymHandle'
+    window.routeId = '@route.id'
+</script>
 }

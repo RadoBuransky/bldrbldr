@@ -1,4 +1,5 @@
-@(title: String, styles: Html = Html(""), scripts: Html = Html(""))(content: Html)
+@(title: String, gymName: Option[String] = None, gymHandle: Option[String] = None,
+    styles: Html = Html(""), scripts: Html = Html(""))(content: Html)
 
 @import views.html.controls.common.button
 
@@ -20,7 +21,7 @@
 
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="/" id="contextbutton"></a></li>
+                    <li><a href="/climbing/@gymHandle" id="contextbutton">@gymName</a></li>
                 </ul>
             </div>
         </div>

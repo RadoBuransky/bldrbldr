@@ -4,6 +4,17 @@ class IndexRoute
 	    $('#deleteRoute').click(@onDeleteRoute)
 	    $('#yesDelete').click(@onYesDelete)
 	    $('#noDelete').click(@onNoDelete)
+	    $('#flags .btn').click(@onFlagClick)
+
+    onFlagClick: () ->
+        $.ajax({
+            url: '/climbing/' + window.gymHandle + '/' + window.routeId + '/flag/' + this.id,
+            type: 'PUT'
+        })
+        btn = $(this)
+        $('.flagCount',btn).hide()
+        $('.glyphicon',btn).show()
+        btn.prop('disabled', true)
 
     onDeleteRoute: () =>
         $('#deleteRoute').hide()
