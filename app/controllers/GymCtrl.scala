@@ -22,6 +22,9 @@ import models.domain.gym._
 import models.contract.JsonMapper
 import scala.concurrent.ExecutionContext.Implicits.global
 import models.domain.route.Tag
+import play.api.data.Form
+import play.api.data.Forms._
+import models.ui.{Color2, forms}
 
 object GymCtrl extends Controller with MongoController {
   private def collection: JSONCollection = db.collection[JSONCollection]("gym")
@@ -89,9 +92,10 @@ object GymCtrl extends Controller with MongoController {
    */
   def newBoulder(gymname: String) = Action {
     val gym = GymService.get(gymname)
-    Ok(Json.obj("grades" -> gradesToJson(gym),
-      "holds" -> holdsToJson(gym),
-      "tags" -> JsonMapper.tagsToJson(gym.categories ++ Tag.getCategories)))
+    val grades = gym.gradingSystem.grades.map(g => g.id -> g.name)
+    val colors = gym.holdColors.map(c => Color2(c))
+    val categories = (gym.categories ::: Tag.categories).map(c => c.id -> c.name)
+    Ok(views.html.boulder.create(grades, colors, categories))
   }
   
   def grades(gymname: String) = Action {

@@ -90,7 +90,7 @@ object JsonMapper {
   }
 
   private def flagsToJson(flags: Map[String, Int]) = {
-    Tag.getFlags.map { f =>
+    Tag.flags.map { f =>
       Json.obj("id" -> f.id,
         "name" -> f.name,
         "count" -> {
@@ -109,7 +109,7 @@ object JsonMapper {
   }
 
   private def routeCategoriesToJson(gym: models.domain.gym.Gym, categories: List[String]) = {
-    val allCategories = gym.categories ++  Tag.getCategories;
+    val allCategories = gym.categories ++  Tag.categories;
 
     categories.map(c => allCategories.find(ct => ct.id == c) match {
       case Some(categoryTag) => Some(categoryTag.name)

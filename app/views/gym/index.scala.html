@@ -1,5 +1,7 @@
 @(gym: models.ui.Gym, isAdmin: Boolean)
 
+@import controls.color
+
 @common("") {
 <div id="gym">
     <div class="container">
@@ -28,13 +30,7 @@
             <a href="/@gym.handle/@route.id" class="route">
                 <div class="routerow">
                     <div class="holdColors">
-                        @if(route.color2.isEmpty) {
-                        <div class="color onecolor" style="background-color: @route.color;"></div>
-                        }
-                        else {
-                        <div class="color twocolors" style="background-color: @route.color;"></div>
-                        <div class="color twocolors" style="background-color: @route.color2;"></div>
-                        }
+                        @color(route.color)
                     </div>
                     <div class="routedesc">
                         <span class="routenote">
