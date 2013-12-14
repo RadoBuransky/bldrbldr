@@ -13,32 +13,18 @@ import play.api.mvc.Action
 import play.api.mvc.Controller
 import play.modules.reactivemongo.MongoController
 import play.modules.reactivemongo.json.collection.JSONCollection
-import reactivemongo.bson.BSONDocument
 import play.api.libs.json._
 import play.api.mvc.Result
-import play.api.mvc.Request
-import org.codehaus.jackson.annotate.JsonValue
-import scala.concurrent.Future
-import scala.concurrent.Await
 import scala.concurrent._
-import scala.util.Try
-import models.domain.gym.Hive
-import play.api.cache.Cached
-import play.api.Play.current
-import models.domain.grade.Grade
-import models.domain.grade.NamedGrade
-import models.domain.gym.SingleColoredHolds
-import models.domain.gym.DoubleColoredHolds
 import models.data.Gym
 import models.data.Route
-import java.util.Date
-import org.joda.time.Days
-import models.domain.grade.GradingSystem
 import models.domain.gym._
 import models.contract.JsonMapper
-import models.domain.grade.IdGrade
 import scala.concurrent.ExecutionContext.Implicits.global
 import models.domain.route.Tag
+import play.api.data.Form
+import play.api.data.Forms._
+import models.ui.Color2
 
 object GymCtrl extends Controller with MongoController {
   private def collection: JSONCollection = db.collection[JSONCollection]("gym")
@@ -46,24 +32,22 @@ object GymCtrl extends Controller with MongoController {
   import models._
 
   def get(gymname: String, s: Option[String]) = Action { request =>
-    Async {      
+    Async {
       // Get gym by handle
 	    val gym = GymService.get(gymname)
-	    
+
 	    // Get boulders from Mongo for this gym
 	    getBoulders(gym.handle).map {
 	      routes => {
 	        // Group routes by grade
-	        val routesByGrade = routes.groupBy(route => route.gradeId).toList.
-	        	sortBy(gradeGroup => gradeGroup._1)
-	        
+	        val routesByGrade = routes.groupBy(route => route.gradeId)
+
 	        // Serialize routes to JSON
-	        val routesJson = routesByGrade.map(gradeGroup => {
-	        	val route =	gym.gradingSystem.findById(gradeGroup._2(0).gradeId)
-	        	Json.obj("grade" -> JsonMapper.gradeToJson(route),
-	              "routes" -> routesToJson(gym, gradeGroup._2))
-          }).toArray
-			    	
+	        val routesByGradeEx = routesByGrade.map(gradeGroup => {
+	        	val grade =	gym.gradingSystem.findById(gradeGroup._2(0).gradeId).get
+            (grade, gradeGroup._2)
+          })
+
 			    val cookie: Cookie = {
 				    if ((s.isDefined) &&
 				        (gym.secret == s.get)) {
@@ -74,21 +58,27 @@ object GymCtrl extends Controller with MongoController {
 				      null
 				    }
 	        }
-	        
+
 	        val isAdmin = (cookie != null) || AuthService.isAdmin(request.cookies, gym)
-	        
+
 	        // Create result
-			    val result = Ok(Json.obj(
-			    	"gym" -> JsonMapper.gymToJson(gym),
-			    	"gradeGroups" -> routesJson,
-			    	"isAdmin" -> isAdmin))
-	        
+//			    val result = Ok(Json.obj(
+//			    	"gym" -> JsonMapper.gymToJson(gym),
+//			    	"gradeGroups" -> routesJson,
+//			    	"isAdmin" -> isAdmin))
+
+          val uiGrades = gym.gradingSystem.grades.filter(g =>
+            routesByGrade.get(g.id).isDefined).map(g => ui.Grade(g)).toList
+          val uiRoutes = routesByGrade.map(e => (e._1, e._2.map(r => ui.Route(r, gym))))
+          val result = Ok(views.html.gym.index(ui.Gym(gym, uiGrades, uiRoutes), isAdmin))
+
 	        if (cookie == null) {
 	          result
 	        }
           else {
             result.withCookies(cookie)
           }
+
 	      }
 	    }
     }
@@ -99,11 +89,12 @@ object GymCtrl extends Controller with MongoController {
    * @param gymname
    * @return
    */
-  def newBoulder(gymname: String) = Action {
-    val gym = GymService.get(gymname)
-    Ok(Json.obj("grades" -> gradesToJson(gym),
-      "holds" -> holdsToJson(gym),
-      "tags" -> JsonMapper.tagsToJson(gym.categories ++ Tag.getCategories)))
+  def newBoulder(gymHandle: String) = Action {
+    val gym = GymService.get(gymHandle)
+    val grades = gym.gradingSystem.grades.map(g => g.id -> g.name)
+    val colors = gym.holdColors.map(c => Color2(c))
+    val categories = (gym.categories ::: Tag.categories).map(c => c.id -> c.name)
+    Ok(views.html.route.create(grades, colors, categories, gymHandle))
   }
   
   def grades(gymname: String) = Action {
@@ -167,7 +158,7 @@ object GymCtrl extends Controller with MongoController {
   
   private def getBoulders(gymhandle: String): Future[List[Route]] = {
     db.collection[JSONCollection]("route").
-    	find(Json.obj("gymName" -> gymhandle, "enabled" -> true)).
+    	find(Json.obj("gymHandle" -> gymhandle, "enabled" -> true)).
     	sort(Json.obj("_id" -> -1)).
     	cursor[Route].collect[List](Int.MaxValue, true)
   }
@@ -177,12 +168,8 @@ object GymCtrl extends Controller with MongoController {
   }
   
   private def gradesToJson(gym: models.domain.gym.Gym) = {
-    Json.toJson(gym.gradingSystem.grades.map {
-    	case idGrade: IdGrade => {
-    	  idGrade match {
-    	    case namedGrade: NamedGrade =>  Json.obj("id" -> idGrade.id, "name" -> namedGrade.name)
-    	  }
-    	}
+    Json.toJson(gym.gradingSystem.grades.map { grade =>
+    	Json.obj("id" -> grade.id, "name" -> grade.name)
   	})
   }
   

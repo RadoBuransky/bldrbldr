@@ -1,11 +1,48 @@
-@import play.i18n.Messages
-
-@styles = {
-}
-
-@common(Messages.get("PageIndex_Title"), styles, scripts) {
-	<div ng-view></div>
-}
-
-@scripts = {
+@common("") {
+    <span id="index">
+        <div class="jumbotron">
+            <div class="container">
+                <h1>Jugjane loves gyms</h1>
+                <div id="subtitle">Climbing gyms. She loves them all.</div>
+                <div>
+                    <a href="/climbing/demo"><button type="button" class="btn btn-default">Check demo</button></a>
+                </div>
+            </div>
+        </div>
+        <div class="max-width" id="indexitem1">
+            <div class="container index-item">
+                <h2>Share new boulders and climbing routes</h2>
+                <div class="step">
+                    <span class="glyphicon glyphicon-camera"></span>
+                    Take a photo of the new climbing challenge.
+                </div>
+                <div class="step">
+                    <span class="glyphicon glyphicon-cloud-upload"></span>
+                    Upload it, say how hard it is and write a few words about it.
+                </div>
+                <div class="step">
+                    <span class="glyphicon glyphicon-comment"></span>
+                    Share it and get feedback from climbers.
+                </div>
+            </div>
+        </div>
+        <div class="max-width" id="indexitem2">
+            <div class="container index-item">
+                <h2>That's exactly what my gym needs</h2>
+                <div class="step">
+                    <span class="glyphicon glyphicon-ok"></span>
+                    Cool. We've got a lot of thoughts to share.
+                </div>
+                <div id="letstalk">
+                    <div>Rado Buranský</div>
+                    <a href="mailto:radoburansky@@gmail.com">
+                        <button type="button" class="btn btn-default">
+                            Let's talk
+                            <span class="glyphicon glyphicon-envelope"></span>
+                        </button>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </span>
 }

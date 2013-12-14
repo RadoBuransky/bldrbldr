@@ -5,11 +5,11 @@ import Discipline.Discipline
 import scala.collection.immutable.LinearSeq
 import models.Color
 
-trait Grade 
-trait UnknownGrade extends Grade
-trait IdGrade extends Grade {
-  def id: String
+trait Grade {
+  val name: String
+  val id: String
 }
+trait UnknownGrade extends Grade
 trait ExactGrade extends Grade {
   def value: String
 }
@@ -19,9 +19,6 @@ trait IntervalGrade extends Grade {
 }
 trait IndexedGrade extends Grade {
   def index: Int
-}
-trait NamedGrade extends Grade {
-  def name: String
 }
 
 trait ColoredGrade extends Grade
@@ -41,21 +38,11 @@ abstract class GradingSystem[+TGrade <: Grade](private val _name: String,
   def grades = _grades  
   
   def findById(id: String): Option[Grade] = {
-    grades.find(grade =>
-      grade match {
-        case idGrade: IdGrade => id == idGrade.id
-        case _ => false
-      })
+    grades.find(grade => grade.id == id)
   }
 }
 
 object Grade {
-  def getName(grade: Grade): Option[String] = {
-    grade match {
-      case ng: NamedGrade => Option(ng.name)
-      case _ => None
-    }
-  }
   
   def getColor(grade: Grade): Option[Color] = {
     grade match {

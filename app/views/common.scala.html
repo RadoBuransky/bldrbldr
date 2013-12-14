@@ -1,6 +1,6 @@
-@(title: String, styles: Html = Html(""), scripts: Html = Html(""))(content: Html)
+@(title: String, gymName: Option[String] = None, gymHandle: Option[String] = None,
+    styles: Html = Html(""), scripts: Html = Html(""))(content: Html)
 
-@import play.i18n.Messages
 @import views.html.controls.common.button
 
 @core(title, styles, scripts) {	
@@ -13,7 +13,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">
+                <a class="navbar-brand" href="/">
                     <img src="@routes.Assets.at("images/logo.png")" style="float: left" />
                     <div style="float: left; padding: 3px 0px 0px 7px">JUGJANE</div>
                 </a>
@@ -21,7 +21,7 @@
 
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#" id="contextbutton"></a></li>
+                    <li><a href="/climbing/@gymHandle" id="contextbutton">@gymName</a></li>
                 </ul>
             </div>
         </div>

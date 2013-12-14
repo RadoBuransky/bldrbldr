@@ -1,0 +1,10 @@
+@(c: models.ui.Color2)
+
+<div id="@c.name" class="holdColors clickable">
+    @if(c.two.isEmpty) {
+        <div class="color onecolor" style="background-color: @c.one;"></div>
+    } else {
+        <div class="color twocolors" style="background-color: @c.one;"></div>
+        <div class="color twocolors" style="background-color: @c.two.get;"></div>
+    }
+</div>

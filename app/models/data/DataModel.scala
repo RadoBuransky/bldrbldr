@@ -2,10 +2,7 @@ package models.data
 
 import org.joda.time.DateTime
 import reactivemongo.bson.BSONObjectID
-import play.api.libs.functional.syntax.functionalCanBuildApplicative
-import play.api.libs.functional.syntax.toFunctionalBuilderOps
 import play.modules.reactivemongo.json.BSONFormats._
-import models.domain.grade.Discipline._
 
 case class Gym (
   _id: Option[BSONObjectID] = None,
@@ -22,7 +19,7 @@ case class Gym (
 
 case class Route (
   _id: Option[BSONObjectID],
-  gymName: String,
+  gymHandle: String,
   fileName: String,
   gradeId: String,
   holdsColor: String,

@@ -35,12 +35,12 @@ case class FlagTag(name: String) extends Tag{
 }
 
 object Tag {
-  def getFlags: List[FlagTag] = {
+  val flags: List[FlagTag] = {
     List(FlagTag("Awesome"), FlagTag("Boring"), FlagTag("Too easy"),
     FlagTag("Too hard"), FlagTag("Scary"), FlagTag("What? How?"))
   }
 
-  def getCategories: List[CategoryTag] = {
+  val categories: List[CategoryTag] = {
     List(CategoryTag("Slab"), CategoryTag("Overhang"),
     CategoryTag("Traverse"), CategoryTag("Corner"), CategoryTag("Edge"), CategoryTag("Crack"),
     CategoryTag("Jugs"), CategoryTag("Crimps"), CategoryTag("Slopers"), CategoryTag("Pinches"),

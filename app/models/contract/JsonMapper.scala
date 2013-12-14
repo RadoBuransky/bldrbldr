@@ -39,7 +39,7 @@ object JsonMapper {
   }
   
   def holdColorByName(gym: models.domain.gym.Gym, holdcolor: String): JsObject = {
-    gym.holdColors.find(h => h.name == holdcolor) match {
+    gym.holdColors.find(h => h.id == holdcolor) match {
       case Some(h) => holdColorToJson(h)
       case None => Json.obj()
     }
@@ -48,9 +48,9 @@ object JsonMapper {
   def holdColorToJson(holdColor: ColoredHolds): JsObject = {
     holdColor match {
   		case (SingleColoredHolds(color)) =>
-  		  Json.obj("name" -> holdColor.name, "color" -> color.toWeb)
+  		  Json.obj("name" -> holdColor.id, "color" -> color.toWeb)
 		  case (DoubleColoredHolds(color1, color2)) =>
-  		  Json.obj("name" -> holdColor.name, "color" -> color1.toWeb, "color2" -> color2.toWeb)
+  		  Json.obj("name" -> holdColor.id, "color" -> color1.toWeb, "color2" -> color2.toWeb)
 		  case _ => Json.obj()
     }
   }
@@ -67,8 +67,7 @@ object JsonMapper {
       case Some(g) => {
     		val name = g match {
           case ex: ExactGrade => ex.value
-          case ng: NamedGrade => ng.name
-          case _ => ""
+          case _ => g.name
         }
 
         val color = g match {
@@ -91,7 +90,7 @@ object JsonMapper {
   }
 
   private def flagsToJson(flags: Map[String, Int]) = {
-    Tag.getFlags.map { f =>
+    Tag.flags.map { f =>
       Json.obj("id" -> f.id,
         "name" -> f.name,
         "count" -> {
@@ -110,7 +109,7 @@ object JsonMapper {
   }
 
   private def routeCategoriesToJson(gym: models.domain.gym.Gym, categories: List[String]) = {
-    val allCategories = gym.categories ++  Tag.getCategories;
+    val allCategories = gym.categories ++  Tag.categories;
 
     categories.map(c => allCategories.find(ct => ct.id == c) match {
       case Some(categoryTag) => Some(categoryTag.name)
