@@ -1,7 +1,5 @@
 @(title: String, description: String, ogImageUrl: Option[String] = None)(content: Html)
 
-@import play.mvc.Http.Request._
-
 <!DOCTYPE html>
 
 <html lang="en">
@@ -18,7 +16,7 @@
         <!-- Facebook -->
         <meta property="og:title" content="@title"/>
         <meta property="og:type" content="article"/>
-        <meta property="og:image" content="@ogImageUrl.getOrElse(routes.Assets.at("images/jugjane_big.png"))"/>
+        <meta property="og:image" content="@ogImageUrl.getOrElse("http://jugjane.com/assets/images/jugjane_big.png")"/>
         <meta property="og:description" content="@description"/>
         <meta property="fb:admins" content="608441607" />
 
@@ -26,7 +24,7 @@
         <meta name="twitter:card" content="summary">
         <meta name="twitter:title" content="@title">
         <meta name="twitter:description" content="@description">
-        <meta name="og:image" content="@ogImageUrl.getOrElse(routes.Assets.at("images/jugjane_big.png"))"/>
+        <meta name="og:image" content="@ogImageUrl.getOrElse("http://jugjane.com/assets/images/jugjane_big.png")"/>
 
         <!-- Styles -->
     	<link href="@routes.Assets.at("stylesheets/main.css")" rel="stylesheet">

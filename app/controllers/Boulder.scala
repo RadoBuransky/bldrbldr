@@ -19,11 +19,8 @@ import play.api.Logger
 import play.api.libs.Files.TemporaryFile
 import play.api.libs.json.Json
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
-import play.api.mvc.Action
-import play.api.mvc.Controller
-import play.api.mvc.MultipartFormData
+import play.api.mvc._
 import play.api.mvc.MultipartFormData.FilePart
-import play.api.mvc.Result
 import play.modules.reactivemongo.MongoController
 import play.modules.reactivemongo.json.collection.JSONCollection
 import reactivemongo.bson.BSONObjectID
@@ -31,6 +28,11 @@ import models.services.AuthService
 import models.data.JsonFormats._
 import play.modules.reactivemongo.json.BSONFormats._
 import models.domain.route.Tag
+import play.api.mvc.MultipartFormData.FilePart
+import models.data.Route
+import scala.Some
+import play.modules.reactivemongo.json.collection.JSONCollection
+import play.mvc.Http
 
 object Boulder extends Controller with MongoController {
   private val jpegMime = "image/jpeg"
