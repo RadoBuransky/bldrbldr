@@ -3,7 +3,8 @@
 @import controls.color
 @import controls.categories
 
-@common("", Some(gym.name), Some(gym.handle)) {
+@common(gym.name + " climbing", "Current climbing routes and boulders at the " + gym.name + " indoor climbing gym.",
+    gymName = Some(gym.name), gymHandle = Some(gym.handle)) {
 <div id="gym">
     <div class="container">
         <h1>@gym.name</h1>

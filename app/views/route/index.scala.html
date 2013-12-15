@@ -4,7 +4,8 @@
 @import controls.color
 @import controls.categories
 
-@common("", Some(gymName), Some(gymHandle)){
+@common(grade + " at " + gymName, "Climbing route of grade " + grade + " at " + gymName,
+    ogImageUrl = Some(photoUrl), gymName = Some(gymName), gymHandle = Some(gymHandle)){
 <div class="container" id="route">
     <h1>
         @color(route.color)

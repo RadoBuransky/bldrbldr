@@ -1,16 +1,35 @@
-@(title: String, styles: Html = Html(""), scripts: Html = Html(""))(content: Html)
+@(title: String, description: String, ogImageUrl: Option[String] = None)(content: Html)
+
+@import play.mvc.Http.Request._
 
 <!DOCTYPE html>
 
 <html lang="en">
     <head>
   		<meta charset="utf-8">
-        <title>Jugjane</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>@title</title>
+        <meta name="description" content="@description"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <meta name="author" content="Rado Buranský"/>
+        <meta name="copyright" content="Rado Buranský"/>
+        <meta name="application-name" content="Jugjane"/>
+        <link rel="author" href="https://plus.google.com/+radoburansky/"/>
+
+        <!-- Facebook -->
+        <meta property="og:title" content="@title"/>
+        <meta property="og:type" content="article"/>
+        <meta property="og:image" content="@ogImageUrl.getOrElse(routes.Assets.at("images/jugjane_big.png"))"/>
+        <meta property="og:description" content="@description"/>
+        <meta property="fb:admins" content="608441607" />
+
+        <!-- Twitter -->
+        <meta name="twitter:card" content="summary">
+        <meta name="twitter:title" content="@title">
+        <meta name="twitter:description" content="@description">
+        <meta name="og:image" content="@ogImageUrl.getOrElse(routes.Assets.at("images/jugjane_big.png"))"/>
 
         <!-- Styles -->
     	<link href="@routes.Assets.at("stylesheets/main.css")" rel="stylesheet">
-		@styles
 
 		<link rel="icon" type="image/png" href="@routes.Assets.at("images/favicon.png")" />
 
@@ -28,7 +47,5 @@
 
         <script src="@routes.Assets.at("javascripts/pages/route/CreateRoute.js")" ></script>
         <script src="@routes.Assets.at("javascripts/pages/route/IndexRoute.js")" ></script>
-
-        @scripts
     </body>
 </html>
