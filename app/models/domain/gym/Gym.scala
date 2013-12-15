@@ -12,7 +12,6 @@ trait Gym {
   def name: String
   def url: URL
   def handle: String
-  def secret: String
   def gradingSystem: GradingSystem[Grade]
   def disciplines: Set[Discipline]
   def holdColors: List[ColoredHolds]

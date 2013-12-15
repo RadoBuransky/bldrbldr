@@ -7,9 +7,9 @@ GET     /*path/                     controllers.Application.untrail(path: String
 # Home page
 GET     /                           controllers.Application.index
 
-POST	/climbing/:gymHandle/new	                    controllers.Boulder.upload(gymHandle)
 GET		/climbing/:gymHandle/new		        		controllers.GymCtrl.newBoulder(gymHandle)
 GET		/climbing/:gymHandle	        				controllers.GymCtrl.get(gymHandle, s: Option[String])
+POST	/climbing/:gymHandle/new	                    controllers.Boulder.upload(gymHandle)
 GET		/climbing/:gymHandle/:routeId           		controllers.Boulder.get(gymHandle, routeId)
 DELETE	/climbing/:gymHandle/:routeId	            	controllers.Boulder.delete(gymHandle, routeId)
 PUT 	/climbing/:gymHandle/:routeId/flag/:flagId		controllers.Boulder.flag(gymHandle, routeId, flagId)

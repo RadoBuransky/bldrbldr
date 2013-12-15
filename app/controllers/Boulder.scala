@@ -36,12 +36,8 @@ object Boulder extends Controller with MongoController {
   private val jpegMime = "image/jpeg"
   private val photoWidth = 800
 
-  def flag(gymHandle: String, routeId: String, flagId: String) = Action {
-    Async {
-      incFlag(routeId, flagId) map { lastError =>
-        Ok
-      }
-    }
+  def flag(gymHandle: String, routeId: String, flagId: String) = Action.async {
+    incFlag(routeId, flagId) map { lastError => Ok }
   }
   
   def delete(gymHandle: String, routeId: String) = Action { request =>
@@ -78,33 +74,27 @@ object Boulder extends Controller with MongoController {
     }
   }
   
-  def get(gymHandle: String, routeId: String) = Action { request =>
-    Async {
-      getBoulder(routeId).map {	route =>
-        route match {
-          case Some(route) => {
-            if (!route.enabled)
-              BadRequest("Route is disabled.")
-            else {
-              // Get gym by handle
-              val gym = GymService.get(gymHandle)
+  def get(gymHandle: String, routeId: String) = Action.async { request =>
+    getBoulder(routeId).map {	route =>
+      route match {
+        case Some(route) => {
+          if (!route.enabled)
+            BadRequest("Route is disabled.")
+          else {
+            // Get gym by handle
+            val gym = GymService.get(gymHandle)
 
-//              Ok(Json.obj("route" -> JsonMapper.routeToJson(gym, route),
-//                "gym" -> JsonMapper.gymToJson(gym),
-//                "isAdmin" -> AuthService.isAdmin(request.cookies, gym)))
-
-              val grade = models.ui.Grade(gym.gradingSystem.findById(route.gradeId).get)
-              val flags = Tag.flags.map(flag => {
-                val count = route.flags.getOrElse(flag.id, 0)
-                models.ui.Flag(flag, count)
-              })
-              val isAdmin = AuthService.isAdmin(request.cookies, gym)
-              Ok(views.html.route.index(models.ui.Route(route, gym), gym.name, gym.handle, grade, flags,
-                PhotoService.getUrl(route.fileName).toString, isAdmin))
-            }
+            val grade = models.ui.Grade(gym.gradingSystem.findById(route.gradeId).get)
+            val flags = Tag.flags.map(flag => {
+              val count = route.flags.getOrElse(flag.id, 0)
+              models.ui.Flag(flag, count)
+            })
+            val isAdmin = AuthService.isAdmin(request.cookies, gym)
+            Ok(views.html.route.index(models.ui.Route(route, gym), gym.name, gym.handle, grade, flags,
+              PhotoService.getUrl(route.fileName).toString, isAdmin))
           }
-          case None => NotFound
         }
+        case None => NotFound
       }
     }
   }

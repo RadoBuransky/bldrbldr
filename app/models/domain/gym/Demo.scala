@@ -29,7 +29,6 @@ object Demo extends Gym {
   def name = "Mystery Crack Gym"
   val url = new URL("http://www.mysterycrack.com/")
   def handle = "demo"
-  def secret = "123"
   def gradingSystem = DemoGradingSystem
   def disciplines = Set(Discipline.Bouldering)
   def holdColors = List(Color.Red, Color.LightRed, Color.Orange, Color.Yellow,

@@ -24,7 +24,6 @@ object Hive extends Gym {
   def name = "Hive"
   val url = new URL("http://www.hiveclimbing.com/")
   def handle = "hive"
-  def secret = "4685733"
   def gradingSystem = HiveGradingSystem
   def disciplines = Set(Discipline.Bouldering)
   def holdColors = List(Color.Red, Color.LightRed, Color.Orange, Color.Yellow,

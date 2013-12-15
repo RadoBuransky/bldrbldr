@@ -1,7 +1,5 @@
 package controllers
 
-import play.api.Play.current
-import play.api.db.DB
 import play.api.mvc.Action
 import play.api.mvc.Controller
 
