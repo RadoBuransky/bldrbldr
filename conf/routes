@@ -14,5 +14,5 @@ GET		/climbing/:gymHandle/:routeId           		controllers.Boulder.get(gymHandle
 DELETE	/climbing/:gymHandle/:routeId	            	controllers.Boulder.delete(gymHandle, routeId)
 PUT 	/climbing/:gymHandle/:routeId/flag/:flagId		controllers.Boulder.flag(gymHandle, routeId, flagId)
 
-# Map static resources from the /public folder to the /assets URL path
+GET     /robots.txt 				controllers.Assets.at(path="/public", file="robots.txt")
 GET     /assets/*file				controllers.Assets.at(path="/public", file)
