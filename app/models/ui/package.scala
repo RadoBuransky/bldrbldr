@@ -44,7 +44,7 @@ package object ui {
   object Color2 {
     def apply(from: models.domain.gym.ColoredHolds): models.ui.Color2 = {
       from match {
-        case (SingleColoredHolds(color)) => Color2(from.id, color.toWeb)
+        case (SingleColoredHolds(color)) => Color2(from.id, color.toWeb, None)
         case (DoubleColoredHolds(color1, color2)) => Color2(from.id, color1.toWeb, Some(color2.toWeb))
         case _ => throw new IllegalStateException()
       }

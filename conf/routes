@@ -1,11 +1,5 @@
-# Routes
-# This file defines all application routes (Higher priority routes first)
-# ~~~~
-
-GET     /*path/                     controllers.Application.untrail(path: String)
-
-# Home page
-GET     /                           controllers.Application.index
+GET     /                           com.jugjane.controllers.Application.index
+GET     /*path/                     com.jugjane.controllers.Application.untrail(path: String)
 
 GET		/climbing/:gymHandle/new		        		controllers.GymCtrl.newBoulder(gymHandle)
 GET		/climbing/:gymHandle	        				controllers.GymCtrl.get(gymHandle, s: Option[String])

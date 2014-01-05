@@ -42,37 +42,35 @@ object Boulder extends Controller with MongoController {
     incFlag(routeId, flagId) map { lastError => Ok }
   }
   
-  def delete(gymHandle: String, routeId: String) = Action { request =>
+  def delete(gymHandle: String, routeId: String) = Action.async { request =>
     // Get gym by handle
     val gym = GymService.get(gymHandle)
     
     if (!AuthService.isAdmin(request.cookies, gym)) {
-      Unauthorized
+      future { Unauthorized }
     }
     else {    
-	  	Async {	  	  	    
-		    getBoulder(routeId).map {	route =>
-		      route match {
-		        case None => NotFound		        
-	        	case Some(route) => {
-	        	  // Delete file from S3
-				  	  val removePhotoFuture = logFuture("removePhoto") {
-				  	    PhotoService.remove(route.fileName)
-				  	  }
-			        val disableRouteFuture = logFuture("disableRoute") {
-			          disableRoute(routeId)
-			        }
-			        
-			        for {
-			          rp <- removePhotoFuture
-			          dr <- disableRouteFuture
-			        } yield true
-			        
-			        Ok
-	        	}
-		      }
-		    }
-	    }
+      getBoulder(routeId).map {	route =>
+        route match {
+          case None => NotFound
+          case Some(route) => {
+            // Delete file from S3
+            val removePhotoFuture = logFuture("removePhoto") {
+              PhotoService.remove(route.fileName)
+            }
+            val disableRouteFuture = logFuture("disableRoute") {
+              disableRoute(routeId)
+            }
+
+            for {
+              rp <- removePhotoFuture
+              dr <- disableRouteFuture
+            } yield true
+
+            Ok
+          }
+        }
+      }
     }
   }
   
@@ -212,7 +210,7 @@ object Boulder extends Controller with MongoController {
     try {
 	    val bis = new BufferedInputStream(fis)
 	    try {
-		    val byteArray = Stream.continually(bis.read).takeWhile(-1 !=).map(_.toByte).toArray
+		    val byteArray = Stream.continually(bis.read).takeWhile(-1 != _).map(_.toByte).toArray
 		    PhotoService.upload(newFileName, jpegMime, byteArray)
 	    }
 	    finally {

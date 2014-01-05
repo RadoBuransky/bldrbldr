@@ -1,4 +1,4 @@
-package controllers
+package com.jugjane.controllers
 
 import play.api.mvc.Action
 import play.api.mvc.Controller
