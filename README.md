@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/RadoBuransky/jugjane.png?branch=master)](https://travis-ci.org/RadoBuransky/jugjane)
+
 Jugjane
 =======
 
