@@ -23,3 +23,7 @@ libraryDependencies ++= Seq(
   "org.specs2" %% "specs2" % "2.3.7" % "test")
 
 play.Project.playScalaSettings
+
+seq(ScctPlugin.instrumentSettings : _*)
+
+seq(com.github.theon.coveralls.CoverallsPlugin.coverallsSettings: _*)
