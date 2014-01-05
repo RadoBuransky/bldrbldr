@@ -1,6 +1,5 @@
 package models.contract
 
-import models.data.Route
 import play.api.libs.json.JsObject
 import org.joda.time.Days
 import org.joda.time.DateTime
@@ -12,9 +11,10 @@ import models.domain.route.Tag
 import models.domain.gym.SingleColoredHolds
 import models.domain.gym.DoubleColoredHolds
 import play.api.libs.json.JsObject
-import models.data.Route
 import scala.Some
 import models.domain.gym.Address
+import models.data.model.Route
+import models.data.model.Route
 
 object JsonMapper {
   def tagsToJson[T <: Tag](tags: Traversable[T]): List[JsObject] = {

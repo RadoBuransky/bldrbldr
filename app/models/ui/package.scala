@@ -4,6 +4,7 @@ import models.domain.gym.{DoubleColoredHolds, SingleColoredHolds}
 import org.joda.time.{DateTime, Days}
 import models.ui.Route
 import models.domain.grade.IntervalGrade
+import models.data.model
 
 /**
  * Created by rado on 13/12/13.
@@ -52,7 +53,7 @@ package object ui {
   }
 
   object Route {
-    def apply(from: models.data.Route, gym: models.domain.gym.Gym):
+    def apply(from: model.Route, gym: models.domain.gym.Gym):
       models.ui.Route = {
       val holdsColor = Color2(gym.holdColors.find(hc => hc.id == from.holdsColor).get)
       val days = Days.daysBetween(new DateTime(from._id.get.time), DateTime.now()).getDays()

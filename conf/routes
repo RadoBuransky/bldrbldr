@@ -1,8 +1,8 @@
 GET     /                           com.jugjane.controllers.Application.index
 GET     /*path/                     com.jugjane.controllers.Application.untrail(path: String)
 
-GET		/climbing/:gymHandle/new		        		controllers.GymCtrl.newBoulder(gymHandle)
-GET		/climbing/:gymHandle	        				controllers.GymCtrl.get(gymHandle, s: Option[String])
+GET		/climbing/:gymHandle/new		        		AppLoader.gymController.newBoulder(gymHandle)
+GET		/climbing/:gymHandle	        				AppLoader.gymController.get(gymHandle, s: Option[String])
 POST	/climbing/:gymHandle/new	                    controllers.Boulder.upload(gymHandle)
 GET		/climbing/:gymHandle/:routeId           		controllers.Boulder.get(gymHandle, routeId)
 DELETE	/climbing/:gymHandle/:routeId	            	controllers.Boulder.delete(gymHandle, routeId)

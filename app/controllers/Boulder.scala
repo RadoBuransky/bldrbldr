@@ -11,11 +11,10 @@ import javax.imageio.IIOImage
 import javax.imageio.ImageIO
 import javax.imageio.ImageWriteParam
 import models.contract.JsonMapper
-import models.data.Route
 import models.domain.grade.Discipline.Bouldering
 import models.services.GymService
 import models.services.PhotoService
-import play.api.Logger
+import play.api.{Routes, Logger}
 import play.api.libs.Files.TemporaryFile
 import play.api.libs.json.Json
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
@@ -29,10 +28,11 @@ import models.data.JsonFormats._
 import play.modules.reactivemongo.json.BSONFormats._
 import models.domain.route.Tag
 import play.api.mvc.MultipartFormData.FilePart
-import models.data.Route
 import scala.Some
 import play.modules.reactivemongo.json.collection.JSONCollection
 import play.mvc.Http
+import models.data.model.Route
+import models.data.model.Route
 
 object Boulder extends Controller with MongoController {
   private val jpegMime = "image/jpeg"
@@ -130,7 +130,7 @@ object Boulder extends Controller with MongoController {
 	        }
 
           Ok(views.html.msg("Thank you!", "Go on. Give us another one.",
-            routes.GymCtrl.get(gymHandle, None).url))
+            new AppLoader.ReversegymController().get(gymHandle, None).url))
 	      }
         else
 	        validateResult
@@ -167,7 +167,7 @@ object Boulder extends Controller with MongoController {
     val categories = dataParts("categories")(0).split(',').filter(c => !c.trim.isEmpty).toList;
     
     // New boulder
-    val boulder = new models.data.Route(None, gymHandle, fileName, gradeId, holdsColor, note,
+    val boulder = new Route(None, gymHandle, fileName, gradeId, holdsColor, note,
         Bouldering.toString(), true, categories, Map.empty)
     
     db.collection[JSONCollection]("route").insert(boulder)
