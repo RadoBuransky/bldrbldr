@@ -1,7 +1,6 @@
-[![Build Status](https://travis-ci.org/RadoBuransky/jugjane.png?branch=master)](https://travis-ci.org/RadoBuransky/jugjane)
-
 Jugjane
 =======
+[![Build Status](https://travis-ci.org/RadoBuransky/jugjane.png?branch=master)](https://travis-ci.org/RadoBuransky/jugjane)
 
 [Jugjane](http://jugjane.com/) loves gyms. Climbing gyms. She loves them all.
 
