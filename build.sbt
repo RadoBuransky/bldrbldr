@@ -26,6 +26,8 @@ play.Project.playScalaSettings
 
 ScoverageSbtPlugin.instrumentSettings
 
+//ScoverageSbtPlugin.ScoverageKeys.excludedPackages in ScoverageSbtPlugin.scoverage := "views*,AppLoader,Reverse*"
+
 CoverallsPlugin.singleProject
 
 CoverallsPlugin.CoverallsKeys.coverallsToken := Some("EuutFJ3YDygbkYOz8cUlBW7gbdFxDBpfF")
