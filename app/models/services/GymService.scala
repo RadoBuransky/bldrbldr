@@ -15,3 +15,11 @@ object GymService {
     }
   }
 }
+
+trait GymServiceComponent {
+  def gymService: GymService
+
+  trait GymService {
+    def get(gymHandle: String): Gym
+  }
+}

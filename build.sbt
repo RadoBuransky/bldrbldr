@@ -23,3 +23,9 @@ libraryDependencies ++= Seq(
   "org.specs2" %% "specs2" % "2.3.7" % "test")
 
 play.Project.playScalaSettings
+
+ScoverageSbtPlugin.instrumentSettings
+
+CoverallsPlugin.singleProject
+
+CoverallsPlugin.CoverallsKeys.coverallsToken := Some("EuutFJ3YDygbkYOz8cUlBW7gbdFxDBpfF")

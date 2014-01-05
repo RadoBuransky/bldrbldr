@@ -20,3 +20,12 @@ object AuthService {
     }
   }
 }
+
+trait AuthServiceComponent {
+  def authService: AuthService
+
+  trait AuthService {
+    def isAdmin(cookies: Cookies, gym: Gym): Boolean
+    def validateSecret(secret: String, gymHandle: String): Boolean
+  }
+}

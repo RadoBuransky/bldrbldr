@@ -1,8 +1,7 @@
 package controllers
 
-import models.services.AuthService
+import models.services.{AuthServiceComponent, GymServiceComponent}
 import play.api.mvc.Cookie
-import models.services.GymService
 import play.api.mvc.Action
 import play.api.mvc.Controller
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -12,18 +11,18 @@ import models.data.RouteDaoComponent
 import models.ui
 
 trait GymController extends Controller {
-  this: RouteDaoComponent =>
+  this: RouteDaoComponent with GymServiceComponent with AuthServiceComponent =>
 
   def get(gymHandle: String, s: Option[String]) = Action.async { request =>
     // Get gym by handle
-    val gym = GymService.get(gymHandle)
+    val gym = gymService.get(gymHandle)
 
     // Get boulders from Mongo for this gym
     routeDao.findByGymhandle(gym.handle).map {
       routes => {
         // Admin authorizaton
         val authCookie = createAuthCookie(s, gymHandle)
-        val isAdmin = (authCookie.isDefined) || AuthService.isAdmin(request.cookies, gym)
+        val isAdmin = (authCookie.isDefined) || authService.isAdmin(request.cookies, gym)
 
         val routesByGrade = routes.groupBy(route => route.gradeId)
         val uiGrades = gym.gradingSystem.grades.filter(g =>
@@ -45,7 +44,7 @@ trait GymController extends Controller {
    * @return
    */
   def newBoulder(gymHandle: String) = Action {
-    val gym = GymService.get(gymHandle)
+    val gym = gymService.get(gymHandle)
     val grades = gym.gradingSystem.grades.map(g => g.id -> g.name)
     val colors = gym.holdColors.map(c => Color2(c))
     val categories = (gym.categories ::: Tag.categories).map(c => c.id -> c.name)
@@ -55,7 +54,7 @@ trait GymController extends Controller {
   private def createAuthCookie(secretOption: Option[String], gymHandle: String): Option[Cookie] = {
     secretOption match {
       case Some(secret) => {
-        AuthService.validateSecret(secret, gymHandle) match {
+        authService.validateSecret(secret, gymHandle) match {
           case true => Some(Cookie(gymHandle, secret, Some(60*60*24*7)))
           case _ => None
         }
