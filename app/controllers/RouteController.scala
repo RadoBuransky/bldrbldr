@@ -34,7 +34,7 @@ import play.mvc.Http
 import models.data.model.Route
 import models.data.model.Route
 
-object Boulder extends Controller with MongoController {
+object RouteController extends Controller with MongoController {
   private val jpegMime = "image/jpeg"
   private val photoWidth = 800
 

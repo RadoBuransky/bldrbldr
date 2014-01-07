@@ -3,6 +3,7 @@ package models.services
 import models.domain.gym.{Demo, Gym, Hive}
 import models.JugjaneException
 import models.JugjaneException
+import scala.util.Try
 
 object GymService {
   private val gyms = Hive :: Demo :: Nil;
@@ -20,6 +21,6 @@ trait GymServiceComponent {
   def gymService: GymService
 
   trait GymService {
-    def get(gymHandle: String): Gym
+    def get(gymHandle: String): Try[Gym]
   }
 }

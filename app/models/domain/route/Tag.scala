@@ -3,14 +3,6 @@ package models.domain.route
 import models.Color
 
 /**
- * Created with IntelliJ IDEA.
- * User: rado
- * Date: 11/11/13
- * Time: 9:28 AM
- * To change this template use File | Settings | File Templates.
- */
-
-/**
  * Route tagging.
  */
 trait Tag {

@@ -9,32 +9,42 @@ import models.domain.route.Tag
 import models.ui.Color2
 import models.data.RouteDaoComponent
 import models.ui
+import scala.util.{Failure, Success}
+import scala.concurrent.Future
 
 trait GymController extends Controller {
   this: RouteDaoComponent with GymServiceComponent with AuthServiceComponent =>
 
   def get(gymHandle: String, s: Option[String]) = Action.async { request =>
     // Get gym by handle
-    val gym = gymService.get(gymHandle)
+    gymService.get(gymHandle) match {
+      case Success(gym) => {
+        // Get boulders from Mongo for this gym
+        routeDao.findByGymhandle(gym.handle).map {
+          routes => {
+            // Admin authorizaton
+            val authCookie = createAuthCookie(s, gymHandle)
+            val isAdmin = authCookie.map(c => Some(true)).getOrElse {
+              authService.isAdmin(request.cookies, gym) match {
+                case Success(r) => Some(r)
+                case Failure(f) => throw f
+              }
+            }.getOrElse(false)
 
-    // Get boulders from Mongo for this gym
-    routeDao.findByGymhandle(gym.handle).map {
-      routes => {
-        // Admin authorizaton
-        val authCookie = createAuthCookie(s, gymHandle)
-        val isAdmin = (authCookie.isDefined) || authService.isAdmin(request.cookies, gym)
+            val routesByGrade = routes.groupBy(route => route.gradeId)
+            val uiGrades = gym.gradingSystem.grades.filter(g =>
+              routesByGrade.get(g.id).isDefined).map(g => ui.Grade(g)).toList
+            val uiRoutes = routesByGrade.map(e => (e._1, e._2.map(r => ui.Route(r, gym))))
+            val result = Ok(views.html.gym.index(ui.Gym(gym, uiGrades, uiRoutes), isAdmin))
 
-        val routesByGrade = routes.groupBy(route => route.gradeId)
-        val uiGrades = gym.gradingSystem.grades.filter(g =>
-          routesByGrade.get(g.id).isDefined).map(g => ui.Grade(g)).toList
-        val uiRoutes = routesByGrade.map(e => (e._1, e._2.map(r => ui.Route(r, gym))))
-        val result = Ok(views.html.gym.index(ui.Gym(gym, uiGrades, uiRoutes), isAdmin))
-
-        authCookie match {
-          case Some(cookie) => result.withCookies(cookie)
-          case None => result
+            authCookie match {
+              case Some(cookie) => result.withCookies(cookie)
+              case None => result
+            }
+          }
         }
       }
+      case Failure(f) => throw f
     }
   }
     
@@ -44,22 +54,26 @@ trait GymController extends Controller {
    * @return
    */
   def newBoulder(gymHandle: String) = Action {
-    val gym = gymService.get(gymHandle)
-    val grades = gym.gradingSystem.grades.map(g => g.id -> g.name)
-    val colors = gym.holdColors.map(c => Color2(c))
-    val categories = (gym.categories ::: Tag.categories).map(c => c.id -> c.name)
-    Ok(views.html.route.create(grades, colors, categories, gymHandle))
+    gymService.get(gymHandle) match {
+      case Success(gym) => {
+        val grades = gym.gradingSystem.grades.map(g => g.id -> g.name)
+        val colors = gym.holdColors.map(c => Color2(c))
+        val categories = (gym.categories ::: Tag.categories).map(c => c.id -> c.name)
+        Ok(views.html.route.create(grades, colors, categories, gymHandle))
+      }
+      case f: Failure[_] => throw f.exception
+    }
   }
 
   private def createAuthCookie(secretOption: Option[String], gymHandle: String): Option[Cookie] = {
     secretOption match {
       case Some(secret) => {
         authService.validateSecret(secret, gymHandle) match {
-          case true => Some(Cookie(gymHandle, secret, Some(60*60*24*7)))
+          case Success(result) if result => Some(Cookie(gymHandle, secret, Some(60*60*24*7)))
           case _ => None
         }
       }
-      case None => None
+      case _ => None
     }
   }
 }

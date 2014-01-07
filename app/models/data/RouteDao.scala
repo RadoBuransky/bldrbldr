@@ -8,5 +8,6 @@ trait RouteDaoComponent {
 
   trait RouteDao {
     def findByGymhandle(gymhandle: String): Future[List[Route]]
+    def incFlag(routeId: String, flagId: String): Unit
   }
 }

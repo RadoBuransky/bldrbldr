@@ -4,6 +4,7 @@ import models.domain.gym.Gym
 import play.api.mvc.Cookies
 import play.api.Play
 import play.api.Play.current
+import scala.util.Try
 
 object AuthService {
   def isAdmin(cookies: Cookies, gym: Gym): Boolean = {
@@ -25,7 +26,7 @@ trait AuthServiceComponent {
   def authService: AuthService
 
   trait AuthService {
-    def isAdmin(cookies: Cookies, gym: Gym): Boolean
-    def validateSecret(secret: String, gymHandle: String): Boolean
+    def isAdmin(cookies: Cookies, gym: Gym): Try[Boolean]
+    def validateSecret(secret: String, gymHandle: String): Try[Boolean]
   }
 }

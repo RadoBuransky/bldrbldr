@@ -5,19 +5,21 @@ import play.api.mvc.Cookies
 import models.domain.gym.Gym
 import play.api.{Configuration, Play}
 import play.api.Play.current
+import scala.util.{Success, Try}
+import common.Utils._
 
 trait AuthServiceComponentImpl extends AuthServiceComponent {
   lazy val authService = new AuthServiceImpl(Play.configuration)
 
   class AuthServiceImpl(config: Configuration) extends AuthService {
-    def isAdmin(cookies: Cookies, gym: Gym): Boolean = {
+    def isAdmin(cookies: Cookies, gym: Gym): Try[Boolean] = paramsFlatTry(cookies, gym) {
       cookies.get(gym.handle) match {
         case Some(cookie) => validateSecret(cookie.value, gym.handle)
-        case None => false
+        case None => Success(false)
       }
     }
 
-    def validateSecret(secret: String, gymHandle: String): Boolean = {
+    def validateSecret(secret: String, gymHandle: String): Try[Boolean] = paramsTry(secret, gymHandle) {
       config.getString("secret." + gymHandle) match {
         case Some(s) => s == secret
         case _ => false

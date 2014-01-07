@@ -10,12 +10,14 @@ import models.domain.gym.Demo
 import scala.concurrent.{ExecutionContext, Future}
 import ExecutionContext.Implicits.global
 import org.specs2.specification.Scope
+import scala.util.Success
+import test.TestUtils
 
 class GymControllerSpec extends Specification with Mockito {
   "newBoulder" should {
     "succeed for existing gym" in new GymControllerScope {
       // Setup
-      gymService.get("demo").returns(Demo)
+      gymService.get("demo").returns(Success(Demo))
 
       val result = newBoulder("demo")(FakeRequest(GET, "/climbing/demo/new"))
 
@@ -30,8 +32,9 @@ class GymControllerSpec extends Specification with Mockito {
   "get" should {
     "succeed for existing gym" in new GymControllerScope {
       // Setup
-      gymService.get("demo") returns Demo
+      gymService.get("demo") returns Success(Demo)
       routeDao.findByGymhandle("demo") returns Future(Nil)
+      authService.isAdmin(any, any) returns Success(false)
 
       val result = get("demo", None)(FakeRequest(GET, "/climbing/demo"))
 
@@ -46,9 +49,9 @@ class GymControllerSpec extends Specification with Mockito {
 
     "set cookie for correct secret" in new GymControllerScope {
       // Setup
-      gymService.get("demo") returns Demo
+      gymService.get("demo") returns Success(Demo)
       routeDao.findByGymhandle("demo") returns Future(Nil)
-      authService.validateSecret("123", "demo") returns true
+      authService.validateSecret("123", "demo") returns Success(true)
 
       val result = get("demo", Some("123"))(FakeRequest(GET, "/climbing/demo"))
 
@@ -64,9 +67,10 @@ class GymControllerSpec extends Specification with Mockito {
 
     "not set cookie for incorrect secret" in new GymControllerScope {
       // Setup
-      gymService.get("demo") returns Demo
+      gymService.get("demo") returns Success(Demo)
       routeDao.findByGymhandle("demo") returns Future(Nil)
-      authService.validateSecret("123", "demo") returns false
+      authService.isAdmin(any, any) returns Success(false)
+      authService.validateSecret("123", "demo") returns Success(false)
 
       val result = get("demo", Some("123"))(FakeRequest(GET, "/climbing/demo"))
 
