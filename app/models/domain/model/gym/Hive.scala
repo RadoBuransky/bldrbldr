@@ -3,13 +3,17 @@ package models.domain.gym
 import models.Color
 import models.domain.grade._
 import java.net.URL
-import models.domain.route.{FlagTag, CategoryTag}
 import java.util.Locale
+import models.domain._
+import models.domain.model._
+import models.domain.model.Grade
+import models.domain.model.GradingSystem
+import models.domain.model.CategoryTag
 
 case class HiveGrade(val from: Grade, val to: Grade, val color: Color, val name: String, val id: String)
-	extends IntervalGrade with SingleColorGrade
+	extends IntervalGrade with model.SingleColorGrade
 
-object HiveGradingSystem extends GradingSystem[HiveGrade]("Hive", Set(Discipline.Bouldering),
+object HiveGradingSystem extends GradingSystem[HiveGrade]("Hive", Set(model.Discipline.Bouldering),
     HiveGrade(Hueco.V0, Hueco.V2, Color(0, 0, 0), "⬣", "hive1") ::
     HiveGrade(Hueco.V1, Hueco.V3, Color(1, 0, 0), "⬣ ⬣", "hive2") ::
     HiveGrade(Hueco.V2, Hueco.V4, Color(0, 1, 0), "⬣ ⬣ ⬣", "hive3") ::
@@ -19,18 +23,18 @@ object HiveGradingSystem extends GradingSystem[HiveGrade]("Hive", Set(Discipline
     Nil)
     
 object Hive extends Gym {
-  import models.domain.gym.ColoredHolds._
+  import HoldsColor._
   
   def name = "Hive"
   val url = new URL("http://www.hiveclimbing.com/")
   def handle = "hive"
   def gradingSystem = HiveGradingSystem
-  def disciplines = Set(Discipline.Bouldering)
+  def disciplines = Set(model.Discipline.Bouldering)
   def holdColors = List(Color.Red, Color.LightRed, Color.Orange, Color.Yellow,
     Color.Green, Color.LightGreen, Color.Blue, Color.LightBlue,
     Color.Indigo, Color.Violet, Color.White, Color.Black, Color.Brown, Color.Sand,
     (Color.Yellow, Color.Blue), (Color.White, Color.Black), (Color.Sand, Color.Black),
     (Color.Red, Color.Black), (Color.Green, Color.Black))
   def categories = List(CategoryTag("TNT"), CategoryTag("CNC"))
-  def address = Address("520 Industrial Avenue", "Vancouver", Locale.CANADA)
+  def address = model.Address("520 Industrial Avenue", "Vancouver", Locale.CANADA)
 }

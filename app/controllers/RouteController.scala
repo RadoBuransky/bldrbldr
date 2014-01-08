@@ -11,7 +11,8 @@ import javax.imageio.IIOImage
 import javax.imageio.ImageIO
 import javax.imageio.ImageWriteParam
 import models.contract.JsonMapper
-import models.domain.grade.Discipline.Bouldering
+import models.domain.model.{Discipline, Tag}
+import Discipline.Bouldering
 import models.services.GymService
 import models.services.PhotoService
 import play.api.{Routes, Logger}
@@ -24,15 +25,15 @@ import play.modules.reactivemongo.MongoController
 import play.modules.reactivemongo.json.collection.JSONCollection
 import reactivemongo.bson.BSONObjectID
 import models.services.AuthService
-import models.data.JsonFormats._
+import models.data.model.{JsonFormats, Route}
+import JsonFormats._
 import play.modules.reactivemongo.json.BSONFormats._
-import models.domain.route.Tag
 import play.api.mvc.MultipartFormData.FilePart
 import scala.Some
 import play.modules.reactivemongo.json.collection.JSONCollection
 import play.mvc.Http
 import models.data.model.Route
-import models.data.model.Route
+import models.domain.model.Tag
 
 object RouteController extends Controller with MongoController {
   private val jpegMime = "image/jpeg"

@@ -1,20 +1,19 @@
 package models.contract
 
-import play.api.libs.json.JsObject
 import org.joda.time.Days
 import org.joda.time.DateTime
 import play.api.libs.json.Json
-import models.domain.gym._
 import models.services.PhotoService
-import models.domain.grade._
-import models.domain.route.Tag
-import models.domain.gym.SingleColoredHolds
-import models.domain.gym.DoubleColoredHolds
-import play.api.libs.json.JsObject
+import models.domain._
+import models.domain.model._
+import models.domain.model.ExactGrade
+import models.domain.model.Grade
+import models.domain.model.DoubleHoldsColor
+import models.data.model.Route
 import scala.Some
-import models.domain.gym.Address
-import models.data.model.Route
-import models.data.model.Route
+import play.api.libs.json.JsObject
+import models.domain.model.Address
+import models.domain.model.SingleHoldsColor
 
 object JsonMapper {
   def tagsToJson[T <: Tag](tags: Traversable[T]): List[JsObject] = {
@@ -26,7 +25,7 @@ object JsonMapper {
       "name" -> tag.name)
   }
 
-  def routeToJson(gym: models.domain.gym.Gym, route: Route): JsObject = {
+  def routeToJson(gym: model.Gym, route: Route): JsObject = {
     val days = Days.daysBetween(new DateTime(route._id.get.time), DateTime.now()).getDays()
     Json.obj("id" -> route._id.get.stringify,
       "holdcolor" -> holdColorByName(gym, route.holdsColor),
@@ -38,24 +37,24 @@ object JsonMapper {
       "flags" -> flagsToJson(route.flags))
   }
   
-  def holdColorByName(gym: models.domain.gym.Gym, holdcolor: String): JsObject = {
+  def holdColorByName(gym: model.Gym, holdcolor: String): JsObject = {
     gym.holdColors.find(h => h.id == holdcolor) match {
       case Some(h) => holdColorToJson(h)
       case None => Json.obj()
     }
   }
   
-  def holdColorToJson(holdColor: ColoredHolds): JsObject = {
+  def holdColorToJson(holdColor: HoldsColor): JsObject = {
     holdColor match {
-  		case (SingleColoredHolds(color)) =>
+  		case (SingleHoldsColor(color)) =>
   		  Json.obj("name" -> holdColor.id, "color" -> color.toWeb)
-		  case (DoubleColoredHolds(color1, color2)) =>
+		  case (DoubleHoldsColor(color1, color2)) =>
   		  Json.obj("name" -> holdColor.id, "color" -> color1.toWeb, "color2" -> color2.toWeb)
 		  case _ => Json.obj()
     }
   }
   
-  def gymToJson(gym: models.domain.gym.Gym): JsObject = {
+  def gymToJson(gym: model.Gym): JsObject = {
     Json.obj("name" -> gym.name,
       "handle" -> gym.handle,
       "url" -> gym.url.toString(),
@@ -71,7 +70,7 @@ object JsonMapper {
         }
 
         val color = g match {
-          case cg: SingleColorGrade => Json.obj("color" -> cg.color.toWeb)
+          case cg: model.SingleColorGrade => Json.obj("color" -> cg.color.toWeb)
           case _ => Json.obj()
         }
 
@@ -108,7 +107,7 @@ object JsonMapper {
       "country" -> address.country.getDisplayCountry())
   }
 
-  private def routeCategoriesToJson(gym: models.domain.gym.Gym, categories: List[String]) = {
+  private def routeCategoriesToJson(gym: model.Gym, categories: List[String]) = {
     val allCategories = gym.categories ++  Tag.categories;
 
     categories.map(c => allCategories.find(ct => ct.id == c) match {

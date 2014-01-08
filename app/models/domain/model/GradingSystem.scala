@@ -1,13 +1,12 @@
-package models.domain.grade
+package models.domain.model
 
-import scala.collection.immutable
 import Discipline.Discipline
-import scala.collection.immutable.LinearSeq
 import models.Color
+import models.domain.model.Grade.GradeId
 
 trait Grade {
   val name: String
-  val id: String
+  val id: GradeId
 }
 trait UnknownGrade extends Grade
 trait ExactGrade extends Grade {
@@ -43,6 +42,7 @@ abstract class GradingSystem[+TGrade <: Grade](private val _name: String,
 }
 
 object Grade {
+  type GradeId = String
   
   def getColor(grade: Grade): Option[Color] = {
     grade match {

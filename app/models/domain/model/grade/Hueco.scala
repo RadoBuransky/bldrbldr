@@ -1,11 +1,13 @@
 package models.domain.grade
 
+import models.domain.model.{Discipline, ExactGrade, GradingSystem}
+
 case class HuecoGrade(val value: String) extends ExactGrade {
   val name = value
   val id = value
 }
 
-object Hueco extends GradingSystem[HuecoGrade]("Hueco", Set(Discipline.Bouldering), 
+object Hueco extends GradingSystem[HuecoGrade]("Hueco", Set(Discipline.Bouldering),
     HuecoGrade("V0") ::
     HuecoGrade("V0+") ::
     HuecoGrade("V1") ::

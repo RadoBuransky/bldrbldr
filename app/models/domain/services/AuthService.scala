@@ -1,10 +1,10 @@
 package models.services
 
-import models.domain.gym.Gym
 import play.api.mvc.Cookies
 import play.api.Play
 import play.api.Play.current
 import scala.util.Try
+import models.domain.model.Gym
 
 object AuthService {
   def isAdmin(cookies: Cookies, gym: Gym): Boolean = {

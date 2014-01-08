@@ -5,12 +5,12 @@ import play.api.mvc.Cookie
 import play.api.mvc.Action
 import play.api.mvc.Controller
 import scala.concurrent.ExecutionContext.Implicits.global
-import models.domain.route.Tag
 import models.ui.Color2
-import models.data.RouteDaoComponent
 import models.ui
 import scala.util.{Failure, Success}
 import scala.concurrent.Future
+import models.domain.model.Tag
+import models.data.dao.RouteDaoComponent
 
 trait GymController extends Controller {
   this: RouteDaoComponent with GymServiceComponent with AuthServiceComponent =>

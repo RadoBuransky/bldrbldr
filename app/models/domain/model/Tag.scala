@@ -1,13 +1,13 @@
-package models.domain.route
+package models.domain.model
 
-import models.Color
+import models.domain.model.Tag.TagId
 
 /**
  * Route tagging.
  */
 trait Tag {
-  val id: String
-  val name: String
+  def id: TagId
+  def name: String
 }
 
 /**
@@ -22,11 +22,13 @@ case class CategoryTag(name: String) extends Tag {
  * General flagging tag. Users can (un)flag it.
  * @param name
  */
-case class FlagTag(name: String) extends Tag{
+case class FlagTag(name: String, counter: Option[Int] = None) extends Tag {
   val id = name.toLowerCase.filter(c => (c != ' ') && (c != '?'))
 }
 
 object Tag {
+  type TagId = String
+
   val flags: List[FlagTag] = {
     List(FlagTag("Awesome"), FlagTag("Boring"), FlagTag("Too easy"),
     FlagTag("Too hard"), FlagTag("Scary"), FlagTag("What? How?"))

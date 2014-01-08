@@ -1,10 +1,11 @@
 package models.services.impl
 
-import models.domain.gym.{Demo, Hive, Gym}
+import models.domain.gym.{Demo, Hive}
 import models.services.{GymService, GymServiceComponent}
 import models.JugjaneException
 import scala.util.Try
 import common.Utils._
+import models.domain.model.Gym
 
 trait GymServiceComponentImpl extends GymServiceComponent {
   val gymService: GymService = new GymServiceImpl()

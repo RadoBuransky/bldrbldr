@@ -2,7 +2,6 @@ package controllers
 
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
-import models.data.RouteDaoComponent
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import models.services.{AuthServiceComponent, GymServiceComponent}
@@ -12,6 +11,7 @@ import ExecutionContext.Implicits.global
 import org.specs2.specification.Scope
 import scala.util.Success
 import test.TestUtils
+import models.data.dao.RouteDaoComponent
 
 class GymControllerSpec extends Specification with Mockito {
   "newBoulder" should {

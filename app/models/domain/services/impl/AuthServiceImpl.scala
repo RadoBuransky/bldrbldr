@@ -2,11 +2,11 @@ package models.services.impl
 
 import models.services.AuthServiceComponent
 import play.api.mvc.Cookies
-import models.domain.gym.Gym
 import play.api.{Configuration, Play}
 import play.api.Play.current
 import scala.util.{Success, Try}
 import common.Utils._
+import models.domain.model.Gym
 
 trait AuthServiceComponentImpl extends AuthServiceComponent {
   lazy val authService = new AuthServiceImpl(Play.configuration)

@@ -1,7 +1,6 @@
-package models.data
+package models.data.model
 
 import play.modules.reactivemongo.json.BSONFormats._
-import models.data.model.{Route}
 
 object JsonFormats {
   import play.api.libs.json.Json

@@ -1,9 +1,9 @@
 package models.services.impl
 
 import models.services.RouteServiceComponent
-import models.data.RouteDaoComponent
 import scala.util.Try
 import common.Utils._
+import models.data.dao.RouteDaoComponent
 
 trait RouteServiceComponentImpl extends RouteServiceComponent {
   this: RouteDaoComponent =>
@@ -11,6 +11,12 @@ trait RouteServiceComponentImpl extends RouteServiceComponent {
   val routeService = new RouteServiceImpl
 
   class RouteServiceImpl extends RouteService {
+    def delete(routeId: String): Try[Unit] = paramsTry(routeId) {
+      notEmpty(routeId, "routeId")
+
+
+    }
+
     def incFlag(routeId: String, flagId: String): Try[Unit] = paramsTry(routeId, flagId) {
       routeDao.incFlag(routeId, flagId)
     }
