@@ -26,7 +26,8 @@ play.Project.playScalaSettings
 
 ScoverageSbtPlugin.instrumentSettings
 
-//ScoverageSbtPlugin.ScoverageKeys.excludedPackages in ScoverageSbtPlugin.scoverage := "views*,AppLoader,Reverse*"
+ScoverageSbtPlugin.ScoverageKeys.excludedPackages in ScoverageSbtPlugin.scoverage :=
+  "views*;AppLoader;Reverse*;<empty>*;models.data.*"
 
 CoverallsPlugin.singleProject
 

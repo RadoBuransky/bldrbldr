@@ -1,6 +1,6 @@
 package controllers
 
-import models.services.{AuthServiceComponent, GymServiceComponent}
+import models.domain.services.{AuthServiceComponent, GymServiceComponent}
 import play.api.mvc.Cookie
 import play.api.mvc.Action
 import play.api.mvc.Controller

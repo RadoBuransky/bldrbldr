@@ -3,7 +3,7 @@ package models.contract
 import org.joda.time.Days
 import org.joda.time.DateTime
 import play.api.libs.json.Json
-import models.services.PhotoService
+import models.domain.services.PhotoService
 import models.domain._
 import models.domain.model._
 import models.domain.model.ExactGrade

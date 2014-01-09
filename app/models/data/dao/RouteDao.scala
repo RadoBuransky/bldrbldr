@@ -8,8 +8,9 @@ trait RouteDaoComponent {
   def routeDao: RouteDao
 
   trait RouteDao {
-    def getByRouteId(routeId: dom.Route.RouteId): Future[dom.Route]
-    def findByGymhandle(gymhandle: String): Future[List[dat.Route]]
-    def incFlag(routeId: String, flagId: dom.Tag.TagId): Unit
+    def getByRouteId(routeId: String): Future[dat.Route]
+    def disable(routeId: String): Future[Unit]
+    def findByGymhandle(gymHandle: String): Future[List[dat.Route]]
+    def incFlag(routeId: String, flagId: String): Future[Unit]
   }
 }

@@ -1,15 +1,13 @@
 package models.domain.model
 
-import Gym.GymHandle
 import models.domain.model.Discipline.Discipline
-import models.domain.model.Grade.GradeId
 import models.domain.model.Route.RouteId
 
 case class Route(
   id: RouteId,
-  gymHandle: GymHandle,
+  gym: Gym,
   fileName: String,
-  gradeId: GradeId,
+  grade: Grade,
   holdsColor: HoldsColor,
   note: String,
   discipline: Discipline,

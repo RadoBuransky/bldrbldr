@@ -13,8 +13,8 @@ import javax.imageio.ImageWriteParam
 import models.contract.JsonMapper
 import models.domain.model.{Discipline, Tag}
 import Discipline.Bouldering
-import models.services.GymService
-import models.services.PhotoService
+import models.domain.services.GymService
+import models.domain.services.PhotoService
 import play.api.{Routes, Logger}
 import play.api.libs.Files.TemporaryFile
 import play.api.libs.json.Json
@@ -24,7 +24,7 @@ import play.api.mvc.MultipartFormData.FilePart
 import play.modules.reactivemongo.MongoController
 import play.modules.reactivemongo.json.collection.JSONCollection
 import reactivemongo.bson.BSONObjectID
-import models.services.AuthService
+import models.domain.services.AuthService
 import models.data.model.{JsonFormats, Route}
 import JsonFormats._
 import play.modules.reactivemongo.json.BSONFormats._

@@ -1,6 +1,6 @@
-package models.services.impl
+package models.domain.services.impl
 
-import models.services.AuthServiceComponent
+import models.domain.services.AuthServiceComponent
 import play.api.mvc.Cookies
 import play.api.{Configuration, Play}
 import play.api.Play.current
@@ -9,7 +9,8 @@ import common.Utils._
 import models.domain.model.Gym
 
 trait AuthServiceComponentImpl extends AuthServiceComponent {
-  lazy val authService = new AuthServiceImpl(Play.configuration)
+  def configuration: Configuration
+  lazy val authService = new AuthServiceImpl(configuration)
 
   class AuthServiceImpl(config: Configuration) extends AuthService {
     def isAdmin(cookies: Cookies, gym: Gym): Try[Boolean] = paramsFlatTry(cookies, gym) {

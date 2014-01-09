@@ -1,8 +1,10 @@
 package models.domain.model
 
 import Discipline.Discipline
-import models.Color
+import models.{JugjaneException, Color}
 import models.domain.model.Grade.GradeId
+import scala.util.{Failure, Try, Success}
+import java.util.NoSuchElementException
 
 trait Grade {
   val name: String
@@ -28,16 +30,36 @@ trait SingleColorGrade extends ColoredGrade {
 object Discipline extends Enumeration {
   type Discipline = Value
   val Bouldering, Climbing = Value
+
+  def getByName(name: String): Try[Discipline] = {
+    try {
+      Success(withName(name))
+    }
+    catch {
+      case e: NoSuchElementException => Failure(e)
+    }
+  }
 }
 
 abstract class GradingSystem[+TGrade <: Grade](private val _name: String,
     private val _disciplines: Set[Discipline], private val _grades: Seq[TGrade]) {
   def name = _name
   def disciplines = _disciplines
-  def grades = _grades  
-  
+  def grades = _grades
+
+  @deprecated
   def findById(id: String): Option[Grade] = {
-    grades.find(grade => grade.id == id)
+    getById(id) match {
+      case Success(grade) => Some(grade)
+      case Failure(e) => None
+    }
+  }
+  
+  def getById(id: String): Try[Grade] = {
+    grades.find(grade => grade.id == id) match {
+      case Some(grade) => Success(grade)
+      case None => Failure(new JugjaneException("Grade doesn't exist! [" + id + "]"))
+    }
   }
 }
 

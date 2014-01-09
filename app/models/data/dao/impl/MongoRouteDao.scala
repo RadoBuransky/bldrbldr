@@ -10,9 +10,8 @@ import play.modules.reactivemongo.json.BSONFormats._
 import play.modules.reactivemongo.json.collection.JSONCollection
 import common.Utils._
 import models.data.dao.RouteDaoComponent
-import models.domain.{model => dom}
 import models.data.{model => dat}
-import models.data.model.{Mapping, Route}
+import models.data.model.{Route}
 import reactivemongo.bson.BSONObjectID
 import models.JugjaneException
 
@@ -23,7 +22,7 @@ trait MongoRouteDaoComponent extends RouteDaoComponent {
     private val routeColName = "route"
     private implicit val routeFormat = Json.format[dat.Route]
 
-    def getByRouteId(routeId: dom.Route.RouteId): Future[dom.Route] = {
+    def getByRouteId(routeId: String): Future[dat.Route] = {
       notEmpty(routeId, "routeId")
 
       val datRouteOption = ReactiveMongoPlugin.db.collection[JSONCollection](routeColName).
@@ -32,22 +31,36 @@ trait MongoRouteDaoComponent extends RouteDaoComponent {
 
       datRouteOption.map {
         case None => throw new JugjaneException("Route not found! [" + routeId + "]")
-        case Some(r) => Mapping.toDomain(r)
+        case Some(r) => r
       }
     }
 
-    def findByGymhandle(gymhandle: String): Future[List[dat.Route]] = {
-      notEmpty(gymhandle, "gymhandle")
+    def disable(routeId: String): Future[Unit] = {
+      notEmpty(routeId, "routeId")
 
       ReactiveMongoPlugin.db.collection[JSONCollection](routeColName).
-        find(Json.obj("gymHandle" -> gymhandle, "enabled" -> true)).
+        update(Json.obj("_id" -> BSONObjectID(routeId)),
+          Json.obj("$set" -> Json.obj("enabled" -> false))).map { lastError =>
+      }
+    }
+
+    def findByGymhandle(gymHandle: String): Future[List[dat.Route]] = {
+      notEmpty(gymHandle, "gymHandle")
+
+      ReactiveMongoPlugin.db.collection[JSONCollection](routeColName).
+        find(Json.obj("gymHandle" -> gymHandle, "enabled" -> true)).
         sort(Json.obj("_id" -> -1)).
         cursor[Route].collect[List](Int.MaxValue, true)
     }
 
-    def incFlag(routeId: dom.Route.RouteId, flagId: dom.Tag.TagId): Unit = {
+    def incFlag(routeId: String, flagId: String): Future[Unit] = {
       notEmpty(routeId, "routeId")
       notEmpty(flagId, "flagId")
+
+      ReactiveMongoPlugin.db.collection[JSONCollection](routeColName).
+        update(Json.obj("_id" -> BSONObjectID(routeId)),
+          Json.obj("$inc" -> Json.obj(("flags." + flagId) -> 1))).map { lastError =>
+      }
     }
   }
 }

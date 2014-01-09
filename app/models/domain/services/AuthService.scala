@@ -1,4 +1,4 @@
-package models.services
+package models.domain.services
 
 import play.api.mvc.Cookies
 import play.api.Play

@@ -1,4 +1,4 @@
-package models.services
+package models.domain.services
 
 import fly.play.s3._
 import java.net.URL

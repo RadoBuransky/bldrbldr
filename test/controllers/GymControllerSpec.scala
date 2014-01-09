@@ -4,7 +4,7 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import models.services.{AuthServiceComponent, GymServiceComponent}
+import models.domain.services.{AuthServiceComponent, GymServiceComponent}
 import models.domain.gym.Demo
 import scala.concurrent.{ExecutionContext, Future}
 import ExecutionContext.Implicits.global

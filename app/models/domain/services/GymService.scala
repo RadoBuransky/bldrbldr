@@ -1,4 +1,4 @@
-package models.services
+package models.domain.services
 
 import models.domain.gym.{Demo, Hive}
 import models.JugjaneException

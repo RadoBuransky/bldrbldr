@@ -1,7 +1,7 @@
-package models.services.impl
+package models.domain.services.impl
 
 import models.domain.gym.{Demo, Hive}
-import models.services.{GymService, GymServiceComponent}
+import models.domain.services.{GymService, GymServiceComponent}
 import models.JugjaneException
 import scala.util.Try
 import common.Utils._
