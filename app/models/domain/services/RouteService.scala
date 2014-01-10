@@ -9,7 +9,7 @@ trait RouteServiceComponent {
 
   trait RouteService {
     def getByRouteId(routeId: dom.Route.RouteId): Future[dom.Route]
-    def delete(routeId: dom.Route.RouteId): Try[Unit]
-    def incFlag(routeId: dom.Route.RouteId, flagId: dom.Tag.TagId): Try[Unit]
+    def delete(routeId: dom.Route.RouteId): Future[Unit]
+    def incFlag(routeId: dom.Route.RouteId, flagId: dom.Tag.TagId): Future[Unit]
   }
 }

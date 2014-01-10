@@ -17,14 +17,15 @@ trait RouteServiceComponentImpl extends RouteServiceComponent {
   val routeService = new RouteServiceImpl
 
   class RouteServiceImpl extends RouteService {
-    def getByRouteId(routeId: dom.Route.RouteId): Future[dom.Route] =
+    def getByRouteId(routeId: dom.Route.RouteId): Future[dom.Route] = {
       routeDao.getByRouteId(routeId).map(routeToDomain(_).get)
-
-    def delete(routeId: dom.Route.RouteId): Try[Unit] = paramsTry(routeId) {
-      notEmpty(routeId, "routeId")
     }
 
-    def incFlag(routeId: dom.Route.RouteId, flagId: dom.Tag.TagId): Try[Unit] = paramsTry(routeId, flagId) {
+    def delete(routeId: dom.Route.RouteId): Future[Unit] = {
+      routeDao.disable(routeId)
+    }
+
+    def incFlag(routeId: dom.Route.RouteId, flagId: dom.Tag.TagId): Future[Unit] = {
       routeDao.incFlag(routeId, flagId)
     }
 

@@ -25,16 +25,17 @@ object HiveGradingSystem extends GradingSystem[HiveGrade]("Hive", Set(model.Disc
 object Hive extends Gym {
   import HoldsColor._
   
-  def name = "Hive"
+  val name = "Hive"
   val url = new URL("http://www.hiveclimbing.com/")
-  def handle = "hive"
-  def gradingSystem = HiveGradingSystem
-  def disciplines = Set(model.Discipline.Bouldering)
-  def holdColors = List(Color.Red, Color.LightRed, Color.Orange, Color.Yellow,
-    Color.Green, Color.LightGreen, Color.Blue, Color.LightBlue,
-    Color.Indigo, Color.Violet, Color.White, Color.Black, Color.Brown, Color.Sand,
-    (Color.Yellow, Color.Blue), (Color.White, Color.Black), (Color.Sand, Color.Black),
-    (Color.Red, Color.Black), (Color.Green, Color.Black))
-  def categories = List(CategoryTag("TNT"), CategoryTag("CNC"))
-  def address = model.Address("520 Industrial Avenue", "Vancouver", Locale.CANADA)
+  val handle = "hive"
+  val gradingSystem = HiveGradingSystem
+  val disciplines = Set(model.Discipline.Bouldering)
+  val holdColors: List[HoldsColor] =
+      List(Color.Red, Color.LightRed, Color.Orange, Color.Yellow,
+      Color.Green, Color.LightGreen, Color.Blue, Color.LightBlue,
+      Color.Indigo, Color.Violet, Color.White, Color.Black, Color.Brown, Color.Sand,
+      (Color.Yellow, Color.Blue), (Color.White, Color.Black), (Color.Sand, Color.Black),
+      (Color.Red, Color.Black), (Color.Green, Color.Black))
+  val categories = List(CategoryTag("TNT"), CategoryTag("CNC"))
+  val address = model.Address("520 Industrial Avenue", "Vancouver", Locale.CANADA)
 }

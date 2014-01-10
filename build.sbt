@@ -27,7 +27,8 @@ play.Project.playScalaSettings
 ScoverageSbtPlugin.instrumentSettings
 
 ScoverageSbtPlugin.ScoverageKeys.excludedPackages in ScoverageSbtPlugin.scoverage :=
-  "views*;AppLoader;Reverse*;<empty>*;models.data.*"
+  "views*;AppLoader;Reverse*;<empty>*;models.data.*;models.domain.services.AuthService*;" +
+    "models.domain.services.GymService*;models.domain.services.PhotoService*;models.contract.JsonMapper*"
 
 CoverallsPlugin.singleProject
 

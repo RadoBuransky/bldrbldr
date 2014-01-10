@@ -65,11 +65,4 @@ abstract class GradingSystem[+TGrade <: Grade](private val _name: String,
 
 object Grade {
   type GradeId = String
-  
-  def getColor(grade: Grade): Option[Color] = {
-    grade match {
-      case scg: SingleColorGrade => Option(scg.color)
-      case _ => None
-    }
-  }
 }
