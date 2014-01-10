@@ -13,8 +13,7 @@ import javax.imageio.ImageWriteParam
 import models.contract.JsonMapper
 import models.domain.model.{Discipline, Tag}
 import Discipline.Bouldering
-import models.domain.services.GymService
-import models.domain.services.PhotoService
+import models.domain.services._
 import play.api.{Routes, Logger}
 import play.api.libs.Files.TemporaryFile
 import play.api.libs.json.Json
@@ -24,7 +23,6 @@ import play.api.mvc.MultipartFormData.FilePart
 import play.modules.reactivemongo.MongoController
 import play.modules.reactivemongo.json.collection.JSONCollection
 import reactivemongo.bson.BSONObjectID
-import models.domain.services.AuthService
 import models.data.model.{JsonFormats, Route}
 import JsonFormats._
 import play.modules.reactivemongo.json.BSONFormats._
@@ -34,44 +32,45 @@ import play.modules.reactivemongo.json.collection.JSONCollection
 import play.mvc.Http
 import models.data.model.Route
 import models.domain.model.Tag
+import play.api.mvc.MultipartFormData.FilePart
+import models.data.model.Route
+import scala.Some
+import play.modules.reactivemongo.json.collection.JSONCollection
+import scala.util.{Success, Failure}
 
-object RouteController extends Controller with MongoController {
+trait RouteController extends Controller with MongoController {
+  this: RouteServiceComponent with GymServiceComponent with AuthServiceComponent
+    with PhotoServiceComponent =>
+
   private val jpegMime = "image/jpeg"
   private val photoWidth = 800
 
   def flag(gymHandle: String, routeId: String, flagId: String) = Action.async {
-    incFlag(routeId, flagId) map { lastError => Ok }
+    routeService.incFlag(routeId, flagId).map { result =>
+      Ok
+    }
   }
   
   def delete(gymHandle: String, routeId: String) = Action.async { request =>
-    // Get gym by handle
-    val gym = GymService.get(gymHandle)
-    
-    if (!AuthService.isAdmin(request.cookies, gym)) {
-      future { Unauthorized }
+    val isAdminTry = gymService.get(gymHandle).flatMap { gym =>
+      authService.isAdmin(request.cookies, gym)
     }
-    else {    
-      getBoulder(routeId).map {	route =>
-        route match {
-          case None => NotFound
-          case Some(route) => {
-            // Delete file from S3
-            val removePhotoFuture = logFuture("removePhoto") {
-              PhotoService.remove(route.fileName)
-            }
-            val disableRouteFuture = logFuture("disableRoute") {
-              disableRoute(routeId)
-            }
 
-            for {
-              rp <- removePhotoFuture
-              dr <- disableRouteFuture
-            } yield true
+    isAdminTry match {
+      case Failure(t) => Promise.successful(InternalServerError).future
+      case Success(isAdmin) if isAdmin => {
+        routeService.getByRouteId(routeId).map { route =>
+          for {
+            rp <- photoService.remove(route.fileName)
+            dr <- routeService.delete(routeId)
+          } yield ()
 
-            Ok
-          }
+          Ok
+        } recover {
+          case _ => NotFound
         }
       }
+      case _ => Promise.successful(Unauthorized).future
     }
   }
   
@@ -139,18 +138,6 @@ object RouteController extends Controller with MongoController {
   	}
   }
 
-  private def incFlag(routeId: String, flagId: String) = {
-    db.collection[JSONCollection]("route").
-      update(Json.obj("_id" -> BSONObjectID(routeId)),
-        Json.obj("$inc" -> Json.obj(("flags." + flagId) -> 1)))
-  }
-  
-  private def disableRoute(routeId: String) = {
-    db.collection[JSONCollection]("route").
-    	update(Json.obj("_id" -> BSONObjectID(routeId)),
-    	    Json.obj("$set" -> Json.obj("enabled" -> false)))    
-  }
-  
   private def getBoulder(routeId: String): Future[Option[Route]] = {
     db.collection[JSONCollection]("route").
     	find(Json.obj("_id" -> BSONObjectID(routeId))).
@@ -255,7 +242,7 @@ object RouteController extends Controller with MongoController {
       case _ => false
     }
   }
-  
+
   private def logFuture[T](msg: String)(body: =>T): Future[T] = {
     val f = Future[T](body)
     f.onFailure {

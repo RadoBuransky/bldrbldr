@@ -4,6 +4,7 @@ import fly.play.s3._
 import java.net.URL
 import play.api.Logger
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 object PhotoService {
   private val BucketName = "jugjane"
@@ -24,9 +25,12 @@ object PhotoService {
   def getUrl(fileName: String): URL = {
     new URL(UrlTemplate.format(BucketName, fileName))
   }
-  
-  def remove(fileName: String) = {
-  	val bucket = S3(BucketName)  	
-  	bucket.remove(fileName)    
+}
+
+trait PhotoServiceComponent {
+  def photoService: PhotoService
+
+  trait PhotoService {
+    def remove(fileName: String): Future[Unit]
   }
 }

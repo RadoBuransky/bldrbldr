@@ -3,10 +3,10 @@ GET     /*path/                     com.jugjane.controllers.Application.untrail(
 
 GET		/climbing/:gymHandle/new		        		AppLoader.gymController.newBoulder(gymHandle)
 GET		/climbing/:gymHandle	        				AppLoader.gymController.get(gymHandle, s: Option[String])
-POST	/climbing/:gymHandle/new	                    controllers.RouteController.upload(gymHandle)
-GET		/climbing/:gymHandle/:routeId           		controllers.RouteController.get(gymHandle, routeId)
-DELETE	/climbing/:gymHandle/:routeId	            	controllers.RouteController.delete(gymHandle, routeId)
-PUT 	/climbing/:gymHandle/:routeId/flag/:flagId		controllers.RouteController.flag(gymHandle, routeId, flagId)
+POST	/climbing/:gymHandle/new	                    AppLoader.routeController.upload(gymHandle)
+GET		/climbing/:gymHandle/:routeId           		AppLoader.routeController.get(gymHandle, routeId)
+DELETE	/climbing/:gymHandle/:routeId	            	AppLoader.routeController.delete(gymHandle, routeId)
+PUT 	/climbing/:gymHandle/:routeId/flag/:flagId		AppLoader.routeController.flag(gymHandle, routeId, flagId)
 
 GET     /robots.txt 				controllers.Assets.at(path="/public", file="robots.txt")
 GET     /sitemap.xml 				controllers.Assets.at(path="/public", file="sitemap.xml")

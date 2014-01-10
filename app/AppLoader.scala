@@ -1,15 +1,16 @@
-import controllers.GymController
+import controllers.{RouteController, GymController}
 import models.data.impl.MongoRouteDaoComponent
-import models.domain.services.impl.{AuthServiceComponentImpl, GymServiceComponentImpl}
+import models.domain.services.impl.{PhotoServiceComponentImpl, RouteServiceComponentImpl, AuthServiceComponentImpl, GymServiceComponentImpl}
 import play.api.Play
 import play.api.Play.current
 
-/**
- * Created by rado on 04/01/14.
- */
 package object AppLoader {
   val gymController = new GymController with MongoRouteDaoComponent with GymServiceComponentImpl
     with AuthServiceComponentImpl with PlayConfiguration
+
+  val routeController = new RouteController with RouteServiceComponentImpl with GymServiceComponentImpl
+    with MongoRouteDaoComponent with AuthServiceComponentImpl with PlayConfiguration
+    with PhotoServiceComponentImpl
 
   trait PlayConfiguration {
     val configuration = Play.configuration

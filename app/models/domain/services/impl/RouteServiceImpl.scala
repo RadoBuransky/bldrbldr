@@ -1,13 +1,11 @@
 package models.domain.services.impl
 
 import models.domain.services.{GymServiceComponent, RouteServiceComponent}
-import scala.util.{Success, Failure, Try}
-import common.Utils._
+import scala.util.Try
 import models.data.dao.RouteDaoComponent
 import models.domain.{ model => dom }
 import models.data.{ model => dat }
-import scala.concurrent.{ExecutionContext, Promise, Future}
-import models.JugjaneException
+import scala.concurrent.{ExecutionContext, Future}
 import models.domain.model.{Tag, Discipline, HoldsColor}
 import ExecutionContext.Implicits.global
 
