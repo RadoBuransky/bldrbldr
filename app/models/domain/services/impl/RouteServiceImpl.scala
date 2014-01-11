@@ -8,6 +8,7 @@ import models.data.{ model => dat }
 import scala.concurrent.{ExecutionContext, Future}
 import models.domain.model.{Tag, Discipline, HoldsColor}
 import ExecutionContext.Implicits.global
+import org.joda.time.DateTime
 
 trait RouteServiceComponentImpl extends RouteServiceComponent {
   this: RouteDaoComponent with GymServiceComponent =>
@@ -17,6 +18,12 @@ trait RouteServiceComponentImpl extends RouteServiceComponent {
   class RouteServiceImpl extends RouteService {
     def getByRouteId(routeId: dom.Route.RouteId): Future[dom.Route] = {
       routeDao.getByRouteId(routeId).map(routeToDomain(_).get)
+    }
+
+    def getByGymHandle(gymHandle: dom.Gym.GymHandle): Future[List[dom.Route]] = {
+      routeDao.findByGymhandle(gymHandle).map { routes =>
+        routes.map(routeToDomain(_).get)
+      }
     }
 
     def delete(routeId: dom.Route.RouteId): Future[Unit] = {
@@ -46,7 +53,8 @@ trait RouteServiceComponentImpl extends RouteServiceComponent {
                     discipline,
                     categories,
                     flags,
-                    route.enabled)
+                    route.enabled,
+                    new DateTime(route._id.get.time))
                 }
               }
             }

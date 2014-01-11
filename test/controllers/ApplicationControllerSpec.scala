@@ -22,4 +22,12 @@ class ApplicationControllerSpec extends Specification with Mockito {
       redirectLocation(result) must equalTo(Some("/xxx"))
     }
   }
+
+  "climbing" should {
+    "see other" in {
+      val result = Application.climbing(FakeRequest(GET, "/climbing"))
+      status(result) must equalTo(Status.SEE_OTHER)
+      redirectLocation(result) must equalTo(Some("/"))
+    }
+  }
 }

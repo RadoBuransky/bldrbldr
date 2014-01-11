@@ -1,6 +1,6 @@
 package controllers
 
-import models.domain.services.{AuthServiceComponent, GymServiceComponent}
+import models.domain.services.{RouteServiceComponent, PhotoService, AuthServiceComponent, GymServiceComponent}
 import play.api.mvc.Cookie
 import play.api.mvc.Action
 import play.api.mvc.Controller
@@ -8,39 +8,37 @@ import scala.concurrent.ExecutionContext.Implicits.global
 import models.ui.Color2
 import models.ui
 import scala.util.{Failure, Success}
-import scala.concurrent.Future
 import models.domain.model.Tag
-import models.data.dao.RouteDaoComponent
 
 trait GymController extends Controller {
-  this: RouteDaoComponent with GymServiceComponent with AuthServiceComponent =>
+  this: GymServiceComponent with AuthServiceComponent with RouteServiceComponent =>
 
   def get(gymHandle: String, s: Option[String]) = Action.async { request =>
     // Get gym by handle
     gymService.get(gymHandle) match {
       case Success(gym) => {
-        // Get boulders from Mongo for this gym
-        routeDao.findByGymhandle(gym.handle).map {
-          routes => {
-            // Admin authorizaton
-            val authCookie = createAuthCookie(s, gymHandle)
-            val isAdmin = authCookie.map(c => Some(true)).getOrElse {
-              authService.isAdmin(request.cookies, gym) match {
-                case Success(r) => Some(r)
-                case Failure(f) => throw f
-              }
-            }.getOrElse(false)
-
-            val routesByGrade = routes.groupBy(route => route.gradeId)
-            val uiGrades = gym.gradingSystem.grades.filter(g =>
-              routesByGrade.get(g.id).isDefined).map(g => ui.Grade(g)).toList
-            val uiRoutes = routesByGrade.map(e => (e._1, e._2.map(r => ui.Route(r, gym))))
-            val result = Ok(views.html.gym.index(ui.Gym(gym, uiGrades, uiRoutes), isAdmin))
-
-            authCookie match {
-              case Some(cookie) => result.withCookies(cookie)
-              case None => result
+        routeService.getByGymHandle(gymHandle).map { routes =>
+          // Admin authorizaton
+          val authCookie = createAuthCookie(s, gymHandle)
+          val isAdmin = authCookie.map(c => Some(true)).getOrElse {
+            authService.isAdmin(request.cookies, gym) match {
+              case Success(r) => Some(r)
+              case Failure(f) => throw f
             }
+          }.getOrElse(false)
+
+          val routesByGrade = routes.groupBy(route => route.grade.id)
+          val uiGrades = gym.gradingSystem.grades.filter(g =>
+            routesByGrade.get(g.id).isDefined).map(g => ui.Grade(g)).toList
+          val uiRoutes = routesByGrade.map(e => (e._1, e._2.map(r => {
+            val photoUrl = PhotoService.getUrl(r.fileName).toString
+            ui.Route(r, photoUrl)
+          })))
+          val result = Ok(views.html.gym.index(ui.Gym(gym, uiGrades, uiRoutes), isAdmin))
+
+          authCookie match {
+            case Some(cookie) => result.withCookies(cookie)
+            case None => result
           }
         }
       }

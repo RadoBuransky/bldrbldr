@@ -7,13 +7,7 @@ import models.domain.services.{PhotoServiceComponent, RouteServiceComponent, Aut
 import scala.concurrent.Promise
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import models.JugjaneException
-import scala.util.{Success, Failure}
 import models.domain.gym.Demo
-import play.api.http.Status._
-import scala.util.Success
-import models.JugjaneException
-import scala.util.Failure
 import scala.util.Success
 import models.JugjaneException
 import scala.util.Failure
@@ -131,5 +125,4 @@ class RouteControllerSpec extends Specification with Mockito {
     val authService: AuthService = mock[AuthService]
     val photoService: PhotoService = mock[PhotoService]
   }
-
 }

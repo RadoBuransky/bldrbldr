@@ -1,26 +1,25 @@
-@(route: models.ui.Route, gymName: String, gymHandle: String, grade: models.ui.Grade, flags: Seq[models.ui.Flag],
-    photoUrl: String, isAdmin: Boolean)
+@(route: models.ui.Route, isAdmin: Boolean)
 
 @import controls.color
 @import controls.categories
 
-@common(grade + " at " + gymName, route.note,
-    ogImageUrl = Some(photoUrl), gymName = Some(gymName), gymHandle = Some(gymHandle)){
+@common(route.d.grade.name + " at " + route.d.gym.name, route.d.note,
+    ogImageUrl = Some(route.photoUrl), gymName = Some(route.d.gym.name), gymHandle = Some(route.d.gym.handle)){
 <div class="container" id="route">
     <h1>
         @color(route.color)
-        @grade
+        @route.d.grade.name
     </h1>
     <div class="routedesc">
         <span class="routenote">
-            @route.note (@route.days days)
+            @route.d.note (@route.days days)
         </span>
         @categories(route.categories, route.days)
     </div>
     <div id="flags">
-        @for(flag <- flags) {
+        @for(flag <- route.d.flags) {
         <button id="@flag.id" type="button" class="btn btn-default">
-            @flag.name <span class="flagCount">(@flag.count)</span>
+            @flag.name <span class="flagCount">(@flag.counter)</span>
             <span class="glyphicon glyphicon-ok" style="display: none"></span>
         </button>
         }
@@ -38,12 +37,12 @@
     }
 
     <div class="row">
-        <img id="routephoto" src="@photoUrl" class="col-xs-12" style="max-width: 800px">
+        <img id="routephoto" src="@route.photoUrl" class="col-xs-12" style="max-width: 800px">
     </div>
 </div>
 <script>
-    window.gymHandle = '@gymHandle'
-    window.routeId = '@route.id'
+    window.gymHandle = '@route.d.gym.handle'
+    window.routeId = '@route.d.id'
 </script>
 }
 

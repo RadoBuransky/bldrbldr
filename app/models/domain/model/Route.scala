@@ -2,6 +2,7 @@ package models.domain.model
 
 import models.domain.model.Discipline.Discipline
 import models.domain.model.Route.RouteId
+import org.joda.time.DateTime
 
 case class Route(
   id: RouteId,
@@ -13,7 +14,8 @@ case class Route(
   discipline: Discipline,
   categories: List[CategoryTag],
   flags: List[FlagTag],
-  enabled: Boolean)
+  enabled: Boolean,
+  created: DateTime)
 
 object Route {
   type RouteId = String

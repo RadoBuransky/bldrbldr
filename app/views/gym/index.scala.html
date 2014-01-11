@@ -21,12 +21,12 @@
         <h2>@grade</h2>
         <div id="routes">
             @for(route <- gym.routes(grade.id)) {
-            <a href="/climbing/@gym.handle/@route.id" class="route">
+            <a href="/climbing/@gym.handle/@route.d.id" class="route">
                 <div class="routerow">
                     @color(route.color)
                     <div class="routedesc">
                         <span class="routenote">
-                            @route.note (@route.days days)
+                            @route.d.note (@route.days days)
                         </span>
                         @categories(route.categories, route.days)
                     </div>

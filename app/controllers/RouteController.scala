@@ -59,13 +59,15 @@ trait RouteController extends Controller with MongoController {
     isAdminTry match {
       case Failure(t) => Promise.successful(InternalServerError).future
       case Success(isAdmin) if isAdmin => {
-        routeService.getByRouteId(routeId).map { route =>
-          for {
+        routeService.getByRouteId(routeId).flatMap { route =>
+          val r = for {
             rp <- photoService.remove(route.fileName)
             dr <- routeService.delete(routeId)
           } yield ()
 
-          Ok
+          r.map { r =>
+            Ok
+          }
         } recover {
           case _ => NotFound
         }
@@ -75,29 +77,45 @@ trait RouteController extends Controller with MongoController {
   }
   
   def get(gymHandle: String, routeId: String) = Action.async { request =>
-    getBoulder(routeId).map {	route =>
-      route match {
-        case Some(route) => {
-          if (!route.enabled)
-            BadRequest("Route is disabled.")
-          else {
-            // Get gym by handle
-            val gym = GymService.get(gymHandle)
-
-            val grade = models.ui.Grade(gym.gradingSystem.findById(route.gradeId).get)
-            val flags = Tag.flags.map(flag => {
-              val count = route.flags.getOrElse(flag.id, 0)
-              models.ui.Flag(flag, count)
-            })
-            val isAdmin = AuthService.isAdmin(request.cookies, gym)
-            Ok(views.html.route.index(models.ui.Route(route, gym), gym.name, gym.handle, grade, flags,
-              PhotoService.getUrl(route.fileName).toString, isAdmin))
+    routeService.getByRouteId(routeId).map { route =>
+      if (!route.enabled)
+        NotFound
+      else {
+        authService.isAdmin(request.cookies, route.gym) match {
+          case Success(isAdmin) => {
+            val photoUrl = PhotoService.getUrl(route.fileName).toString
+            Ok(views.html.route.index(models.ui.Route(route, photoUrl), isAdmin))
           }
+          case Failure(t) => InternalServerError
         }
-        case None => NotFound
       }
+    } recover {
+      case _ => NotFound
     }
   }
+//    getBoulder(routeId).map {	route =>
+//      route match {
+//        case Some(route) => {
+//          if (!route.enabled)
+//            BadRequest("Route is disabled.")
+//          else {
+//            // Get gym by handle
+//            val gym = GymService.get(gymHandle)
+//
+//            val grade = models.ui.Grade(gym.gradingSystem.findById(route.gradeId).get)
+//            val flags = Tag.flags.map(flag => {
+//              val count = route.flags.getOrElse(flag.id, 0)
+//              models.ui.Flag(flag, count)
+//            })
+//            val isAdmin = AuthService.isAdmin(request.cookies, gym)
+//            Ok(views.html.route.index(models.ui.Route(route, gym), gym.name, gym.handle, grade, flags,
+//              PhotoService.getUrl(route.fileName).toString, isAdmin))
+//          }
+//        }
+//        case None => NotFound
+//      }
+//    }
+//  }
   
   def upload(gymHandle: String) = Action(parse.multipartFormData) { request => {
 	    // Get gym by handle

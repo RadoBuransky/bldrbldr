@@ -2,6 +2,7 @@ package com.jugjane.test
 
 import models.domain.model.{Tag, Discipline, Route}
 import models.domain.gym.{DemoGradingSystem, Demo}
+import org.joda.time.DateTime
 
 object TestData {
   val route1: Route = Route("123",
@@ -13,5 +14,7 @@ object TestData {
     Discipline.Bouldering,
     Tag.categories(0) :: Tag.categories(3) :: Nil,
     Tag.flags(1).setCounter(10) :: Tag.flags(0) :: Tag.flags(4).setCounter(0) :: Nil,
-    true)
+    true,
+    new DateTime(1983, 1, 10, 10, 10
+    ))
 }

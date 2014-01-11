@@ -1,5 +1,6 @@
 GET     /                           com.jugjane.controllers.Application.index
 GET     /*path/                     com.jugjane.controllers.Application.untrail(path: String)
+GET		/climbing                   com.jugjane.controllers.Application.climbing
 
 GET		/climbing/:gymHandle/new		        		AppLoader.gymController.newBoulder(gymHandle)
 GET		/climbing/:gymHandle	        				AppLoader.gymController.get(gymHandle, s: Option[String])

@@ -18,7 +18,11 @@ case class Gym(name: String,
 
 case class Color2(name: String, one: WebColor, two: Option[WebColor] = None)
 
-case class Route(id: String, color: Color2, note: String, days: Int, categories: List[String])
+case class Route(d: domain.model.Route, photoUrl: String) {
+  val days = Days.daysBetween(d.created, DateTime.now()).getDays()
+  val color = Color2(d.holdsColor)
+  val categories = d.categories.map { c => c.name }
+}
 
 case class Flag(id: String, name: String, count: Int)
 
@@ -51,15 +55,13 @@ object Color2 {
   }
 }
 
-object Route {
-  def apply(from: model.Route, gym: domain.model.Gym):
-    models.ui.Route = {
-    val holdsColor = Color2(gym.holdColors.find(hc => hc.id == from.holdsColor).get)
-    val days = Days.daysBetween(new DateTime(from._id.get.time), DateTime.now()).getDays()
-    holdsColor.two.isEmpty
-    Route(from._id.get.stringify, holdsColor, from.note, days, from.categories)
-  }
-}
+//object Route {
+//  def apply(from: domain.model.Route): models.ui.Route = {
+//    val holdsColor = Color2(gym.holdColors.find(hc => hc.id == from.holdsColor).get)
+//    val days = Days.daysBetween(new DateTime(from._id.get.time), DateTime.now()).getDays()
+//    Route(from)
+//  }
+//}
 
 object Flag {
   def apply(from: FlagTag, count: Int): models.ui.Flag = {

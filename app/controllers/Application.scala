@@ -12,4 +12,8 @@ object Application extends Controller {
   def untrail(path: String) = Action {
     MovedPermanently("/" + path)
   }
+
+  def climbing = Action {
+    SeeOther("/")
+  }
 }
