@@ -12,6 +12,7 @@ import scala.util.Success
 import models.JugjaneException
 import scala.util.Failure
 import com.jugjane.test.TestData
+import java.net.URL
 
 class RouteControllerSpec extends Specification with Mockito {
   "flag" should {
@@ -99,7 +100,7 @@ class RouteControllerSpec extends Specification with Mockito {
       // Setup
       gymService.get("demo").returns(Success(Demo))
       authService.isAdmin(any, any).returns(Success(true))
-      routeService.getByRouteId("123").returns(Promise.successful(TestData.route1).future)
+      routeService.getByRouteId("123").returns(Promise.successful(TestData.domRoute1).future)
       photoService.remove("/home/rado/123.jpeg").returns(Promise.successful().future)
       routeService.delete("123").returns(Promise.successful().future)
 
@@ -115,6 +116,71 @@ class RouteControllerSpec extends Specification with Mockito {
       there was one(routeService).getByRouteId("123")
       there was one(photoService).remove("/home/rado/123.jpeg")
       there was one(routeService).delete("123")
+    }
+  }
+
+  "get" should {
+    "fail if route doesn't exist" in new RouteControllerScope {
+      // Setup
+      routeService.getByRouteId("123").returns(Promise.failed(new JugjaneException("x")).future)
+
+      // Execute
+      val result = get("demo", "123")(FakeRequest(GET, "/climbing/demo/123"))
+
+      // Assert
+      status(result) must equalTo(NOT_FOUND)
+
+      // Verify
+      there was one(routeService).getByRouteId("123")
+    }
+
+    "fail if route is disabled" in new RouteControllerScope {
+      // Setup
+      val route = TestData.domRoute1.copy(enabled = false)
+      routeService.getByRouteId("123").returns(Promise.successful(route).future)
+
+      // Execute
+      val result = get("demo", "123")(FakeRequest(GET, "/climbing/demo/123"))
+
+      // Assert
+      status(result) must equalTo(NOT_FOUND)
+
+      // Verify
+      there was one(routeService).getByRouteId("123")
+    }
+
+    "fail if authorization service fails" in new RouteControllerScope {
+      // Setup
+      routeService.getByRouteId("123").returns(Promise.successful(TestData.domRoute1).future)
+      authService.isAdmin(any, any).returns(Failure(new JugjaneException("x")))
+
+      // Execute
+      val result = get("demo", "123")(FakeRequest(GET, "/climbing/demo/123"))
+
+      // Assert
+      status(result) must equalTo(INTERNAL_SERVER_ERROR)
+
+      // Verify
+      there was one(routeService).getByRouteId("123")
+      there was one(authService).isAdmin(any, any)
+    }
+
+    "return route" in new RouteControllerScope {
+      // Setup
+      routeService.getByRouteId("123").returns(Promise.successful(TestData.domRoute1).future)
+      authService.isAdmin(any, any).returns(Success(true))
+      photoService.getUrl(TestData.domRoute1.fileName).returns(new URL("http://xxx/"))
+
+      // Execute
+      val result = get("demo", "123")(FakeRequest(GET, "/climbing/demo/123"))
+
+      // Assert
+      status(result) must equalTo(OK)
+
+      // Verify
+      there was one(routeService).getByRouteId("123")
+      there was one(authService).isAdmin(any, any)
+      there was one(photoService).getUrl(TestData.domRoute1.fileName)
     }
   }
 

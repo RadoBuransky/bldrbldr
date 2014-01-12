@@ -1,6 +1,6 @@
 package controllers
 
-import models.domain.services.{RouteServiceComponent, PhotoService, AuthServiceComponent, GymServiceComponent}
+import models.domain.services._
 import play.api.mvc.Cookie
 import play.api.mvc.Action
 import play.api.mvc.Controller
@@ -9,9 +9,14 @@ import models.ui.Color2
 import models.ui
 import scala.util.{Failure, Success}
 import models.domain.model.Tag
+import scala.util.Success
+import scala.util.Failure
+import play.api.mvc.Cookie
+import scala.Some
 
 trait GymController extends Controller {
-  this: GymServiceComponent with AuthServiceComponent with RouteServiceComponent =>
+  this: GymServiceComponent with AuthServiceComponent with RouteServiceComponent
+    with PhotoServiceComponent =>
 
   def get(gymHandle: String, s: Option[String]) = Action.async { request =>
     // Get gym by handle
@@ -31,7 +36,7 @@ trait GymController extends Controller {
           val uiGrades = gym.gradingSystem.grades.filter(g =>
             routesByGrade.get(g.id).isDefined).map(g => ui.Grade(g)).toList
           val uiRoutes = routesByGrade.map(e => (e._1, e._2.map(r => {
-            val photoUrl = PhotoService.getUrl(r.fileName).toString
+            val photoUrl = photoService.getUrl(r.fileName).toString
             ui.Route(r, photoUrl)
           })))
           val result = Ok(views.html.gym.index(ui.Gym(gym, uiGrades, uiRoutes), isAdmin))

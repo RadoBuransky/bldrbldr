@@ -83,7 +83,7 @@ trait RouteController extends Controller with MongoController {
       else {
         authService.isAdmin(request.cookies, route.gym) match {
           case Success(isAdmin) => {
-            val photoUrl = PhotoService.getUrl(route.fileName).toString
+            val photoUrl = photoService.getUrl(route.fileName).toString
             Ok(views.html.route.index(models.ui.Route(route, photoUrl), isAdmin))
           }
           case Failure(t) => InternalServerError
@@ -93,29 +93,6 @@ trait RouteController extends Controller with MongoController {
       case _ => NotFound
     }
   }
-//    getBoulder(routeId).map {	route =>
-//      route match {
-//        case Some(route) => {
-//          if (!route.enabled)
-//            BadRequest("Route is disabled.")
-//          else {
-//            // Get gym by handle
-//            val gym = GymService.get(gymHandle)
-//
-//            val grade = models.ui.Grade(gym.gradingSystem.findById(route.gradeId).get)
-//            val flags = Tag.flags.map(flag => {
-//              val count = route.flags.getOrElse(flag.id, 0)
-//              models.ui.Flag(flag, count)
-//            })
-//            val isAdmin = AuthService.isAdmin(request.cookies, gym)
-//            Ok(views.html.route.index(models.ui.Route(route, gym), gym.name, gym.handle, grade, flags,
-//              PhotoService.getUrl(route.fileName).toString, isAdmin))
-//          }
-//        }
-//        case None => NotFound
-//      }
-//    }
-//  }
   
   def upload(gymHandle: String) = Action(parse.multipartFormData) { request => {
 	    // Get gym by handle

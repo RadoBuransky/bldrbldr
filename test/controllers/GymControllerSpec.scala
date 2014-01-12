@@ -4,7 +4,7 @@ import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import models.domain.services.{RouteServiceComponent, AuthServiceComponent, GymServiceComponent}
+import models.domain.services.{PhotoServiceComponent, RouteServiceComponent, AuthServiceComponent, GymServiceComponent}
 import models.domain.gym.Demo
 import scala.concurrent.{ExecutionContext, Future}
 import ExecutionContext.Implicits.global
@@ -12,6 +12,7 @@ import org.specs2.specification.Scope
 import scala.util.Success
 import test.TestUtils
 import models.data.dao.RouteDaoComponent
+import models.domain.services.impl.PhotoServiceComponentImpl
 
 class GymControllerSpec extends Specification with Mockito {
   "newBoulder" should {
@@ -86,9 +87,11 @@ class GymControllerSpec extends Specification with Mockito {
   }
 
   trait GymControllerScope extends Scope with GymController
-    with GymServiceComponent with AuthServiceComponent with RouteServiceComponent {
+    with GymServiceComponent with AuthServiceComponent with RouteServiceComponent
+    with PhotoServiceComponent {
     val gymService: GymService = mock[GymService]
     val authService: AuthService = mock[AuthService]
     val routeService: RouteService = mock[RouteService]
+    val photoService: PhotoService = mock[PhotoService]
   }
 }

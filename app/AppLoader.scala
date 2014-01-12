@@ -7,6 +7,7 @@ import play.api.Play.current
 package object AppLoader {
   val gymController = new GymController with MongoRouteDaoComponent with GymServiceComponentImpl
     with AuthServiceComponentImpl with PlayConfiguration with RouteServiceComponentImpl
+    with PhotoServiceComponentImpl
 
   val routeController = new RouteController with RouteServiceComponentImpl with GymServiceComponentImpl
     with MongoRouteDaoComponent with AuthServiceComponentImpl with PlayConfiguration

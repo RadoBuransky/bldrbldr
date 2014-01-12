@@ -8,7 +8,6 @@ import scala.concurrent.Future
 
 object PhotoService {
   private val BucketName = "jugjane"
-  private val UrlTemplate = "http://%s.s3.amazonaws.com/%s"
   
   def upload(fileName: String, mimeType: String, data: Array[Byte]) = {
   	val bucket = S3(BucketName)
@@ -21,10 +20,6 @@ object PhotoService {
       case S3Exception(status, code, message, originalXml) => Logger.error("Error: " + message)
     }  
   }
-  
-  def getUrl(fileName: String): URL = {
-    new URL(UrlTemplate.format(BucketName, fileName))
-  }
 }
 
 trait PhotoServiceComponent {
@@ -32,5 +27,6 @@ trait PhotoServiceComponent {
 
   trait PhotoService {
     def remove(fileName: String): Future[Unit]
+    def getUrl(fileName: String): URL
   }
 }

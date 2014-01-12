@@ -31,7 +31,7 @@ object JsonMapper {
       "holdcolor" -> holdColorByName(gym, route.holdsColor),
       "note" -> route.note,
       "days" -> days,
-      "photo" -> PhotoService.getUrl(route.fileName).toString,
+      "photo" -> "", //PhotoService.getUrl(route.fileName).toString,
       "grade" -> gradeToJson(gym.gradingSystem.findById(route.gradeId)),
       "categories" -> routeCategoriesToJson(gym, route.categories),
       "flags" -> flagsToJson(route.flags))

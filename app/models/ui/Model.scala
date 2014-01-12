@@ -55,14 +55,6 @@ object Color2 {
   }
 }
 
-//object Route {
-//  def apply(from: domain.model.Route): models.ui.Route = {
-//    val holdsColor = Color2(gym.holdColors.find(hc => hc.id == from.holdsColor).get)
-//    val days = Days.daysBetween(new DateTime(from._id.get.time), DateTime.now()).getDays()
-//    Route(from)
-//  }
-//}
-
 object Flag {
   def apply(from: FlagTag, count: Int): models.ui.Flag = {
       Flag(from.id, from.name, count)
