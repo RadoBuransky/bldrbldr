@@ -1,4 +1,4 @@
-package controllers
+package com.jugjane.controllers
 
 import models.domain.services._
 import play.api.mvc.Cookie
@@ -13,6 +13,7 @@ import scala.util.Success
 import scala.util.Failure
 import play.api.mvc.Cookie
 import scala.Some
+import scala.concurrent.Promise
 
 trait GymController extends Controller {
   this: GymServiceComponent with AuthServiceComponent with RouteServiceComponent
@@ -47,7 +48,7 @@ trait GymController extends Controller {
           }
         }
       }
-      case Failure(f) => throw f
+      case Failure(f) => Promise.successful(InternalServerError).future
     }
   }
     
@@ -64,7 +65,7 @@ trait GymController extends Controller {
         val categories = (gym.categories ::: Tag.categories).map(c => c.id -> c.name)
         Ok(views.html.route.create(grades, colors, categories, gymHandle))
       }
-      case f: Failure[_] => throw f.exception
+      case Failure(f) => InternalServerError
     }
   }
 

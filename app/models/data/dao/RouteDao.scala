@@ -12,5 +12,6 @@ trait RouteDaoComponent {
     def disable(routeId: String): Future[Unit]
     def findByGymhandle(gymHandle: String): Future[List[dat.Route]]
     def incFlag(routeId: String, flagId: String): Future[Unit]
+    def save(route: dat.Route): Future[Unit]
   }
 }

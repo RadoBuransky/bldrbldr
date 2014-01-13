@@ -1,4 +1,4 @@
-import controllers.{RouteController, GymController}
+import com.jugjane.controllers.{RouteController, GymController}
 import models.data.impl.MongoRouteDaoComponent
 import models.domain.services.impl.{PhotoServiceComponentImpl, RouteServiceComponentImpl, AuthServiceComponentImpl, GymServiceComponentImpl}
 import play.api.Play

@@ -12,5 +12,6 @@ trait RouteServiceComponent {
     def getByGymHandle(gymHandle: dom.Gym.GymHandle): Future[List[dom.Route]]
     def delete(routeId: dom.Route.RouteId): Future[Unit]
     def incFlag(routeId: dom.Route.RouteId, flagId: dom.Tag.TagId): Future[Unit]
+    def save(route: dom.Route): Future[Unit]
   }
 }

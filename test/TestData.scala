@@ -8,7 +8,7 @@ import org.joda.time.DateTime
 import reactivemongo.bson.BSONObjectID
 
 object TestData {
-  val domRoute1: dom.Route = dom.Route("123",
+  val domRoute1: dom.Route = dom.Route(Some("123"),
     Demo,
     "/home/rado/123.jpeg",
     DemoGradingSystem.getById("demo3").get,
@@ -18,8 +18,7 @@ object TestData {
     Tag.categories(0) :: Tag.categories(3) :: Nil,
     Tag.flags(1).setCounter(10) :: Tag.flags(0) :: Tag.flags(4).setCounter(0) :: Nil,
     true,
-    new DateTime(1983, 1, 10, 10, 10
-    ))
+    Some(new DateTime(1983, 1, 10, 10, 10)))
 
   val datRoute1: dat.Route = dat.Route(Some(BSONObjectID.generate),
     "demo",

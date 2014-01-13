@@ -1,4 +1,4 @@
-package controllers
+package com.jugjane.controllers
 
 import org.specs2.mock.Mockito
 import org.specs2.mutable.Specification
@@ -9,10 +9,13 @@ import models.domain.gym.Demo
 import scala.concurrent.{ExecutionContext, Future}
 import ExecutionContext.Implicits.global
 import org.specs2.specification.Scope
-import scala.util.Success
+import scala.util.{Failure, Success}
 import test.TestUtils
 import models.data.dao.RouteDaoComponent
 import models.domain.services.impl.PhotoServiceComponentImpl
+import com.jugjane.test.TestData
+import models.JugjaneException
+import java.net.URL
 
 class GymControllerSpec extends Specification with Mockito {
   "newBoulder" should {
@@ -20,10 +23,23 @@ class GymControllerSpec extends Specification with Mockito {
       // Setup
       gymService.get("demo").returns(Success(Demo))
 
-      val result = newBoulder("demo")(FakeRequest(GET, "/climbing/demo/new"))
+      val result = newBoulder("demo")(FakeRequest(POST, "/climbing/demo/new"))
 
       // Assert
-      status(result) must equalTo(200)
+      status(result) must equalTo(OK)
+
+      // Verfy
+      there was one(gymService).get("demo")
+    }
+
+    "fail for nonexisting gym" in new GymControllerScope {
+      // Setup
+      gymService.get("demo") returns Failure(new JugjaneException("x"))
+
+      val result = newBoulder("demo")(FakeRequest(POST, "/climbing/demo/new"))
+
+      // Assert
+      status(result) must equalTo(INTERNAL_SERVER_ERROR)
 
       // Verfy
       there was one(gymService).get("demo")
@@ -34,18 +50,33 @@ class GymControllerSpec extends Specification with Mockito {
     "succeed for existing gym" in new GymControllerScope {
       // Setup
       gymService.get("demo") returns Success(Demo)
-      routeService.getByGymHandle("demo") returns Future(Nil)
+      routeService.getByGymHandle("demo") returns Future(TestData.domRoute1 :: Nil)
       authService.isAdmin(any, any) returns Success(false)
+      photoService.getUrl(TestData.domRoute1.fileName).returns(new URL("http://xxx/"))
 
       val result = get("demo", None)(FakeRequest(GET, "/climbing/demo"))
 
       // Assert
-      status(result) must equalTo(200)
+      status(result) must equalTo(OK)
 
       // Verfy
       there was one(gymService).get("demo")
       there was one(routeService).getByGymHandle("demo")
       there was no(authService).validateSecret(any, any)
+      there was one(photoService).getUrl(TestData.domRoute1.fileName)
+    }
+
+    "fail for nonexisting gym" in new GymControllerScope {
+      // Setup
+      gymService.get("demo") returns Failure(new JugjaneException("x"))
+
+      val result = get("demo", None)(FakeRequest(GET, "/climbing/demo"))
+
+      // Assert
+      status(result) must equalTo(INTERNAL_SERVER_ERROR)
+
+      // Verfy
+      there was one(gymService).get("demo")
     }
 
     "set cookie for correct secret" in new GymControllerScope {
@@ -57,7 +88,7 @@ class GymControllerSpec extends Specification with Mockito {
       val result = get("demo", Some("123"))(FakeRequest(GET, "/climbing/demo"))
 
       // Assert
-      status(result) must equalTo(200)
+      status(result) must equalTo(OK)
       cookies(result) must not beEmpty
 
       // Verfy
@@ -76,7 +107,7 @@ class GymControllerSpec extends Specification with Mockito {
       val result = get("demo", Some("123"))(FakeRequest(GET, "/climbing/demo"))
 
       // Assert
-      status(result) must equalTo(200)
+      status(result) must equalTo(OK)
       cookies(result) must beEmpty
 
       // Verfy

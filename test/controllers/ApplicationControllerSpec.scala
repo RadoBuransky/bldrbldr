@@ -1,8 +1,7 @@
-package controllers
+package com.jugjane.controllers
 
 import org.specs2.mutable.Specification
 import org.specs2.mock.Mockito
-import com.jugjane.controllers.Application
 import play.mvc.Http.Status
 import play.api.test.FakeRequest
 import play.api.test.Helpers._

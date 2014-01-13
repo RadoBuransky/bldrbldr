@@ -1,49 +1,20 @@
-package controllers
+package com.jugjane.controllers
 
-import java.io.BufferedInputStream
-import java.io.File
-import java.io.FileInputStream
-import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent._
-import org.imgscalr.Scalr
-import javax.imageio.IIOImage
-import javax.imageio.ImageIO
-import javax.imageio.ImageWriteParam
-import models.contract.JsonMapper
-import models.domain.model.{Discipline, Tag}
-import Discipline.Bouldering
+import models.domain.{ model => dom }
 import models.domain.services._
-import play.api.{Routes, Logger}
 import play.api.libs.Files.TemporaryFile
-import play.api.libs.json.Json
-import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.mvc._
-import play.api.mvc.MultipartFormData.FilePart
 import play.modules.reactivemongo.MongoController
-import play.modules.reactivemongo.json.collection.JSONCollection
-import reactivemongo.bson.BSONObjectID
-import models.data.model.{JsonFormats, Route}
-import JsonFormats._
-import play.modules.reactivemongo.json.BSONFormats._
 import play.api.mvc.MultipartFormData.FilePart
 import scala.Some
-import play.modules.reactivemongo.json.collection.JSONCollection
-import play.mvc.Http
-import models.data.model.Route
-import models.domain.model.Tag
-import play.api.mvc.MultipartFormData.FilePart
-import models.data.model.Route
-import scala.Some
-import play.modules.reactivemongo.json.collection.JSONCollection
 import scala.util.{Success, Failure}
+import models.domain.model.Discipline
 
 trait RouteController extends Controller with MongoController {
   this: RouteServiceComponent with GymServiceComponent with AuthServiceComponent
     with PhotoServiceComponent =>
-
-  private val jpegMime = "image/jpeg"
-  private val photoWidth = 800
 
   def flag(gymHandle: String, routeId: String, flagId: String) = Action.async {
     routeService.incFlag(routeId, flagId).map { result =>
@@ -51,28 +22,20 @@ trait RouteController extends Controller with MongoController {
     }
   }
   
-  def delete(gymHandle: String, routeId: String) = Action.async { request =>
-    val isAdminTry = gymService.get(gymHandle).flatMap { gym =>
-      authService.isAdmin(request.cookies, gym)
-    }
+  def delete(gymHandle: String, routeId: String) = Action.async { implicit request =>
+    adminAction(gymHandle) {
+      routeService.getByRouteId(routeId).flatMap { route =>
+        val r = for {
+          rp <- photoService.remove(route.fileName)
+          dr <- routeService.delete(routeId)
+        } yield ()
 
-    isAdminTry match {
-      case Failure(t) => Promise.successful(InternalServerError).future
-      case Success(isAdmin) if isAdmin => {
-        routeService.getByRouteId(routeId).flatMap { route =>
-          val r = for {
-            rp <- photoService.remove(route.fileName)
-            dr <- routeService.delete(routeId)
-          } yield ()
-
-          r.map { r =>
-            Ok
-          }
-        } recover {
-          case _ => NotFound
+        r.map { r =>
+          Ok
         }
+      } recover {
+        case _ => NotFound
       }
-      case _ => Promise.successful(Unauthorized).future
     }
   }
   
@@ -94,157 +57,78 @@ trait RouteController extends Controller with MongoController {
     }
   }
   
-  def upload(gymHandle: String) = Action(parse.multipartFormData) { request => {
-	    // Get gym by handle
-	    val gym = GymService.get(gymHandle)
-	    
-	    if (!AuthService.isAdmin(request.cookies, gym)) {
-	      Unauthorized
-	    }
-	    else {
-	      val validateResult = validate(request.body)
-	      
-	      if (validateResult == Ok) {
-		      // Generate random UUID file name 
-		      val fileName = UUID.randomUUID().toString() + ".jpg"
-	      
-	        val uploadPhotoFuture = logFuture("uploadPhoto") {
-	      		uploadPhoto(request.body.file("photo"), fileName)
-	        }
-	        val saveToMongoFuture = logFuture("saveToMongo") {
-	          saveToMongo(gymHandle, request.body.dataParts, fileName)
-	        }
-	        
-	        val store = for {
-	          uploadPhoto <- uploadPhotoFuture
-	          saveToMongo <- saveToMongoFuture
-	        } yield true
-	        
-	        store.onSuccess {
-	          case _ => true
-	        }
-
-          Ok(views.html.msg("Thank you!", "Go on. Give us another one.",
-            new AppLoader.ReversegymController().get(gymHandle, None).url))
-	      }
-        else
-	        validateResult
-	    }
-  	}
+  def upload(gymHandle: String): Action[MultipartFormData[TemporaryFile]] =
+    Action.async(parse.multipartFormData) { implicit request =>
+    upload(gymHandle, request.body.file("photo"))
   }
 
-  private def getBoulder(routeId: String): Future[Option[Route]] = {
-    db.collection[JSONCollection]("route").
-    	find(Json.obj("_id" -> BSONObjectID(routeId))).
-    	cursor[Route].headOption
+  def upload(gymHandle: String, requestFile: Option[FilePart[TemporaryFile]])
+            (implicit request: Request[MultipartFormData[TemporaryFile]]): Future[SimpleResult] = {
+    adminAction(gymHandle) {
+      validate(requestFile) match {
+        case Some(validationError) => Promise.successful(BadRequest(validationError)).future
+        case None => {
+          // Generate random file name
+          val newFileName = photoService.generateFileName()
+
+          val store = for {
+            uploadPhoto <- photoService.upload(request.body.file("photo").get.ref.file, newFileName)
+            saveToMongo <- saveToMongo(gymHandle, request.body.dataParts, newFileName)
+          } yield true
+
+          store.map { result =>
+            Ok(views.html.msg("Thank you!", "Go on. Give us another one.",
+              new AppLoader.ReversegymController().get(gymHandle, None).url))
+          }
+        }
+      }
+    }
+  }
+
+  private def adminAction(gymHandle: String)(controller: => Future[SimpleResult])
+                         (implicit request: Request[_]): Future[SimpleResult] = {
+    val isAdminTry = gymService.get(gymHandle).flatMap { gym =>
+      authService.isAdmin(request.cookies, gym)
+    }
+
+    isAdminTry match {
+      case Failure(t) => Promise.successful(InternalServerError).future
+      case Success(isAdmin) if isAdmin => {
+        controller
+      }
+      case _ => Promise.successful(Unauthorized).future
+    }
   }
   
-  private def saveToMongo(gymHandle: String, dataParts: Map[String, Seq[String]], fileName: String) = {
+  private def saveToMongo(gymHandle: String, dataParts: Map[String, Seq[String]],
+                          fileName: String): Future[Unit] = {
     val gradeId = dataParts("grade")(0)
-    val holdsColor = dataParts("color")(0)
+    val coloredHoldsId = dataParts("color")(0)
     val note = dataParts.getOrElse("note", null) match {
       case ns: Seq[String] => ns(0)
       case null => ""
     }
 
-    val categories = dataParts("categories")(0).split(',').filter(c => !c.trim.isEmpty).toList;
+    val categoryIds = dataParts("categories")(0).split(',').filter(c => !c.trim.isEmpty).toList;
     
-    // New boulder
-    val boulder = new Route(None, gymHandle, fileName, gradeId, holdsColor, note,
-        Bouldering.toString(), true, categories, Map.empty)
-    
-    db.collection[JSONCollection]("route").insert(boulder)
-  }
-  
-  private def validate(body: MultipartFormData[TemporaryFile]): Result = {
-	    body.file("photo") match {
-	      case Some(photo) => {
-	        // Check photo type
-	        if (!checkIfPhoto(photo.contentType.get)) {
-	          Logger.error("Format not supported! [" + photo.contentType.get + "]")
-	          BadRequest("Format not supported!")
-	        }
-	        else
-	          Ok
-	      }
-	      case None => BadRequest("No photo uploaded!")
-	    }
-  }
-
-  private def uploadPhoto(file: Option[FilePart[TemporaryFile]], fileName: String) = {
-    val photo = file.get
-    try {
-	    Logger.info("Resizing...")	
-	    resizeImage(photo.ref.file, photoWidth)
-	
-	    Logger.info("Uploading to S3...")
-			uploadToS3(photo.ref.file.getPath(), fileName)	    
-	  }
-    catch {
-	    case ex: Throwable => {
-	      Logger.error("Cannot process uploaded photo!", ex)
-	      BadRequest("Cannot process uploaded photo!")
-	    }
-	  }
-  }
-  
-  private def uploadToS3(filePath: String, newFileName: String) = {
-    val fis = new FileInputStream(filePath)
-    try {
-	    val bis = new BufferedInputStream(fis)
-	    try {
-		    val byteArray = Stream.continually(bis.read).takeWhile(-1 != _).map(_.toByte).toArray
-		    PhotoService.upload(newFileName, jpegMime, byteArray)
-	    }
-	    finally {
-	      bis.close()
-	    }
-    }
-    finally {
-      fis.close()
-    }
-  }
-  
-  private def resizeImage(file: File, width: Int) = {
-    // Read and resize image
-    val rsImg = Scalr.resize(ImageIO.read(file), width)
-
-    val jpgWriter = ImageIO.getImageWritersByFormatName("jpg").next();
-    try {
-      // Set quality
-      val param = jpgWriter.getDefaultWriteParam();
-      param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-      param.setCompressionQuality(0.5f);
-
-      // Write to temporary file
-      file.delete()
-      val outputStream = ImageIO.createImageOutputStream(file)
-      try {
-        jpgWriter.setOutput(outputStream);
-        jpgWriter.write(null, new IIOImage(rsImg, null, null), param);
-      } finally {
-        outputStream.close();
+    gymService.get(gymHandle).flatMap { gym =>
+      dom.Route.create(None, gym, fileName, gradeId, coloredHoldsId, note,
+        Discipline.Bouldering.toString, categoryIds, Map.empty, true, None).map { route =>
+        routeService.save(route)
       }
+    } match {
+      case Success(result) => result
+      case Failure(t) => Promise.failed(t).future
     }
-    finally {
-      jpgWriter.dispose();
-    }    
+  }
+  
+  private def validate(filePart: Option[FilePart[TemporaryFile]]): Option[String] = {
+    filePart match {
+      case Some(photo) if !checkIfPhoto(photo.contentType.get) => Some("Format not supported!")
+      case None => Some("No photo uploaded!")
+      case _ => None
+    }
   }
 
-  private def checkIfPhoto(file: String): Boolean = {
-    file match {
-      case `jpegMime` => true
-      case _ => false
-    }
-  }
-
-  private def logFuture[T](msg: String)(body: =>T): Future[T] = {
-    val f = Future[T](body)
-    f.onFailure {
-      case ex: Exception => {
-        Logger.error("Future error! [" + msg + "]", ex)
-      }
-    }
-    f
-  }
+  private def checkIfPhoto(file: String) = (file == photoService.getMime)
 }

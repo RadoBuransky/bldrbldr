@@ -1,10 +1,10 @@
 package models.domain.model
 
-import Discipline.Discipline
 import models.{JugjaneException, Color}
 import models.domain.model.Grade.GradeId
 import scala.util.{Failure, Try, Success}
 import java.util.NoSuchElementException
+import models.domain.model.Discipline.Discipline
 
 trait Grade {
   val name: String
@@ -46,14 +46,6 @@ abstract class GradingSystem[+TGrade <: Grade](private val _name: String,
   def name = _name
   def disciplines = _disciplines
   def grades = _grades
-
-  @deprecated
-  def findById(id: String): Option[Grade] = {
-    getById(id) match {
-      case Success(grade) => Some(grade)
-      case Failure(e) => None
-    }
-  }
   
   def getById(id: String): Try[Grade] = {
     grades.find(grade => grade.id == id) match {

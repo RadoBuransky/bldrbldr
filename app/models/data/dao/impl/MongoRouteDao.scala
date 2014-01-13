@@ -62,5 +62,11 @@ trait MongoRouteDaoComponent extends RouteDaoComponent {
           Json.obj("$inc" -> Json.obj(("flags." + flagId) -> 1))).map { lastError =>
       }
     }
+
+    def save(route: dat.Route): Future[Unit] = {
+      ReactiveMongoPlugin.db.collection[JSONCollection](routeColName).
+        insert(route).map { lastError =>
+      }
+    }
   }
 }

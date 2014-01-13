@@ -1,7 +1,6 @@
 package models.ui
 
 import org.joda.time.{DateTime, Days}
-import models.data.model
 import models.domain
 import models.domain.model._
 import models.ui.Color2.WebColor
@@ -19,7 +18,7 @@ case class Gym(name: String,
 case class Color2(name: String, one: WebColor, two: Option[WebColor] = None)
 
 case class Route(d: domain.model.Route, photoUrl: String) {
-  val days = Days.daysBetween(d.created, DateTime.now()).getDays()
+  val days = Days.daysBetween(d.created.get, DateTime.now()).getDays()
   val color = Color2(d.holdsColor)
   val categories = d.categories.map { c => c.name }
 }
