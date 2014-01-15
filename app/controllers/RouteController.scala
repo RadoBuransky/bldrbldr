@@ -59,12 +59,13 @@ trait RouteController extends Controller with MongoController {
   
   def upload(gymHandle: String): Action[MultipartFormData[TemporaryFile]] =
     Action.async(parse.multipartFormData) { implicit request =>
-    upload(gymHandle, request.body.file("photo"))
+    doUpload(gymHandle)
   }
 
-  def upload(gymHandle: String, requestFile: Option[FilePart[TemporaryFile]])
-            (implicit request: Request[MultipartFormData[TemporaryFile]]): Future[SimpleResult] = {
+  def doUpload(gymHandle: String)(implicit request: Request[MultipartFormData[TemporaryFile]]):
+    Future[SimpleResult] = {
     adminAction(gymHandle) {
+      val requestFile = request.body.file("photo")
       validate(requestFile) match {
         case Some(validationError) => Promise.successful(BadRequest(validationError)).future
         case None => {
@@ -72,7 +73,7 @@ trait RouteController extends Controller with MongoController {
           val newFileName = photoService.generateFileName()
 
           val store = for {
-            uploadPhoto <- photoService.upload(request.body.file("photo").get.ref.file, newFileName)
+            uploadPhoto <- photoService.upload(requestFile.get.ref.file, newFileName)
             saveToMongo <- saveToMongo(gymHandle, request.body.dataParts, newFileName)
           } yield true
 

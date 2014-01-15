@@ -13,7 +13,9 @@ import models.JugjaneException
 import scala.util.Failure
 import com.jugjane.test.TestData
 import java.net.URL
-import play.api.mvc.MultipartFormData
+import play.api.mvc.{Request, MultipartFormData}
+import play.api.mvc.MultipartFormData.{FilePart, BadPart, MissingFilePart}
+import play.api.libs.Files.TemporaryFile
 
 class RouteControllerSpec extends Specification with Mockito {
   "flag" should {
@@ -185,21 +187,38 @@ class RouteControllerSpec extends Specification with Mockito {
     }
   }
 
-//  "upload" should {
-//    "fail if authorization service fails" in new RouteControllerScope {
-//      // Setup
-//      authService.isAdmin(any, any).returns(Failure(new JugjaneException("x")))
-//
-//      // Execute
-//      val result = upload("demo", None)(FakeRequest(POST, "/climbing/demo"))
-//
-//      // Assert
-//      status(result) must equalTo(UNAUTHORIZED)
-//
-//      // Verify
-//      there was one(authService).isAdmin(any, any)
-//    }
-//  }
+  "upload" should {
+    "succeed if everything's ok" in new RouteControllerScope {
+      // Data
+      val dataParts = Map[String, Seq[String]]("grade" -> Seq("demo2"),
+        "color" -> Seq("black"),
+        "note" -> Seq("abc"),
+        "categories" -> Seq("jugs,slopers,overhang"))
+      val request= mock[Request[MultipartFormData[TemporaryFile]]]
+      val tempFile = TemporaryFile("do_upload","spec")
+      val part = FilePart("photo", "testPhoto.jpeg", Some("image/jpeg"), tempFile)
+      val files = Seq[FilePart[TemporaryFile]](part)
+      val multipartBody = MultipartFormData(dataParts, files, Seq[BadPart](), Seq[MissingFilePart]())
+
+      // Setup
+      gymService.get("demo").returns(Success(Demo))
+      authService.isAdmin(any, any).returns(Success(true))
+      photoService.getMime.returns("image/jpeg")
+      photoService.generateFileName().returns("newTestPhoto.jpeg")
+      photoService.upload(part.ref.file, "newTestPhoto.jpeg").returns(Promise.successful().future)
+      routeService.save(any).returns(Promise.successful().future)
+      request.body returns multipartBody
+
+      // Execute
+      val result = doUpload("demo")(request)
+
+      // Assert
+      status(result) must equalTo(OK)
+
+      // Verify
+      there was one(authService).isAdmin(any, any)
+    }
+  }
 
   trait RouteControllerScope extends Scope with RouteController with RouteServiceComponent
     with GymServiceComponent with AuthServiceComponent with PhotoServiceComponent {
