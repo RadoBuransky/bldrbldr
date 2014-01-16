@@ -9,6 +9,8 @@ import scala.concurrent.{ExecutionContext, Future}
 import ExecutionContext.Implicits.global
 import org.joda.time.DateTime
 import reactivemongo.bson.BSONObjectID
+import common.Utils
+
 
 trait RouteServiceComponentImpl extends RouteServiceComponent {
   this: RouteDaoComponent with GymServiceComponent =>
@@ -20,6 +22,7 @@ trait RouteServiceComponentImpl extends RouteServiceComponent {
       routeDao.getByRouteId(routeId).map(datToDom(_).get)
 
     def getByGymHandle(gymHandle: dom.Gym.GymHandle): Future[List[dom.Route]] = {
+      Utils.notEmpty(gymHandle, "gymHandle")
       routeDao.findByGymhandle(gymHandle).map { routes =>
         routes.map(datToDom(_).get)
       }

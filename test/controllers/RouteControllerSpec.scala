@@ -16,6 +16,7 @@ import java.net.URL
 import play.api.mvc.{Request, MultipartFormData}
 import play.api.mvc.MultipartFormData.{FilePart, BadPart, MissingFilePart}
 import play.api.libs.Files.TemporaryFile
+import test.TestUtils
 
 class RouteControllerSpec extends Specification with Mockito {
   "flag" should {
@@ -216,7 +217,108 @@ class RouteControllerSpec extends Specification with Mockito {
       status(result) must equalTo(OK)
 
       // Verify
+      there was two(gymService).get("demo")
       there was one(authService).isAdmin(any, any)
+      there was one(photoService).getMime
+      there was one(photoService).generateFileName()
+      there was one(photoService).upload(part.ref.file, "newTestPhoto.jpeg")
+      there was one(routeService).save(any)
+      there was two(request).body
+    }
+
+    "fails if save to DB fails" in new RouteControllerScope {
+      // Data
+      val dataParts = Map[String, Seq[String]]("grade" -> Seq("demo2"),
+        "color" -> Seq("black"),
+        "note" -> Seq("abc"),
+        "categories" -> Seq("jugs,slopers,overhang"))
+      val request= mock[Request[MultipartFormData[TemporaryFile]]]
+      val tempFile = TemporaryFile("do_upload","spec")
+      val part = FilePart("photo", "testPhoto.jpeg", Some("image/jpeg"), tempFile)
+      val files = Seq[FilePart[TemporaryFile]](part)
+      val multipartBody = MultipartFormData(dataParts, files, Seq[BadPart](), Seq[MissingFilePart]())
+
+      // Setup
+      gymService.get("demo").returns(Success(Demo))
+      authService.isAdmin(any, any).returns(Success(true))
+      photoService.getMime.returns("image/jpeg")
+      photoService.generateFileName().returns("newTestPhoto.jpeg")
+      photoService.upload(part.ref.file, "newTestPhoto.jpeg").returns(Promise.successful().future)
+      routeService.save(any).returns(Promise.failed(new JugjaneException("x")).future)
+      request.body returns multipartBody
+
+      // Execute
+      val result = TestUtils.await(doUpload("demo")(request))
+
+      // Assert
+      result must beAFailedTry.withThrowable[JugjaneException]
+
+      // Verify
+      there was two(gymService).get("demo")
+      there was one(authService).isAdmin(any, any)
+      there was one(photoService).getMime
+      there was one(photoService).generateFileName()
+      there was one(photoService).upload(part.ref.file, "newTestPhoto.jpeg")
+      there was one(routeService).save(any)
+      there was two(request).body
+    }
+
+    "fails if photo has wrong mime type" in new RouteControllerScope {
+      // Data
+      val dataParts = Map[String, Seq[String]]("grade" -> Seq("demo2"),
+        "color" -> Seq("black"),
+        "note" -> Seq("abc"),
+        "categories" -> Seq("jugs,slopers,overhang"))
+      val request= mock[Request[MultipartFormData[TemporaryFile]]]
+      val tempFile = TemporaryFile("do_upload","spec")
+      val part = FilePart("photo", "testPhoto.jpeg", Some("image/gif"), tempFile)
+      val files = Seq[FilePart[TemporaryFile]](part)
+      val multipartBody = MultipartFormData(dataParts, files, Seq[BadPart](), Seq[MissingFilePart]())
+
+      // Setup
+      gymService.get("demo").returns(Success(Demo))
+      authService.isAdmin(any, any).returns(Success(true))
+      photoService.getMime.returns("image/jpeg")
+      request.body returns multipartBody
+
+      // Execute
+      val result = doUpload("demo")(request)
+
+      // Assert
+      status(result) must equalTo(BAD_REQUEST)
+
+      // Verify
+      there was one(gymService).get("demo")
+      there was one(authService).isAdmin(any, any)
+      there was one(photoService).getMime
+      there was one(request).body
+    }
+
+    "fails if no photo has been uploaded" in new RouteControllerScope {
+      // Data
+      val dataParts = Map[String, Seq[String]]("grade" -> Seq("demo2"),
+        "color" -> Seq("black"),
+        "note" -> Seq("abc"),
+        "categories" -> Seq("jugs,slopers,overhang"))
+      val request= mock[Request[MultipartFormData[TemporaryFile]]]
+      val files = Seq[FilePart[TemporaryFile]]()
+      val multipartBody = MultipartFormData(dataParts, files, Seq[BadPart](), Seq[MissingFilePart]())
+
+      // Setup
+      gymService.get("demo").returns(Success(Demo))
+      authService.isAdmin(any, any).returns(Success(true))
+      request.body returns multipartBody
+
+      // Execute
+      val result = doUpload("demo")(request)
+
+      // Assert
+      status(result) must equalTo(BAD_REQUEST)
+
+      // Verify
+      there was one(gymService).get("demo")
+      there was one(authService).isAdmin(any, any)
+      there was one(request).body
     }
   }
 

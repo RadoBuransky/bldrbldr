@@ -102,6 +102,19 @@ class RouteServiceImplSpec extends Specification with Mockito {
     }
   }
 
+  "save" should {
+    "delegate to dao and map" in new RouteServiceScope {
+      // Setup
+      routeDao.save(any).returns(Promise.successful().future)
+
+      // Execute & assert
+      TestUtils.await(routeService.save(TestData.domRoute1)) must beASuccessfulTry
+
+      // Verify
+      there was one(routeDao).save(any)
+    }
+  }
+
   trait RouteServiceScope extends Scope with RouteServiceComponentImpl with GymServiceComponent
     with RouteDaoComponent {
     val gymService: GymService = mock[GymService]
