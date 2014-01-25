@@ -1,7 +1,7 @@
 Jugjane
 =======
 [![Build Status](https://travis-ci.org/RadoBuransky/jugjane.png?branch=master)](https://travis-ci.org/RadoBuransky/jugjane)
-[![Coverage Status](https://coveralls.io/repos/RadoBuransky/jugjane/badge.png?branch=bigbang)](https://coveralls.io/r/RadoBuransky/jugjane?branch=master)
+[![Coverage Status](https://coveralls.io/repos/RadoBuransky/jugjane/badge.png?branch=master)](https://coveralls.io/r/RadoBuransky/jugjane?branch=master)
 
 [Jugjane](http://jugjane.com/) loves gyms. Climbing gyms. She loves them all.
 
