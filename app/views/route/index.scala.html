@@ -4,7 +4,7 @@
 @import controls.categories
 
 @common(route.d.grade.name + " at " + route.d.gym.name, route.d.note,
-    ogImageUrl = Some(route.photoUrl), gymName = Some(route.d.gym.name), gymHandle = Some(route.d.gym.handle)){
+    ogImageUrl = route.photoUrl, gymName = Some(route.d.gym.name), gymHandle = Some(route.d.gym.handle)){
 <div class="container" id="route">
     <h1>
         @color(route.color)
@@ -36,9 +36,11 @@
     </div>
     }
 
+    @if(route.photoUrl.isDefined) {
     <div class="row">
-        <img id="routephoto" src="@route.photoUrl" class="col-xs-12" style="max-width: 800px">
+        <img id="routephoto" src="@route.photoUrl.get" class="col-xs-12" style="max-width: 800px">
     </div>
+    }
 </div>
 <script>
     window.gymHandle = '@route.d.gym.handle'

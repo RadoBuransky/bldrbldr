@@ -7,7 +7,8 @@ import models.data.{model => dat}
 case class Route (
   _id: Option[BSONObjectID],
   gymHandle: String,
-  fileName: String,
+  fileName: Option[String],
+  location: Option[String],
   gradeId: String,
   holdsColor: String,
   note: String,

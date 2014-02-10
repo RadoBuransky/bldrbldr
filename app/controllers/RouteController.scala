@@ -26,7 +26,12 @@ trait RouteController extends Controller with MongoController {
     adminAction(gymHandle) {
       routeService.getByRouteId(routeId).flatMap { route =>
         val r = for {
-          rp <- photoService.remove(route.fileName)
+          rp <- {
+            if (route.fileName.isDefined)
+              photoService.remove(route.fileName.get)
+            else
+              Future()
+          }
           dr <- routeService.delete(routeId)
         } yield ()
 
@@ -46,7 +51,7 @@ trait RouteController extends Controller with MongoController {
       else {
         authService.isAdmin(request.cookies, route.gym) match {
           case Success(isAdmin) => {
-            val photoUrl = photoService.getUrl(route.fileName).toString
+            val photoUrl = route.fileName.map(photoService.getUrl(_).toString)
             Ok(views.html.route.index(models.ui.Route(route, photoUrl), isAdmin))
           }
           case Failure(t) => InternalServerError
@@ -66,14 +71,19 @@ trait RouteController extends Controller with MongoController {
     Future[SimpleResult] = {
     adminAction(gymHandle) {
       val requestFile = request.body.file("photo")
-      validate(requestFile) match {
+      validate(requestFile, request.body.dataParts) match {
         case Some(validationError) => Promise.successful(BadRequest(validationError)).future
         case None => {
           // Generate random file name
-          val newFileName = photoService.generateFileName()
+          val newFileName = requestFile.map(_ => photoService.generateFileName())
 
           val store = for {
-            uploadPhoto <- photoService.upload(requestFile.get.ref.file, newFileName)
+            uploadPhoto <- {
+              if (newFileName.isDefined)
+                photoService.upload(requestFile.get.ref.file, newFileName.get)
+              else
+                Future()
+            }
             saveToMongo <- saveToMongo(gymHandle, request.body.dataParts, newFileName)
           } yield true
 
@@ -102,15 +112,16 @@ trait RouteController extends Controller with MongoController {
   }
   
   private def saveToMongo(gymHandle: String, dataParts: Map[String, Seq[String]],
-                          fileName: String): Future[Unit] = {
+                          fileName: Option[String]): Future[Unit] = {
     val gradeId = dataParts("grade")(0)
     val coloredHoldsId = dataParts("color")(0)
     val note = dataParts.getOrElse("note", Seq(""))(0)
+    val location = dataParts.get("location").map(_(0))
 
     val categoryIds = dataParts("categories")(0).split(',').filter(c => !c.trim.isEmpty).toList;
     
     gymService.get(gymHandle).flatMap { gym =>
-      dom.Route.create(None, gym, fileName, gradeId, coloredHoldsId, note,
+      dom.Route.create(None, gym, fileName, location, gradeId, coloredHoldsId, note,
         Discipline.Bouldering.toString, categoryIds, Map.empty, true, None).map { route =>
         routeService.save(route)
       }
@@ -119,8 +130,20 @@ trait RouteController extends Controller with MongoController {
       case Failure(t) => Promise.failed(t).future
     }
   }
-  
-  private def validate(filePart: Option[FilePart[TemporaryFile]]): Option[String] = {
+
+  private def validate(filePart: Option[FilePart[TemporaryFile]],
+                       dataParts: Map[String, Seq[String]]): Option[String] = {
+    if (filePart.isEmpty) {
+      if (dataParts.get("location").isEmpty)
+        Some("Either photo or route location in the gym must be provided!")
+      else
+        None
+    }
+    else
+      validatePhoto(filePart)
+  }
+
+  private def validatePhoto(filePart: Option[FilePart[TemporaryFile]]): Option[String] = {
     filePart match {
       case Some(photo) if !checkIfPhoto(photo.contentType.get) => Some("Format not supported!")
       case None => Some("No photo uploaded!")

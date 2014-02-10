@@ -113,6 +113,11 @@ class RouteServiceImplSpec extends Specification with Mockito {
       // Verify
       there was one(routeDao).save(any)
     }
+
+    "fail if neither photo nor location is provided" in new RouteServiceScope {
+      // Execute & assert
+      routeService.save(TestData.badDomRoute1) must throwA[JugjaneException].await
+    }
   }
 
   trait RouteServiceScope extends Scope with RouteServiceComponentImpl with GymServiceComponent

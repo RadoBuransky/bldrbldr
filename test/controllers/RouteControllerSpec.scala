@@ -17,6 +17,13 @@ import play.api.mvc.{Request, MultipartFormData}
 import play.api.mvc.MultipartFormData.{FilePart, BadPart, MissingFilePart}
 import play.api.libs.Files.TemporaryFile
 import test.TestUtils
+import scala.util.Failure
+import play.api.mvc.MultipartFormData.FilePart
+import scala.Some
+import scala.util.Success
+import models.JugjaneException
+import play.api.mvc.MultipartFormData.MissingFilePart
+import play.api.mvc.MultipartFormData.BadPart
 
 class RouteControllerSpec extends Specification with Mockito {
   "flag" should {
@@ -173,7 +180,7 @@ class RouteControllerSpec extends Specification with Mockito {
       // Setup
       routeService.getByRouteId("123").returns(Promise.successful(TestData.domRoute1).future)
       authService.isAdmin(any, any).returns(Success(true))
-      photoService.getUrl(TestData.domRoute1.fileName).returns(new URL("http://xxx/"))
+      photoService.getUrl(TestData.domRoute1.fileName.get).returns(new URL("http://xxx/"))
 
       // Execute
       val result = get("demo", "123")(FakeRequest(GET, "/climbing/demo/123"))
@@ -184,49 +191,44 @@ class RouteControllerSpec extends Specification with Mockito {
       // Verify
       there was one(routeService).getByRouteId("123")
       there was one(authService).isAdmin(any, any)
-      there was one(photoService).getUrl(TestData.domRoute1.fileName)
+      there was one(photoService).getUrl(TestData.domRoute1.fileName.get)
     }
   }
 
   "upload" should {
-    "succeed if everything's ok" in new RouteControllerScope {
+    "succeed if only photo is uploaded" in new RouteControllerScope {
       // Data
       val dataParts = Map[String, Seq[String]]("grade" -> Seq("demo2"),
         "color" -> Seq("black"),
         "note" -> Seq("abc"),
         "categories" -> Seq("jugs,slopers,overhang"))
-      val request= mock[Request[MultipartFormData[TemporaryFile]]]
-      val tempFile = TemporaryFile("do_upload","spec")
-      val part = FilePart("photo", "testPhoto.jpeg", Some("image/jpeg"), tempFile)
-      val files = Seq[FilePart[TemporaryFile]](part)
-      val multipartBody = MultipartFormData(dataParts, files, Seq[BadPart](), Seq[MissingFilePart]())
 
-      // Setup
-      gymService.get("demo").returns(Success(Demo))
-      authService.isAdmin(any, any).returns(Success(true))
-      photoService.getMime.returns("image/jpeg")
-      photoService.generateFileName().returns("newTestPhoto.jpeg")
-      photoService.upload(part.ref.file, "newTestPhoto.jpeg").returns(Promise.successful().future)
-      routeService.save(any).returns(Promise.successful().future)
-      request.body returns multipartBody
-
-      // Execute
-      val result = doUpload("demo")(request)
-
-      // Assert
-      status(result) must equalTo(OK)
-
-      // Verify
-      there was two(gymService).get("demo")
-      there was one(authService).isAdmin(any, any)
-      there was one(photoService).getMime
-      there was one(photoService).generateFileName()
-      there was one(photoService).upload(part.ref.file, "newTestPhoto.jpeg")
-      there was one(routeService).save(any)
-      there was two(request).body
+      successUploadTest(dataParts, true)
     }
 
-    "fails if save to DB fails" in new RouteControllerScope {
+    "succeed if only location is set" in new RouteControllerScope {
+      // Data
+      val dataParts = Map[String, Seq[String]]("grade" -> Seq("demo2"),
+        "color" -> Seq("black"),
+        "note" -> Seq("abc"),
+        "categories" -> Seq("jugs,slopers,overhang"),
+        "location" -> Seq("32"))
+
+      successUploadTest(dataParts, false)
+    }
+
+    "succeed if both location and photo are provided" in new RouteControllerScope {
+      // Data
+      val dataParts = Map[String, Seq[String]]("grade" -> Seq("demo2"),
+        "color" -> Seq("black"),
+        "note" -> Seq("abc"),
+        "categories" -> Seq("jugs,slopers,overhang"),
+        "location" -> Seq("32"))
+
+      successUploadTest(dataParts, true)
+    }
+
+    "fail if save to DB fails" in new RouteControllerScope {
       // Data
       val dataParts = Map[String, Seq[String]]("grade" -> Seq("demo2"),
         "color" -> Seq("black"),
@@ -260,10 +262,10 @@ class RouteControllerSpec extends Specification with Mockito {
       there was one(photoService).generateFileName()
       there was one(photoService).upload(part.ref.file, "newTestPhoto.jpeg")
       there was one(routeService).save(any)
-      there was two(request).body
+      there was three(request).body
     }
 
-    "fails if photo has wrong mime type" in new RouteControllerScope {
+    "fail if photo has wrong mime type" in new RouteControllerScope {
       // Data
       val dataParts = Map[String, Seq[String]]("grade" -> Seq("demo2"),
         "color" -> Seq("black"),
@@ -291,10 +293,10 @@ class RouteControllerSpec extends Specification with Mockito {
       there was one(gymService).get("demo")
       there was one(authService).isAdmin(any, any)
       there was one(photoService).getMime
-      there was one(request).body
+      there was two(request).body
     }
 
-    "fails if no photo has been uploaded" in new RouteControllerScope {
+    "fail if neither photo has been uploaded nor location has been set" in new RouteControllerScope {
       // Data
       val dataParts = Map[String, Seq[String]]("grade" -> Seq("demo2"),
         "color" -> Seq("black"),
@@ -318,7 +320,7 @@ class RouteControllerSpec extends Specification with Mockito {
       // Verify
       there was one(gymService).get("demo")
       there was one(authService).isAdmin(any, any)
-      there was one(request).body
+      there was two(request).body
     }
   }
 
@@ -328,5 +330,44 @@ class RouteControllerSpec extends Specification with Mockito {
     val gymService: GymService = mock[GymService]
     val authService: AuthService = mock[AuthService]
     val photoService: PhotoService = mock[PhotoService]
+
+    protected def successUploadTest(dataParts: Map[String, Seq[String]], file: Boolean) {
+      val request= mock[Request[MultipartFormData[TemporaryFile]]]
+      val tempFile = TemporaryFile("do_upload","spec")
+      val part = FilePart("photo", "testPhoto.jpeg", Some("image/jpeg"), tempFile)
+      val files = file match {
+        case true => Seq[FilePart[TemporaryFile]](part)
+        case _ => Nil
+      }
+      val multipartBody = MultipartFormData(dataParts, files, Seq[BadPart](), Seq[MissingFilePart]())
+
+      // Setup
+      gymService.get("demo").returns(Success(Demo))
+      authService.isAdmin(any, any).returns(Success(true))
+      if (file) {
+        photoService.getMime.returns("image/jpeg")
+        photoService.generateFileName().returns("newTestPhoto.jpeg")
+        photoService.upload(part.ref.file, "newTestPhoto.jpeg").returns(Promise.successful().future)
+      }
+      routeService.save(any).returns(Promise.successful().future)
+      request.body returns multipartBody
+
+      // Execute
+      val result = doUpload("demo")(request)
+
+      // Assert
+      status(result) must equalTo(OK)
+
+      // Verify
+      there was two(gymService).get("demo")
+      there was one(authService).isAdmin(any, any)
+      if (file) {
+        there was one(photoService).getMime
+        there was one(photoService).generateFileName()
+        there was one(photoService).upload(part.ref.file, "newTestPhoto.jpeg")
+      }
+      there was one(routeService).save(any)
+      there was three(request).body
+    }
   }
 }

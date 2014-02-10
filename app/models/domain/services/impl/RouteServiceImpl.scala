@@ -10,6 +10,7 @@ import ExecutionContext.Implicits.global
 import org.joda.time.DateTime
 import reactivemongo.bson.BSONObjectID
 import common.Utils
+import models.JugjaneException
 
 
 trait RouteServiceComponentImpl extends RouteServiceComponent {
@@ -33,14 +34,19 @@ trait RouteServiceComponentImpl extends RouteServiceComponent {
     def incFlag(routeId: dom.Route.RouteId, flagId: dom.Tag.TagId): Future[Unit] =
       routeDao.incFlag(routeId, flagId)
 
-    def save(route: dom.Route): Future[Unit] = routeDao.save(domToDat(route))
+    def save(route: dom.Route): Future[Unit] = {
+      if (route.fileName.isEmpty && route.location.isEmpty)
+        throw new JugjaneException("Either photo or route location must be provided!")
+
+      routeDao.save(domToDat(route))
+    }
 
     private def datToDom(route: dat.Route): Try[dom.Route] = {
       require(route._id.isDefined, "route must have _id set")
 
       gymService.get(route.gymHandle).flatMap { gym =>
-        dom.Route.create(Some(route._id.get.stringify), gym, route.fileName, route.gradeId,
-          route.holdsColor, route.note, route.discipline, route.categories, route.flags,
+        dom.Route.create(Some(route._id.get.stringify), gym, route.fileName, route.location,
+          route.gradeId, route.holdsColor, route.note, route.discipline, route.categories, route.flags,
           route.enabled, Some(new DateTime(route._id.get.time)))
       }
     }
@@ -52,7 +58,7 @@ trait RouteServiceComponentImpl extends RouteServiceComponent {
       val flags = route.flags.filter(_.counter.getOrElse(0) > 0).map { flag =>
         flag.name -> flag.counter.get
       }
-      dat.Route(id, route.gym.handle, route.fileName, route.grade.id, route.holdsColor.id,
+      dat.Route(id, route.gym.handle, route.fileName, route.location, route.grade.id, route.holdsColor.id,
         route.note, discipline, route.enabled, categoryIds, flags.toMap)
     }
   }

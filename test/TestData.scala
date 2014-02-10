@@ -10,7 +10,8 @@ import reactivemongo.bson.BSONObjectID
 object TestData {
   val domRoute1: dom.Route = dom.Route(Some(BSONObjectID.generate.stringify),
     Demo,
-    "/home/rado/123.jpeg",
+    Some("/home/rado/123.jpeg"),
+    None,
     DemoGradingSystem.getById("demo3").get,
     Demo.holdColors(0),
     "blaaa",
@@ -20,9 +21,12 @@ object TestData {
     true,
     Some(new DateTime(1983, 1, 10, 10, 10)))
 
+  val badDomRoute1: dom.Route = domRoute1.copy(fileName = None)
+
   val datRoute1: dat.Route = dat.Route(Some(BSONObjectID.generate),
     "demo",
-    "/home/rado/x.jpeg",
+    Some("/home/rado/x.jpeg"),
+    None,
     "demo1",
     "white_black",
     "blaaa",

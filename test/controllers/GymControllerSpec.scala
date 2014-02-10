@@ -52,7 +52,7 @@ class GymControllerSpec extends Specification with Mockito {
       gymService.get("demo") returns Success(Demo)
       routeService.getByGymHandle("demo") returns Future(TestData.domRoute1 :: Nil)
       authService.isAdmin(any, any) returns Success(false)
-      photoService.getUrl(TestData.domRoute1.fileName).returns(new URL("http://xxx/"))
+      photoService.getUrl(TestData.domRoute1.fileName.get).returns(new URL("http://xxx/"))
 
       val result = get("demo", None)(FakeRequest(GET, "/climbing/demo"))
 
@@ -63,7 +63,7 @@ class GymControllerSpec extends Specification with Mockito {
       there was one(gymService).get("demo")
       there was one(routeService).getByGymHandle("demo")
       there was no(authService).validateSecret(any, any)
-      there was one(photoService).getUrl(TestData.domRoute1.fileName)
+      there was one(photoService).getUrl(TestData.domRoute1.fileName.get)
     }
 
     "fail for nonexisting gym" in new GymControllerScope {

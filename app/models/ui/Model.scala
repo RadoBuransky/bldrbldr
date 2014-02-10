@@ -17,7 +17,7 @@ case class Gym(name: String,
 
 case class Color2(name: String, one: WebColor, two: Option[WebColor] = None)
 
-case class Route(d: domain.model.Route, photoUrl: String) {
+case class Route(d: domain.model.Route, photoUrl: Option[String]) {
   val days = Days.daysBetween(d.created.get, DateTime.now()).getDays()
   val color = Color2(d.holdsColor)
   val categories = d.categories.map { c => c.name }
