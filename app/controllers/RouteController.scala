@@ -116,7 +116,12 @@ trait RouteController extends Controller with MongoController {
     val gradeId = dataParts("grade")(0)
     val coloredHoldsId = dataParts("color")(0)
     val note = dataParts.getOrElse("note", Seq(""))(0)
-    val location = dataParts.get("location").map(_(0))
+    val location = dataParts.get("location").map(_(0).trim).flatMap { l =>
+      if (l.isEmpty)
+        None
+      else
+        Some(l)
+    }
 
     val categoryIds = dataParts("categories")(0).split(',').filter(c => !c.trim.isEmpty).toList;
     

@@ -1,10 +1,8 @@
 package models.data.model
 
 import reactivemongo.bson.BSONObjectID
-import models.domain.{model => dom}
-import models.data.{model => dat}
 
-case class Route (
+case class Route(
   _id: Option[BSONObjectID],
   gymHandle: String,
   fileName: Option[String],

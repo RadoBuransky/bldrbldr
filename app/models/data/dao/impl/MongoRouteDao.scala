@@ -64,8 +64,12 @@ trait MongoRouteDaoComponent extends RouteDaoComponent {
     }
 
     def save(route: dat.Route): Future[Unit] = {
-      ReactiveMongoPlugin.db.collection[JSONCollection](routeColName).
-        insert(route).map { lastError =>
+      // If this mysteriously crashes with NoSuchElementException JsError.get, then check the
+      // "flags" map if it's empty ...fixed in 0.10.2
+      val insertResult = ReactiveMongoPlugin.db.collection[JSONCollection](routeColName).insert(route)
+
+      insertResult.map { lastError =>
+        println(lastError)
       }
     }
   }

@@ -3,12 +3,12 @@
 @import controls.color
 @import controls.categories
 
-@common(route.d.grade.name + " at " + route.d.gym.name, route.d.note,
+@common(route.title + " at " + route.d.gym.name, route.d.note,
     ogImageUrl = route.photoUrl, gymName = Some(route.d.gym.name), gymHandle = Some(route.d.gym.handle)){
 <div class="container" id="route">
     <h1>
         @color(route.color)
-        @route.d.grade.name
+        @route.title
     </h1>
     <div class="routedesc">
         <span class="routenote">

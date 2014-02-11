@@ -17,8 +17,7 @@ resolvers ++= Seq(
 libraryDependencies ++= Seq(
   jdbc,
   "org.imgscalr" % "imgscalr-lib" % "4.2",
-  "org.reactivemongo" %% "play2-reactivemongo" % "0.10.0",
-  "com.typesafe" %% "play-plugins-mailer" % "2.1-RC2",
+  "org.reactivemongo" %% "play2-reactivemongo" % "0.10.2",
   "nl.rhinofly" %% "play-s3" % "3.3.3",
   "org.specs2" %% "specs2" % "2.3.7" % "test")
 

@@ -21,6 +21,8 @@ case class Route(d: domain.model.Route, photoUrl: Option[String]) {
   val days = Days.daysBetween(d.created.get, DateTime.now()).getDays()
   val color = Color2(d.holdsColor)
   val categories = d.categories.map { c => c.name }
+  val title = (d.grade.name + atLocation).trim
+  lazy val atLocation = d.location.map(l => " @ " + l).getOrElse("")
 }
 
 case class Flag(id: String, name: String, count: Int)
