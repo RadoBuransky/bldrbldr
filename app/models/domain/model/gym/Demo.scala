@@ -34,5 +34,5 @@ object Demo extends Gym {
     (Color.Yellow, Color.Blue), (Color.White, Color.Black), (Color.Sand, Color.Black),
     (Color.Red, Color.Black), (Color.Green, Color.Black))
   val categories = List(CategoryTag("TNT"), CategoryTag("CNC"))
-  val address = model.Address("Marie Curie Sklodowskej 39", "Bratislava", Locale.forLanguageTag("sk-sk"))
+  val address = model.Address("211 West 3rd street", "North Vancouver", Locale.forLanguageTag("en-ca"))
 }

@@ -1,9 +1,9 @@
-@(grades: Seq[(String, String)], colors: Seq[models.ui.Color2], categories: Seq[(String, String)], gymhandle: String)
+@(grades: Seq[(String, String)], colors: Seq[models.ui.Color2], categories: Seq[(String, String)], gymhandle: String, lang: Lang)
 
 @import helper._
 @import controls.color
 
-@common("Add new climbing route", "Add new climbing route") {
+@common("Add new climbing route", "Add new climbing route", lang) {
 <div id="createRoute" class="container">
     <form id="createRouteForm" action="/climbing/@gymhandle/new" method="post" enctype="multipart/form-data"
           class="form-horizontal" role="form">

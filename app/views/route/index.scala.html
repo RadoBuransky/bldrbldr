@@ -1,9 +1,9 @@
-@(route: models.ui.Route, isAdmin: Boolean)
+@(route: models.ui.Route, isAdmin: Boolean, lang: Lang)
 
 @import controls.color
 @import controls.categories
 
-@common(route.title + " at " + route.d.gym.name, route.d.note,
+@common(route.title + " at " + route.d.gym.name, route.d.note, lang,
     ogImageUrl = route.photoUrl, gymName = Some(route.d.gym.name), gymHandle = Some(route.d.gym.handle)){
 <div class="container" id="route">
     <h1>

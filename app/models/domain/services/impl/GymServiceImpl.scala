@@ -6,12 +6,13 @@ import models.JugjaneException
 import scala.util.Try
 import common.Utils._
 import models.domain.model.Gym
+import models.domain.model.gym.Vertigo
 
 trait GymServiceComponentImpl extends GymServiceComponent {
   val gymService: GymService = new GymServiceImpl()
 
   class GymServiceImpl extends GymService {
-    private val gyms = Hive :: Demo :: Nil;
+    private val gyms = Hive :: Demo :: Vertigo :: Nil;
 
     def get(gymHandle: String): Try[Gym] = paramsTry(gymHandle) {
       val gym = gyms.find(g => g.handle == gymHandle)

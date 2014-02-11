@@ -14,6 +14,9 @@ import scala.util.Failure
 import play.api.mvc.Cookie
 import scala.Some
 import scala.concurrent.Promise
+import play.api.Logger
+import common.SupportedLang._
+import common.SupportedLang
 
 trait GymController extends Controller {
   this: GymServiceComponent with AuthServiceComponent with RouteServiceComponent
@@ -40,7 +43,8 @@ trait GymController extends Controller {
             val photoUrl = r.fileName.map(photoService.getUrl(_, gymHandle).toString)
             ui.Route(r, photoUrl)
           })))
-          val result = Ok(views.html.gym.index(ui.Gym(gym, uiGrades, uiRoutes), isAdmin))
+          val result = Ok(views.html.gym.index(ui.Gym(gym, uiGrades, uiRoutes), isAdmin,
+            gym.address.country))
 
           authCookie match {
             case Some(cookie) => result.withCookies(cookie)
@@ -48,7 +52,10 @@ trait GymController extends Controller {
           }
         }
       }
-      case Failure(f) => Promise.successful(InternalServerError).future
+      case Failure(f) => {
+        Logger.error("GymController.get [" + gymHandle + "," + s + "]", f)
+        Promise.successful(InternalServerError).future
+      }
     }
   }
     
@@ -63,7 +70,7 @@ trait GymController extends Controller {
         val grades = gym.gradingSystem.grades.map(g => g.id -> g.name)
         val colors = gym.holdColors.map(c => Color2(c))
         val categories = (gym.categories ::: Tag.categories).map(c => c.id -> c.name)
-        Ok(views.html.route.create(grades, colors, categories, gymHandle))
+        Ok(views.html.route.create(grades, colors, categories, gymHandle, gym.address.country))
       }
       case Failure(f) => InternalServerError
     }

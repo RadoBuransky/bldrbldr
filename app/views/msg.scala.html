@@ -1,6 +1,6 @@
-@(title: String, text: String, url: String)
+@(title: String, text: String, url: String, lang: Lang)
 
-@common("Jugjane", title + " " + text) {
+@common("Jugjane", title + " " + text, lang) {
 <div class="container">
     <h1>@title</h1>
     <p>@text</p>

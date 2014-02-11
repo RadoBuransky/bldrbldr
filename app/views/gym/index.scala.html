@@ -1,10 +1,10 @@
-@(gym: models.ui.Gym, isAdmin: Boolean)
+@(gym: models.ui.Gym, isAdmin: Boolean, lang: Lang)
 
 @import controls.color
 @import controls.categories
 
 @common(gym.name + " climbing", "Current climbing routes and boulders at the " + gym.name + " indoor climbing gym.",
-    gymName = Some(gym.name), gymHandle = Some(gym.handle)) {
+    lang, gymName = Some(gym.name), gymHandle = Some(gym.handle)) {
 <div id="gym">
     <div class="container">
         <h1>@gym.name</h1>

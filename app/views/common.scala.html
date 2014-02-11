@@ -1,6 +1,6 @@
-@(title: String, description: String, ogImageUrl: Option[String] = None, gymName: Option[String] = None, gymHandle: Option[String] = None)(content: Html)
+@(title: String, description: String, lang: Lang, ogImageUrl: Option[String] = None, gymName: Option[String] = None, gymHandle: Option[String] = None)(content: Html)
 
-@core(title, description, ogImageUrl) {
+@core(title, description, lang, ogImageUrl) {
     <div class="navbar navbar-inverse" role="navigation">
         <div class="container">
             <div class="navbar-header">

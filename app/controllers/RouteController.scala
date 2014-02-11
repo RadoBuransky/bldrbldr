@@ -12,6 +12,8 @@ import scala.Some
 import scala.util.{Success, Failure}
 import models.domain.model.{Gym, Discipline}
 import play.api.Logger
+import common.SupportedLang._
+import common.SupportedLang
 
 trait RouteController extends Controller with MongoController {
   this: RouteServiceComponent with GymServiceComponent with AuthServiceComponent
@@ -53,7 +55,8 @@ trait RouteController extends Controller with MongoController {
         authService.isAdmin(request.cookies, route.gym) match {
           case Success(isAdmin) => {
             val photoUrl = route.fileName.map(photoService.getUrl(_, gymHandle).toString)
-            Ok(views.html.route.index(models.ui.Route(route, photoUrl), isAdmin))
+            Ok(views.html.route.index(models.ui.Route(route, photoUrl), isAdmin,
+              route.gym.address.country))
           }
           case Failure(t) => InternalServerError
         }
@@ -91,7 +94,7 @@ trait RouteController extends Controller with MongoController {
 
             store.map { result =>
               Ok(views.html.msg("Thank you!", "Go on. Give us another one.",
-                new AppLoader.ReversegymController().get(gymHandle, None).url))
+                new AppLoader.ReversegymController().get(gymHandle, None).url, SupportedLang.defaultLang))
             }
           } match {
             case Success(result) => result
