@@ -1,9 +1,9 @@
-@(route: models.ui.Route, isAdmin: Boolean, lang: Lang)
+@(route: models.ui.Route, isAdmin: Boolean)(implicit lang: Lang)
 
 @import controls.color
 @import controls.categories
 
-@common(route.title + " at " + route.d.gym.name, route.d.note, lang,
+@common(route.title + " " + Messages("views.route.index.at") + " " + route.d.gym.name, route.d.note, lang,
     ogImageUrl = route.photoUrl, gymName = Some(route.d.gym.name), gymHandle = Some(route.d.gym.handle)){
 <div class="container" id="route">
     <h1>
@@ -12,14 +12,14 @@
     </h1>
     <div class="routedesc">
         <span class="routenote">
-            @route.d.note (@route.days days)
+            @route.d.note (@route.days @Messages("views.route.index.days"))
         </span>
         @categories(route.categories, route.days)
     </div>
     <div id="flags">
         @for(flag <- route.d.flags) {
         <button id="@flag.id" type="button" class="btn btn-default">
-            @flag.name <span class="flagCount">(@flag.counter)</span>
+            @com.jugjane.common.Messages.Models.flag(flag.id) <span class="flagCount">(@flag.counter)</span>
             <span class="glyphicon glyphicon-ok" style="display: none"></span>
         </button>
         }
@@ -27,11 +27,16 @@
 
     @if(isAdmin) {
     <div id="admincontainer">
-        <button id="deleteRoute" type="button" class="btn btn-default">Delete</button>
+        <button id="deleteRoute" type="button" class="btn btn-default">
+            @Messages("views.route.index.deleteButton")
+        </button>
         <div id="reallyDelete" style="display: none">
-            Do you really want to delete this?
-            <button id="yesDelete" type="button" class="btn btn-danger">Yes, delete it!</button>
-            <button id="noDelete" type="button" class="btn">No</button>
+            @Messages("views.route.index.reallyDelete")
+            <button id="yesDelete" type="button" class="btn btn-danger">
+                @Messages("views.route.index.yesDelete")</button>
+            <button id="noDelete" type="button" class="btn">
+                @Messages("views.route.index.noDelete")
+            </button>
         </div>
     </div>
     }

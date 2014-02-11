@@ -1,13 +1,11 @@
 package com.jugjane.controllers
 
 import models.domain.services._
-import play.api.mvc.Cookie
 import play.api.mvc.Action
 import play.api.mvc.Controller
 import scala.concurrent.ExecutionContext.Implicits.global
 import models.ui.Color2
 import models.ui
-import scala.util.{Failure, Success}
 import models.domain.model.Tag
 import scala.util.Success
 import scala.util.Failure
@@ -16,7 +14,8 @@ import scala.Some
 import scala.concurrent.Promise
 import play.api.Logger
 import common.SupportedLang._
-import common.SupportedLang
+import play.api.i18n.Lang
+import com.jugjane.common.Messages
 
 trait GymController extends Controller {
   this: GymServiceComponent with AuthServiceComponent with RouteServiceComponent
@@ -36,6 +35,8 @@ trait GymController extends Controller {
             }
           }.getOrElse(false)
 
+          implicit val lang: Lang = gym.address.country
+
           val routesByGrade = routes.groupBy(route => route.grade.id)
           val uiGrades = gym.gradingSystem.grades.filter(g =>
             routesByGrade.get(g.id).isDefined).map(g => ui.Grade(g)).toList
@@ -43,8 +44,7 @@ trait GymController extends Controller {
             val photoUrl = r.fileName.map(photoService.getUrl(_, gymHandle).toString)
             ui.Route(r, photoUrl)
           })))
-          val result = Ok(views.html.gym.index(ui.Gym(gym, uiGrades, uiRoutes), isAdmin,
-            gym.address.country))
+          val result = Ok(views.html.gym.index(ui.Gym(gym, uiGrades, uiRoutes), isAdmin)(gym.address.country))
 
           authCookie match {
             case Some(cookie) => result.withCookies(cookie)
@@ -67,10 +67,12 @@ trait GymController extends Controller {
   def newBoulder(gymHandle: String) = Action {
     gymService.get(gymHandle) match {
       case Success(gym) => {
+        implicit val lang: Lang = gym.address.country
+
         val grades = gym.gradingSystem.grades.map(g => g.id -> g.name)
         val colors = gym.holdColors.map(c => Color2(c))
-        val categories = (gym.categories ::: Tag.categories).map(c => c.id -> c.name)
-        Ok(views.html.route.create(grades, colors, categories, gymHandle, gym.address.country))
+        val categories = (gym.categories ::: Tag.categories).map(c => c.id -> Messages.Models.category(c.id))
+        Ok(views.html.route.create(grades, colors, categories, gymHandle)(gym.address.country))
       }
       case Failure(f) => InternalServerError
     }

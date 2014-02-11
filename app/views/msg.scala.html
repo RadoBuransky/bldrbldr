@@ -1,9 +1,10 @@
-@(title: String, text: String, url: String, lang: Lang)
+@(title: String, text: String, url: String)(implicit lang: Lang)
 
 @common("Jugjane", title + " " + text, lang) {
 <div class="container">
     <h1>@title</h1>
     <p>@text</p>
-    <a href="@url" class="btn btn-default">Continue <span class="glyphicon glyphicon-ok"></span></a>
+    <a href="@url" class="btn btn-default">@Messages("views.msg.continueButton")
+        <span class="glyphicon glyphicon-ok"></span></a>
 </div>
 }

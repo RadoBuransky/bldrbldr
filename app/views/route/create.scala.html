@@ -1,27 +1,27 @@
-@(grades: Seq[(String, String)], colors: Seq[models.ui.Color2], categories: Seq[(String, String)], gymhandle: String, lang: Lang)
+@(grades: Seq[(String, String)], colors: Seq[models.ui.Color2], categories: Seq[(String, String)], gymhandle: String)(implicit lang: Lang)
 
 @import helper._
 @import controls.color
 
-@common("Add new climbing route", "Add new climbing route", lang) {
+@common(Messages("views.route.create.title"), Messages("views.route.create.title"), lang) {
 <div id="createRoute" class="container">
     <form id="createRouteForm" action="/climbing/@gymhandle/new" method="post" enctype="multipart/form-data"
           class="form-horizontal" role="form">
-        <h1>Add new climbing route</h1>
+        <h1>@Messages("views.route.create.title")</h1>
         <div class="form-group">
-            <label for="photo" class="col-sm-1 control-label">Photo</label>
+            <label for="photo" class="col-sm-1 control-label">@Messages("views.route.create.photoLabel")</label>
             <div class="col-sm-5">
                 <input id="photo" name="photo" type="file"/>
             </div>
         </div>
         <div class="form-group">
-            <label for="location" class="col-sm-1 control-label">Location</label>
+            <label for="location" class="col-sm-1 control-label">@Messages("views.route.create.locationLabel")</label>
             <div class="col-sm-1">
                 <input id="location" name="location" class="form-control" type="text">
             </div>
         </div>
         <div class="form-group">
-            <label for="grade" class="col-sm-1 control-label">Grade</label>
+            <label for="grade" class="col-sm-1 control-label">@Messages("views.route.create.gradeLabel")</label>
             <div class="col-sm-5">
                 <select id="grade" name="grade" class="form-control" required>
                     @for(grade <- grades) {
@@ -31,7 +31,7 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-1 control-label">Holds</label>
+            <label class="col-sm-1 control-label">@Messages("views.route.create.holdsLabel")</label>
             <div class="col-sm-5">
                 <div class="holdColorsSelector">
                     @for(c <- colors) { @color(c) }
@@ -39,7 +39,7 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-1 control-label">Tags</label>
+            <label class="col-sm-1 control-label">@Messages("views.route.create.tagsLabel")</label>
             <div class="col-sm-5" id="tags">
                 @for(c <- categories) {
                 <button id="@c._1" type="button" class="btn btn-default btn-sm" data-toggle="button">
@@ -49,7 +49,7 @@
             </div>
         </div>
         <div class="form-group">
-            <label class="col-sm-1 control-label" for="note">Note</label>
+            <label class="col-sm-1 control-label" for="note">@Messages("views.route.create.noteLabel")</label>
             <div class="col-sm-5">
                 <textarea id="note" name="note" class="form-control" rows="5"></textarea>
             </div>
@@ -57,7 +57,7 @@
         <div class="form-group">
             <div class="col-sm-1 control-label"></div>
             <div class="col-sm-5">
-                <button type="submit" class="btn btn-primary">Upload</button>
+                <button type="submit" class="btn btn-primary">@Messages("views.route.create.uploadButton")</button>
             </div>
         </div>
     </form>

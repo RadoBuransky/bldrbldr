@@ -1,0 +1,64 @@
+#=============================================================
+# Views
+#=============================================================
+
+# Gym - index
+views.gym.index.addNewButton=Pridať cestu
+views.gym.index.days=dní
+
+# Route - new
+views.route.create.title=Pridať novú cestu
+views.route.create.photoLabel=Fotka
+views.route.create.locationLabel=Číslo
+views.route.create.gradeLabel=Obtiažnosť
+views.route.create.holdsLabel=Chyty
+views.route.create.tagsLabel=Značky
+views.route.create.noteLabel=Poznámka
+views.route.create.uploadButton=Pridať
+
+# Route - index
+views.route.index.at=-
+views.route.index.days=dní
+views.route.index.deleteButton=Zmazať
+views.route.index.reallyDelete=Fakt to chceš zmazať?
+views.route.index.yesDelete=Áno, preč s tým!
+views.route.index.noDelete=Nie
+
+# Msg
+views.msg.continueButton=Pokračovať
+
+# Controls
+views.controls.categories.new=nové
+
+#=============================================================
+# Controllers
+#=============================================================
+
+# RouteController
+controllers.route.doUpload.thankYou=Ďakujeme!
+controllers.route.doUpload.goOn=Poď, pokračuj. Ešte jeden.
+
+#=============================================================
+# Models
+#=============================================================
+
+# Flags
+models.flags.awesome=Úžasné
+models.flags.boring=Nuda
+models.flags.tooeasy=Priľahké
+models.flags.toohard=Priťažké
+models.flags.scary=Morál
+models.flags.whathow=Čo? Ako?
+
+# Categories
+models.categories.slab=Platňa
+models.categories.overhang=Previs
+models.categories.traverse=Traverz
+models.categories.corner=Kút
+models.categories.edge=Hrana
+models.categories.crack=Špára
+models.categories.jugs=Mádla
+models.categories.crimps=Škrabky
+models.categories.slopers=Obliny
+models.categories.pinches=Stisky
+models.categories.volumes=Štruktúry

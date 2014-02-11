@@ -55,8 +55,8 @@ trait RouteServiceComponentImpl extends RouteServiceComponent {
       val id = route.id.map(BSONObjectID(_))
       val discipline = route.discipline.toString
       val categoryIds = route.categories.map(_.id)
-      val flags = route.flags.filter(_.counter.getOrElse(0) > 0).map { flag =>
-        flag.name -> flag.counter.get
+      val flags = route.flags.filter(_.counter > 0).map { flag =>
+        flag.id -> flag.counter
       }
       dat.Route(id, route.gym.handle, route.fileName, route.location, route.grade.id, route.holdsColor.id,
         route.note, discipline, route.enabled, categoryIds, flags.toMap)

@@ -1,0 +1,64 @@
+#=============================================================
+# Views
+#=============================================================
+
+# Gym - index
+views.gym.index.addNewButton=Add new
+views.gym.index.days=days
+
+# Route - new
+views.route.create.title=Add new climbing route
+views.route.create.photoLabel=Photo
+views.route.create.locationLabel=Location
+views.route.create.gradeLabel=Grade
+views.route.create.holdsLabel=Holds
+views.route.create.tagsLabel=Tags
+views.route.create.noteLabel=Note
+views.route.create.uploadButton=Upload
+
+# Route - index
+views.route.index.at=at
+views.route.index.days=days
+views.route.index.deleteButton=Delete
+views.route.index.reallyDelete=Do you really want to delete this?
+views.route.index.yesDelete=Yes, delete it!
+views.route.index.noDelete=No
+
+# Msg
+views.msg.continueButton=Continue
+
+# Controls
+views.controls.categories.new=new
+
+#=============================================================
+# Controllers
+#=============================================================
+
+# RouteController
+controllers.route.doUpload.thankYou=Thank you!
+controllers.route.doUpload.goOn=Go on. Give us another one.
+
+#=============================================================
+# Models
+#=============================================================
+
+# Flags
+models.flags.awesome=Awesome
+models.flags.boring=Boring
+models.flags.tooeasy=Too easy
+models.flags.toohard=Too hard
+models.flags.scary=Scary
+models.flags.whathow=What? How?
+
+# Categories
+models.categories.slab=Slab
+models.categories.overhang=Overhang
+models.categories.traverse=Traverse
+models.categories.corner=Corner
+models.categories.edge=Edge
+models.categories.crack=Crack
+models.categories.jugs=Jugs
+models.categories.crimps=Crimps
+models.categories.slopers=Slopers
+models.categories.pinches=Pinches
+models.categories.volumes=Volumes

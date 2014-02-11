@@ -14,6 +14,8 @@ import models.domain.model.{Gym, Discipline}
 import play.api.Logger
 import common.SupportedLang._
 import common.SupportedLang
+import com.jugjane.common.Messages
+import play.api.i18n.Lang
 
 trait RouteController extends Controller with MongoController {
   this: RouteServiceComponent with GymServiceComponent with AuthServiceComponent
@@ -48,21 +50,30 @@ trait RouteController extends Controller with MongoController {
   }
   
   def get(gymHandle: String, routeId: String) = Action.async { request =>
+    val logMsg = "get [" + gymHandle + ", " + routeId + "]"
+
     routeService.getByRouteId(routeId).map { route =>
       if (!route.enabled)
         NotFound
       else {
         authService.isAdmin(request.cookies, route.gym) match {
           case Success(isAdmin) => {
+            implicit val lang: Lang = route.gym.address.country
+
             val photoUrl = route.fileName.map(photoService.getUrl(_, gymHandle).toString)
-            Ok(views.html.route.index(models.ui.Route(route, photoUrl), isAdmin,
-              route.gym.address.country))
+            Ok(views.html.route.index(models.ui.Route(route, photoUrl), isAdmin)(route.gym.address.country))
           }
-          case Failure(t) => InternalServerError
+          case Failure(t) => {
+            Logger.error(logMsg, t)
+            InternalServerError
+          }
         }
       }
     } recover {
-      case _ => NotFound
+      case ex: Exception => {
+        Logger.error(logMsg, ex)
+        NotFound
+      }
     }
   }
   
@@ -92,9 +103,11 @@ trait RouteController extends Controller with MongoController {
               saveToMongo <- saveToMongo(gym, request.body.dataParts, newFileName)
             } yield true
 
+            val lang = gym.address.country
+
             store.map { result =>
-              Ok(views.html.msg("Thank you!", "Go on. Give us another one.",
-                new AppLoader.ReversegymController().get(gymHandle, None).url, SupportedLang.defaultLang))
+              Ok(views.html.msg(Messages.Controllers.Route.thankYou(lang), Messages.Controllers.Route.goOn(lang),
+                new AppLoader.ReversegymController().get(gymHandle, None).url)(lang))
             }
           } match {
             case Success(result) => result

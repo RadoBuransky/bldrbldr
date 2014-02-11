@@ -20,5 +20,5 @@ object SupportedLang extends Enumeration {
     }
   }
 
-  implicit def localeToLang(locale: Locale): Lang = Lang(locale.getLanguage)
+  implicit def localeToLang(locale: Locale): Lang = Lang(locale.toLanguageTag)
 }

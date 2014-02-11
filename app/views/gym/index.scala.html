@@ -1,4 +1,4 @@
-@(gym: models.ui.Gym, isAdmin: Boolean, lang: Lang)
+@(gym: models.ui.Gym, isAdmin: Boolean)(implicit lang: Lang)
 
 @import controls.color
 @import controls.categories
@@ -12,7 +12,9 @@
         <div id="gymaddress">@gym.address.street, @gym.address.city, @gym.address.country</div>
         @if(isAdmin) {
         <a href="/climbing/@gym.handle/new">
-            <button id="addnewroute" type="button" class="btn btn-default">Add new</button>
+            <button id="addnewroute" type="button" class="btn btn-default">
+                @Messages("views.gym.index.addNewButton")
+            </button>
         </a>
         }
     </div>
@@ -27,7 +29,7 @@
                     <div class="routedesc">
                         @route.atLocation
                         <span class="routenote">
-                            @route.d.note (@route.days days)
+                            @route.d.note (@route.days @Messages("views.gym.index.days"))
                         </span>
                         @categories(route.categories, route.days)
                     </div>

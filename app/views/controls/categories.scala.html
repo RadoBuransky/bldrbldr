@@ -1,4 +1,4 @@
-@(categories: Seq[String], days: Int)
+@(categories: Seq[String], days: Int)(implicit lang: Lang)
 
 @for(category <- categories) {
 <span class="badge category">
@@ -7,5 +7,5 @@
 }
 
 @if(days < 14) {
-<span class="badge category newcategory">new</span>
+<span class="badge category newcategory">@Messages("views.controls.categories.new")</span>
 }

@@ -10,7 +10,6 @@ import models.JugjaneException
  */
 trait Tag {
   def id: TagId
-  def name: String
 }
 
 /**
@@ -23,20 +22,17 @@ case class CategoryTag(name: String) extends Tag {
 
 /**
  * General flagging tag. Users can (un)flag it.
- * @param name
  */
-case class FlagTag(name: String, counter: Option[Int] = None) extends Tag {
-  val id = name.toLowerCase.filter(c => (c != ' ') && (c != '?'))
-
-  def setCounter(counter: Int) = FlagTag(name, Some(counter))
+case class FlagTag(id: String, counter: Int = 0) extends Tag {
+  def setCounter(counter: Int) = FlagTag(id, counter)
 }
 
 object Tag {
   type TagId = String
 
   val flags: List[FlagTag] = {
-    List(FlagTag("Awesome"), FlagTag("Boring"), FlagTag("Too easy"),
-    FlagTag("Too hard"), FlagTag("Scary"), FlagTag("What? How?"))
+    List(FlagTag("awesome"), FlagTag("boring"), FlagTag("tooeasy"),
+    FlagTag("toohard"), FlagTag("scary"), FlagTag("whathow"))
   }
 
   val categories: List[CategoryTag] = {
@@ -47,9 +43,12 @@ object Tag {
   }
 
   def getFlagsByIdsCounts(idsCounts: Map[String, Int]): Try[List[FlagTag]] = {
-    getByIds(idsCounts.keys, flags).map { fs =>
-      fs.map { f =>
-        f.setCounter(idsCounts(f.id))
+    Try {
+      flags.map { f =>
+        idsCounts.get(f.id) match {
+          case Some(c) => f.setCounter(c)
+          case _ => f
+        }
       }
     }
   }

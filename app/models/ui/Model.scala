@@ -4,9 +4,10 @@ import org.joda.time.{DateTime, Days}
 import models.domain
 import models.domain.model._
 import models.ui.Color2.WebColor
-import models.domain.model.FlagTag
 import scala.Some
 import models.domain.model.SingleHoldsColor
+import play.api.i18n.Lang
+import com.jugjane.common.Messages
 
 case class Gym(name: String,
                handle: String,
@@ -17,15 +18,13 @@ case class Gym(name: String,
 
 case class Color2(name: String, one: WebColor, two: Option[WebColor] = None)
 
-case class Route(d: domain.model.Route, photoUrl: Option[String]) {
+case class Route(d: domain.model.Route, photoUrl: Option[String])(implicit lang: Lang) {
   val days = Days.daysBetween(d.created.get, DateTime.now()).getDays()
   val color = Color2(d.holdsColor)
-  val categories = d.categories.map { c => c.name }
+  val categories = d.categories.map { c => Messages.Models.category(c.id) }
   val title = (d.grade.name + atLocation).trim
   lazy val atLocation = d.location.map(l => " @ " + l).getOrElse("")
 }
-
-case class Flag(id: String, name: String, count: Int)
 
 case class Grade(name: String, id: String, from: Option[String], to: Option[String]) {
   override def toString(): String = {
@@ -53,12 +52,6 @@ object Color2 {
       case (DoubleHoldsColor(color1, color2)) => Color2(from.id, color1.toWeb, Some(color2.toWeb))
       case _ => throw new IllegalStateException()
     }
-  }
-}
-
-object Flag {
-  def apply(from: FlagTag, count: Int): models.ui.Flag = {
-      Flag(from.id, from.name, count)
   }
 }
 
