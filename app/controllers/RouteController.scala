@@ -10,7 +10,8 @@ import play.modules.reactivemongo.MongoController
 import play.api.mvc.MultipartFormData.FilePart
 import scala.Some
 import scala.util.{Success, Failure}
-import models.domain.model.Discipline
+import models.domain.model.{Gym, Discipline}
+import play.api.Logger
 
 trait RouteController extends Controller with MongoController {
   this: RouteServiceComponent with GymServiceComponent with AuthServiceComponent
@@ -28,7 +29,7 @@ trait RouteController extends Controller with MongoController {
         val r = for {
           rp <- {
             if (route.fileName.isDefined)
-              photoService.remove(route.fileName.get)
+              photoService.remove(route.fileName.get, gymHandle)
             else
               Future()
           }
@@ -51,7 +52,7 @@ trait RouteController extends Controller with MongoController {
       else {
         authService.isAdmin(request.cookies, route.gym) match {
           case Success(isAdmin) => {
-            val photoUrl = route.fileName.map(photoService.getUrl(_).toString)
+            val photoUrl = route.fileName.map(photoService.getUrl(_, gymHandle).toString)
             Ok(views.html.route.index(models.ui.Route(route, photoUrl), isAdmin))
           }
           case Failure(t) => InternalServerError
@@ -77,19 +78,24 @@ trait RouteController extends Controller with MongoController {
           // Generate random file name
           val newFileName = requestFile.map(_ => photoService.generateFileName())
 
-          val store = for {
-            uploadPhoto <- {
-              if (newFileName.isDefined)
-                photoService.upload(requestFile.get.ref.file, newFileName.get)
-              else
-                Future()
-            }
-            saveToMongo <- saveToMongo(gymHandle, request.body.dataParts, newFileName)
-          } yield true
+          gymService.get(gymHandle).map { gym =>
+            val store = for {
+              uploadPhoto <- {
+                if (newFileName.isDefined)
+                  photoService.upload(requestFile.get.ref.file, newFileName.get, gymHandle)
+                else
+                  Future()
+              }
+              saveToMongo <- saveToMongo(gym, request.body.dataParts, newFileName)
+            } yield true
 
-          store.map { result =>
-            Ok(views.html.msg("Thank you!", "Go on. Give us another one.",
-              new AppLoader.ReversegymController().get(gymHandle, None).url))
+            store.map { result =>
+              Ok(views.html.msg("Thank you!", "Go on. Give us another one.",
+                new AppLoader.ReversegymController().get(gymHandle, None).url))
+            }
+          } match {
+            case Success(result) => result
+            case Failure(t) => Promise.failed(t).future
           }
         }
       }
@@ -111,7 +117,7 @@ trait RouteController extends Controller with MongoController {
     }
   }
   
-  private def saveToMongo(gymHandle: String, dataParts: Map[String, Seq[String]],
+  private def saveToMongo(gym: Gym, dataParts: Map[String, Seq[String]],
                           fileName: Option[String]): Future[Unit] = {
     val gradeId = dataParts("grade")(0)
     val coloredHoldsId = dataParts("color")(0)
@@ -125,11 +131,9 @@ trait RouteController extends Controller with MongoController {
 
     val categoryIds = dataParts("categories")(0).split(',').filter(c => !c.trim.isEmpty).toList;
     
-    gymService.get(gymHandle).flatMap { gym =>
-      dom.Route.create(None, gym, fileName, location, gradeId, coloredHoldsId, note,
-        Discipline.Bouldering.toString, categoryIds, Map.empty, true, None).map { route =>
+    dom.Route.create(None, gym, fileName, location, gradeId, coloredHoldsId, note,
+      Discipline.Bouldering.toString, categoryIds, Map.empty, true, None).map { route =>
         routeService.save(route)
-      }
     } match {
       case Success(result) => result
       case Failure(t) => Promise.failed(t).future

@@ -17,6 +17,7 @@ import play.api.mvc.{Request, MultipartFormData}
 import play.api.mvc.MultipartFormData.{FilePart, BadPart, MissingFilePart}
 import play.api.libs.Files.TemporaryFile
 import test.TestUtils
+import test.TestUtils.TestEnvironment
 import scala.util.Failure
 import play.api.mvc.MultipartFormData.FilePart
 import scala.Some
@@ -24,6 +25,7 @@ import scala.util.Success
 import models.JugjaneException
 import play.api.mvc.MultipartFormData.MissingFilePart
 import play.api.mvc.MultipartFormData.BadPart
+import common.Environment.PlayEnvironment
 
 class RouteControllerSpec extends Specification with Mockito {
   "flag" should {
@@ -112,7 +114,7 @@ class RouteControllerSpec extends Specification with Mockito {
       gymService.get("demo").returns(Success(Demo))
       authService.isAdmin(any, any).returns(Success(true))
       routeService.getByRouteId("123").returns(Promise.successful(TestData.domRoute1).future)
-      photoService.remove("/home/rado/123.jpeg").returns(Promise.successful().future)
+      photoService.remove("/home/rado/123.jpeg", "demo")(PlayEnvironment).returns(Promise.successful().future)
       routeService.delete("123").returns(Promise.successful().future)
 
       // Execute
@@ -125,7 +127,7 @@ class RouteControllerSpec extends Specification with Mockito {
       there was one(gymService).get("demo")
       there was one(authService).isAdmin(any, any)
       there was one(routeService).getByRouteId("123")
-      there was one(photoService).remove("/home/rado/123.jpeg")
+      there was one(photoService).remove("/home/rado/123.jpeg", "demo")
       there was one(routeService).delete("123")
     }
   }
@@ -180,7 +182,7 @@ class RouteControllerSpec extends Specification with Mockito {
       // Setup
       routeService.getByRouteId("123").returns(Promise.successful(TestData.domRoute1).future)
       authService.isAdmin(any, any).returns(Success(true))
-      photoService.getUrl(TestData.domRoute1.fileName.get).returns(new URL("http://xxx/"))
+      photoService.getUrl(TestData.domRoute1.fileName.get, "demo").returns(new URL("http://xxx/"))
 
       // Execute
       val result = get("demo", "123")(FakeRequest(GET, "/climbing/demo/123"))
@@ -191,7 +193,7 @@ class RouteControllerSpec extends Specification with Mockito {
       // Verify
       there was one(routeService).getByRouteId("123")
       there was one(authService).isAdmin(any, any)
-      there was one(photoService).getUrl(TestData.domRoute1.fileName.get)
+      there was one(photoService).getUrl(TestData.domRoute1.fileName.get, "demo")
     }
   }
 
@@ -245,7 +247,7 @@ class RouteControllerSpec extends Specification with Mockito {
       authService.isAdmin(any, any).returns(Success(true))
       photoService.getMime.returns("image/jpeg")
       photoService.generateFileName().returns("newTestPhoto.jpeg")
-      photoService.upload(part.ref.file, "newTestPhoto.jpeg").returns(Promise.successful().future)
+      photoService.upload(part.ref.file, "newTestPhoto.jpeg", "demo").returns(Promise.successful().future)
       routeService.save(any).returns(Promise.failed(new JugjaneException("x")).future)
       request.body returns multipartBody
 
@@ -260,7 +262,7 @@ class RouteControllerSpec extends Specification with Mockito {
       there was one(authService).isAdmin(any, any)
       there was one(photoService).getMime
       there was one(photoService).generateFileName()
-      there was one(photoService).upload(part.ref.file, "newTestPhoto.jpeg")
+      there was one(photoService).upload(part.ref.file, "newTestPhoto.jpeg", "demo")
       there was one(routeService).save(any)
       there was three(request).body
     }
@@ -347,7 +349,7 @@ class RouteControllerSpec extends Specification with Mockito {
       if (file) {
         photoService.getMime.returns("image/jpeg")
         photoService.generateFileName().returns("newTestPhoto.jpeg")
-        photoService.upload(part.ref.file, "newTestPhoto.jpeg").returns(Promise.successful().future)
+        photoService.upload(part.ref.file, "newTestPhoto.jpeg", "demo")(PlayEnvironment).returns(Promise.successful().future)
       }
       routeService.save(any).returns(Promise.successful().future)
       request.body returns multipartBody
@@ -364,7 +366,7 @@ class RouteControllerSpec extends Specification with Mockito {
       if (file) {
         there was one(photoService).getMime
         there was one(photoService).generateFileName()
-        there was one(photoService).upload(part.ref.file, "newTestPhoto.jpeg")
+        there was one(photoService).upload(part.ref.file, "newTestPhoto.jpeg", "demo")(PlayEnvironment)
       }
       there was one(routeService).save(any)
       there was three(request).body

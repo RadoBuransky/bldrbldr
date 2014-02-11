@@ -10,12 +10,12 @@ import scala.concurrent.{ExecutionContext, Future}
 import ExecutionContext.Implicits.global
 import org.specs2.specification.Scope
 import scala.util.{Failure, Success}
-import test.TestUtils
-import models.data.dao.RouteDaoComponent
-import models.domain.services.impl.PhotoServiceComponentImpl
+import test.TestUtils.TestEnvironment
 import com.jugjane.test.TestData
 import models.JugjaneException
 import java.net.URL
+import common.Environment
+import common.Environment.PlayEnvironment
 
 class GymControllerSpec extends Specification with Mockito {
   "newBoulder" should {
@@ -52,7 +52,7 @@ class GymControllerSpec extends Specification with Mockito {
       gymService.get("demo") returns Success(Demo)
       routeService.getByGymHandle("demo") returns Future(TestData.domRoute1 :: Nil)
       authService.isAdmin(any, any) returns Success(false)
-      photoService.getUrl(TestData.domRoute1.fileName.get).returns(new URL("http://xxx/"))
+      photoService.getUrl(TestData.domRoute1.fileName.get, "demo")(PlayEnvironment).returns(new URL("http://xxx/"))
 
       val result = get("demo", None)(FakeRequest(GET, "/climbing/demo"))
 
@@ -63,7 +63,7 @@ class GymControllerSpec extends Specification with Mockito {
       there was one(gymService).get("demo")
       there was one(routeService).getByGymHandle("demo")
       there was no(authService).validateSecret(any, any)
-      there was one(photoService).getUrl(TestData.domRoute1.fileName.get)
+      there was one(photoService).getUrl(TestData.domRoute1.fileName.get, "demo")
     }
 
     "fail for nonexisting gym" in new GymControllerScope {

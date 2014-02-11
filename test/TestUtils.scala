@@ -8,6 +8,7 @@ import scala.util.Failure
 import play.api.mvc.Cookie
 import scala.Some
 import scala.language.postfixOps
+import common.Environment
 
 object TestUtils {
   def cookies(cookies: Cookie*) = new Cookies {
@@ -20,5 +21,10 @@ object TestUtils {
       case None => Failure(new IllegalStateException("Future should either fail or succeed."))
       case Some(t) => t
     }
+  }
+
+  implicit object TestEnvironment extends Environment {
+    val isDev: Boolean = true
+    val isProd: Boolean = false
   }
 }

@@ -37,7 +37,7 @@ trait GymController extends Controller {
           val uiGrades = gym.gradingSystem.grades.filter(g =>
             routesByGrade.get(g.id).isDefined).map(g => ui.Grade(g)).toList
           val uiRoutes = routesByGrade.map(e => (e._1, e._2.map(r => {
-            val photoUrl = r.fileName.map(photoService.getUrl(_).toString)
+            val photoUrl = r.fileName.map(photoService.getUrl(_, gymHandle).toString)
             ui.Route(r, photoUrl)
           })))
           val result = Ok(views.html.gym.index(ui.Gym(gym, uiGrades, uiRoutes), isAdmin))

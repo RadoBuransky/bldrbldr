@@ -11,6 +11,7 @@ import javax.imageio.{IIOImage, ImageWriteParam, ImageIO}
 import play.api.Logger
 import java.util.UUID
 import ExecutionContext.Implicits.global
+import common.Environment
 
 trait PhotoServiceComponentImpl extends PhotoServiceComponent {
   val photoService = new PhotoServiceImpl
@@ -23,24 +24,25 @@ trait PhotoServiceComponentImpl extends PhotoServiceComponent {
 
     def generateFileName(): String = UUID.randomUUID().toString() + ".jpg"
 
-    def upload(file: File, fileName: String): Future[Unit] = {
+    def upload(file: File, fileName: String, gymHandle: String)
+              (implicit environment: Environment): Future[Unit] = {
       notEmpty(fileName, "fileName")
 
       Logger.info("Resizing...")
       resizeImage(file, photoWidth)
 
       Logger.info("Uploading to S3...")
-      uploadToS3(file.getPath(), fileName)
+      uploadToS3(file.getPath(), fileName, gymHandle, environment)
     }
 
-    def remove(fileName: String): Future[Unit] = {
+    def remove(fileName: String, gymHandle: String)(implicit environment: Environment): Future[Unit] = {
       notEmpty(fileName, "fileName")
-      S3(bucketName).remove(fileName)
+      S3(bucketName).remove(getFileName(fileName, gymHandle, environment))
     }
 
-    def getUrl(fileName: String): URL = {
+    def getUrl(fileName: String, gymHandle: String)(implicit environment: Environment): URL = {
       notEmpty(fileName, "fileName")
-      new URL(UrlTemplate.format(bucketName, fileName))
+      new URL(UrlTemplate.format(bucketName, getFileName(fileName, gymHandle, environment)))
     }
 
     def getMime: String = jpegMime
@@ -71,14 +73,16 @@ trait PhotoServiceComponentImpl extends PhotoServiceComponent {
       }
     }
 
-    private def uploadToS3(filePath: String, newFileName: String): Future[Unit] = {
+    private def uploadToS3(filePath: String, newFileName: String, gymHandle: String,
+                           environment: Environment): Future[Unit] = {
       val fis = new FileInputStream(filePath)
       try {
         val bis = new BufferedInputStream(fis)
         try {
           val byteArray = Stream.continually(bis.read).takeWhile(-1 != _).map(_.toByte).toArray
 
-          val result = S3(bucketName) add BucketFile(newFileName, jpegMime, byteArray)
+          val result = S3(bucketName) add BucketFile(getFileName(newFileName, gymHandle, environment),
+            jpegMime, byteArray)
 
           result.map { unit =>
             Logger.info("File saved to S3. [" + newFileName + "]")
@@ -93,6 +97,11 @@ trait PhotoServiceComponentImpl extends PhotoServiceComponent {
       finally {
         fis.close()
       }
+    }
+
+    private def getFileName(fileName: String, gymHandle: String, environment: Environment) = {
+      val env = if (environment.isProd) "" else "dev/"
+      env + gymHandle + "/" + fileName
     }
   }
 }
