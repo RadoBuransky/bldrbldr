@@ -5,6 +5,8 @@
 # Gym - index
 views.gym.index.addNewButton=Pridať cestu
 views.gym.index.days=dní
+views.gym.index.description1=Cesty a bouldre v lezeckom centre
+views.gym.index.description2=.
 
 # Route - new
 views.route.create.title=Pridať novú cestu

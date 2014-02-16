@@ -3,8 +3,9 @@
 @import controls.color
 @import controls.categories
 
-@common(gym.name + " climbing", "Current climbing routes and boulders at the " + gym.name + " indoor climbing gym.",
-    lang, gymName = Some(gym.name), gymHandle = Some(gym.handle)) {
+@common(gym.name, Messages("views.gym.index.description1") + " " + gym.name + " " +
+    Messages("views.gym.index.description2"), lang, gymName = Some(gym.name),
+    gymHandle = Some(gym.handle)) {
 <div id="gym" itemscope itemtype="http://schema.org/ExerciseGym">
     <div class="container">
         <h1 itemprop="name">@gym.name</h1>

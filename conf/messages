@@ -5,6 +5,8 @@
 # Gym - index
 views.gym.index.addNewButton=Add new
 views.gym.index.days=days
+views.gym.index.description1=Climbing routes and boulders at
+views.gym.index.description2=climbing gym.
 
 # Route - new
 views.route.create.title=Add new climbing route
