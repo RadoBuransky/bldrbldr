@@ -5,11 +5,17 @@
 
 @common(gym.name + " climbing", "Current climbing routes and boulders at the " + gym.name + " indoor climbing gym.",
     lang, gymName = Some(gym.name), gymHandle = Some(gym.handle)) {
-<div id="gym">
+<div id="gym" itemscope itemtype="http://schema.org/ExerciseGym">
     <div class="container">
-        <h1>@gym.name</h1>
-        <div id="gymurl"><a href="@gym.url" target="_blank">@gym.url</a></div>
-        <div id="gymaddress">@gym.address.street, @gym.address.city, @gym.address.country</div>
+        <h1 itemprop="name">@gym.name</h1>
+        <div id="gymurl">
+            <a href="@gym.url" target="_blank" itemprop="url">@gym.url</a>
+        </div>
+        <div id="gymaddress" itemprop="address" itemscope itemtype="http://schema.org/PostalAddress">
+            <span itemprop="streetAddress">@gym.address.street</span>,
+            <span itemprop="addressLocality">@gym.address.city</span>,
+            <span itemprop="addressCountry">@gym.address.country</span>
+        </div>
         @if(isAdmin) {
         <a href="/climbing/@gym.handle/new">
             <button id="addnewroute" type="button" class="btn btn-default">
